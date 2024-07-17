@@ -8,6 +8,7 @@ import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
+import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
@@ -58,6 +59,19 @@ public class GroupBuyService {
 
         return true;
 
+    }
+    //공구 시작 기능
+    public boolean start(Long gpbuyIdx) {
+        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).get();
+        groupBuy.updateStatus("시작");
+        groupBuy.updateStartedAt(LocalDateTime.now());
+        GroupBuy updatedGroupBuy = groupBuy;
+        updatedGroupBuy = gpbuyRepository.save(updatedGroupBuy);
+        if (updatedGroupBuy == null){
+            return false;
+        }
+
+        return true;
     }
 
     public List<RegisteredBidListResponse> findBidList(Long gpbuyIdx) {
@@ -120,6 +134,42 @@ public class GroupBuyService {
         return responseList;
     }
 
+    //공구 상세조회 기능
+    public GroupBuyDetailResponse findByGpbuyIdx(Long gpbuyIdx) {
+        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).get();
+        Bid bid = null;
+        ProductImg thumbnailImg = null;
+        List<String> productImgList = new ArrayList<>();
+
+        //선정된 입찰 정보 가져오기
+        for (Bid b: groupBuy.getBidList()){
+            if (b.getBidSelect()){
+                bid = b;
+                break;
+            }
+        }
+        //썸네일과 본문 이미지 분리
+        for (ProductImg img : bid.getProduct().getProductImgList()){
+            thumbnailImg = extractThumbnailImg(bid.getProduct().getProductImgList());
+            if (img.getProductImgSequence() != 0){
+                productImgList.add(img.getProductImgUrl());
+            }
+        }
+        //응답 DTO 빌딩
+        GroupBuyDetailResponse response = GroupBuyDetailResponse.builder()
+                .gpbuyIdx(groupBuy.getIdx())
+                .userIdx(groupBuy.getUser().getIdx())
+                .productThumbnailImg(thumbnailImg.getProductImgUrl())
+                .productImgUrlList(productImgList)
+                .productName(bid.getProduct().getProductName())
+                .companyName(bid.getProduct().getCompany().getCompanyName())
+                .gpbuyRemainQuantity(groupBuy.getGpbuyRemainQuantity())
+                .gpbuyQuantity(groupBuy.getGpbuyQuantity())
+                .gpbuyStartedAt(groupBuy.getGpbuyStartedAt())
+                .gpbuyEndedAt(groupBuy.getGpbuyEndedAt())
+                .build();
+        return response;
+    }
 
 
     //-- 유틸, 추출 메소드 --
@@ -135,4 +185,6 @@ public class GroupBuyService {
         }
         return null;
     }
+
+
 }
