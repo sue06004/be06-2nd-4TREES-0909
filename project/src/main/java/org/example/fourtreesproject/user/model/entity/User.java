@@ -5,7 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.fourtreesproject.company.model.entity.Company;
 import org.example.fourtreesproject.delivery.model.DeliveryAddress;
+import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;

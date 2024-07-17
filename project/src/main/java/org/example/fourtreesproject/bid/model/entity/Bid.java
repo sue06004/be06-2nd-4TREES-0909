@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
+import org.example.fourtreesproject.product.model.entity.Product;
 
 import java.time.LocalDateTime;
 

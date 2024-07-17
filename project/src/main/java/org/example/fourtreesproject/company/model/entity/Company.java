@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.user.model.entity.User;
 
+import java.util.List;
+
 @Entity
 @Table(name="company")
 @Builder
@@ -33,6 +35,6 @@ public class Company {
     private User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
-    private Product product;
+    private List<Product> product;
 
 }
