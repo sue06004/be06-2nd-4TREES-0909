@@ -44,7 +44,7 @@ public class Bid {
     @JoinColumn(name="product_idx")
     private Product product;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="gpbuy_idx")
     private GroupBuy groupBuy;
 }
