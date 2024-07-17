@@ -31,7 +31,6 @@ public class Company {
     @Column(columnDefinition = "TEXT", nullable = true)
     private String companyIntro;
 
-
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 

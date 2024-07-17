@@ -41,6 +41,7 @@ public class Orders {
     private Integer orderQuantity;
 
     @Column(nullable = false, length = 10)
+    @ColumnDefault(value = "주문")
     private String orderStatus;
 
     @Column(nullable = false)
