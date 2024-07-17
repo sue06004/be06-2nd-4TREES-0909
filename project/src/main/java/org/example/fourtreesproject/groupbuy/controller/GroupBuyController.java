@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/gpbuy")
 public class GroupBuyController {
+
     private final GroupBuyService gpbuyService;
 
     @Operation(summary = "공구 등록 api")
