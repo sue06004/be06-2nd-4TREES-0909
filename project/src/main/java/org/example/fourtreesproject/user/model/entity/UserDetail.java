@@ -3,6 +3,7 @@ package org.example.fourtreesproject.user.model.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user_detail")
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class UserDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

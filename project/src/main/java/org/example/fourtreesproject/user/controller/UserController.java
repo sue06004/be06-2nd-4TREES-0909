@@ -5,16 +5,16 @@ import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.delivery.model.request.DeliveryAddressRegisterRequest;
 import org.example.fourtreesproject.emailVerify.model.dto.EmailVerifyDto;
 import org.example.fourtreesproject.emailVerify.service.EmailVerifyService;
+import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.request.SellerSignupRequest;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;
+import org.example.fourtreesproject.user.model.response.UserInfoResponse;
 import org.example.fourtreesproject.user.service.UserService;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import static org.example.fourtreesproject.common.BaseResponseStatus.USER_EMAIL_AUTH_FAIL;
-import static org.example.fourtreesproject.common.BaseResponseStatus.USER_INFO_DETAIL_FAIL;
+import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 
 
 @RestController
@@ -61,11 +61,20 @@ public class UserController {
 
     @PostMapping("/delivery/register")
     public BaseResponse<String> deliveryRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                 @RequestBody DeliveryAddressRegisterRequest deliveryAddressRegisterRequest){
+                                                 @RequestBody DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws Exception{
         if (customUserDetails == null){
-            return new BaseResponse<>(USER_INFO_DETAIL_FAIL);
+            return new BaseResponse<>(USER_NOT_LOGIN);
         }
         userService.registerDelivery(customUserDetails.getUser(), deliveryAddressRegisterRequest);
         return new BaseResponse<>();
+    }
+
+    @GetMapping("/info/detail")
+    public BaseResponse<UserInfoResponse> userInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception{
+        if (customUserDetails == null){
+            throw new InvalidUserException(USER_NOT_LOGIN);
+        }
+        UserInfoResponse userInfoDetail = userService.getUserInfoDetail(customUserDetails.getIdx());
+        return new BaseResponse<>(userInfoDetail);
     }
 }
