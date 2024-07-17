@@ -1,9 +1,12 @@
 package org.example.fourtreesproject.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fourtreesproject.user.model.entity.SellerDetail;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
+import org.example.fourtreesproject.user.model.request.SellerSignupRequest;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;
+import org.example.fourtreesproject.user.repository.SellerDetailRepository;
 import org.example.fourtreesproject.user.repository.UserDetailRepository;
 import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.mail.SimpleMailMessage;
@@ -18,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final SellerDetailRepository sellerDetailRepository;
     private final UserDetailRepository userDetailRepository;
     private final JavaMailSender emailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -37,6 +41,31 @@ public class UserService {
         UserDetail userDetail = UserDetail.builder().user(user).build();
         userRepository.save(user);
         userDetailRepository.save(userDetail);
+    }
+
+    public void sellerSignup(SellerSignupRequest sellerSignupRequest) {
+        User user = User.builder()
+                .type("inapp")
+                .email(sellerSignupRequest.getEmail())
+                .password(bCryptPasswordEncoder.encode(sellerSignupRequest.getPassword()))
+                .name(sellerSignupRequest.getName())
+                .phoneNumber(sellerSignupRequest.getPhoneNumber())
+                .birth(sellerSignupRequest.getBirth())
+                .sex(sellerSignupRequest.getSex())
+                .address(sellerSignupRequest.getAddress())
+                .postCode(sellerSignupRequest.getPostCode())
+                .build();
+        SellerDetail sellerDetail = SellerDetail.builder()
+                .sellerAccount(sellerSignupRequest.getSellerAccount())
+                .sellerBank(sellerSignupRequest.getSellerBank())
+                .sellerOpenedAt(sellerSignupRequest.getSellerOpenedAt())
+                .sellerMosNum(sellerSignupRequest.getSellerMosNum())
+                .sellerRegNum(sellerSignupRequest.getSellerRegNum())
+                .sellerDepoName(sellerSignupRequest.getSellerDepoName())
+                .user(user)
+                .build();
+        userRepository.save(user);
+        sellerDetailRepository.save(sellerDetail);
     }
 
     public String sendEmail(String email){

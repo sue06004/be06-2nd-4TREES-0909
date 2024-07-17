@@ -15,14 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupBuyController {
     private final GroupBuyService gpbuyService;
 
-    @PostMapping("/register")
-    public BaseResponse register(
-            @RequestBody GroupBuyCreateRequest request
-            ){
-
-        if (gpbuyService.save(request)){
-            return new BaseResponse();
-        };
-
-    }
+//    @PostMapping("/register")
+//    public BaseResponse register(
+//            @RequestBody GroupBuyCreateRequest request
+//            ){
+//
+//        if (gpbuyService.save(request)){
+//            return new BaseResponse();
+//        }
+//
+//    }
 }

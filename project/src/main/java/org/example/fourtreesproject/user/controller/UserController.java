@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.emailVerify.model.dto.EmailVerifyDto;
 import org.example.fourtreesproject.emailVerify.service.EmailVerifyService;
+import org.example.fourtreesproject.user.model.request.SellerSignupRequest;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;
 import org.example.fourtreesproject.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,17 @@ public class UserController {
                 .uuid(uuid)
                 .build());
         return new BaseResponse<>("");
+    }
+
+    @PostMapping("/seller/signup")
+    public BaseResponse sellerSignup(@RequestBody SellerSignupRequest sellerSignupRequest) {
+        String uuid = userService.sendEmail(sellerSignupRequest.getEmail());
+        userService.sellerSignup(sellerSignupRequest);
+        emailVerifyService.save(EmailVerifyDto.builder()
+                .email(sellerSignupRequest.getEmail())
+                .uuid(uuid)
+                .build());
+        return new BaseResponse();
     }
 
     @GetMapping("/verify")
