@@ -26,7 +26,7 @@ public class UserService {
     private final JavaMailSender emailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void signup(UserSignupRequest userSignupReq) {
+    public void signup(UserSignupRequest userSignupReq) throws Exception{
         User user = User.builder()
                 .type("inapp")
                 .email(userSignupReq.getEmail())
@@ -43,7 +43,7 @@ public class UserService {
         userDetailRepository.save(userDetail);
     }
 
-    public void sellerSignup(SellerSignupRequest sellerSignupRequest) {
+    public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws Exception {
         User user = User.builder()
                 .type("inapp")
                 .email(sellerSignupRequest.getEmail())
@@ -68,7 +68,7 @@ public class UserService {
         sellerDetailRepository.save(sellerDetail);
     }
 
-    public String sendEmail(String email){
+    public String sendEmail(String email) throws Exception{
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(email); // 받는 사람 메일
         simpleMailMessage.setSubject("[내 사이트] 가입 환영"); // 메일 제목
@@ -79,7 +79,7 @@ public class UserService {
         return uuid;
     }
 
-    public void activeMember(String email){
+    public void activeMember(String email) throws Exception {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if(userOptional.isPresent()){
             User user = userOptional.get();
