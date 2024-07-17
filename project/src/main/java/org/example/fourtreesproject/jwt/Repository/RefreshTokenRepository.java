@@ -1,6 +1,6 @@
 package org.example.fourtreesproject.jwt.Repository;
 
-import org.example.fourtreesproject.jwt.RefreshToken;
+import org.example.fourtreesproject.jwt.model.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
