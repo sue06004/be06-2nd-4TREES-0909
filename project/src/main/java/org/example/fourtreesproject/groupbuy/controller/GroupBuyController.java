@@ -36,6 +36,6 @@ public class GroupBuyController {
     ){
         List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
 
-        return null;
+        return new BaseResponse<>(result);
     }
 }
