@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.company.model.entity.Company;
 import org.example.fourtreesproject.delivery.model.DeliveryAddress;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
+import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
@@ -60,6 +61,8 @@ public class User {
     private List<GroupBuy> groupBuy;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private Company company;
+    @OneToMany(mappedBy = "user")
+    private List<Orders> ordersList;
 
     public void updateEmailStatus() {
         this.emailStatus = true;
