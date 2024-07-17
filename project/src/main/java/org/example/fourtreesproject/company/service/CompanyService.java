@@ -2,6 +2,7 @@ package org.example.fourtreesproject.company.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.company.model.entity.Company;
+import org.example.fourtreesproject.company.model.request.CompanyModifyRequest;
 import org.example.fourtreesproject.company.model.request.CompanyRegisterRequest;
 import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.user.model.entity.User;
@@ -24,11 +25,27 @@ public class CompanyService {
                 .companyAddress(request.getCompanyAddress())
                 .companyPostCode(request.getCompanyPostCode())
                 .companyType(request.getCompanyType())
-                .companyInfo(request.getCompanyIntro())
+                .companyIntro(request.getCompanyIntro())
                 .build();
 
         companyRepository.save(registCompany);
+    }
 
+    //업체 정보 수정
+    public void modify(CompanyModifyRequest request, User user) {
+        Company company = companyRepository.findByUserIdx(user.getIdx()).orElseThrow(); //db의 업체정보 가져옴
+
+        company = Company.builder()     //변경값이 없으면 company 데이터 그대로, 있으면 request 데이터로 변경
+                .user(user)
+                .idx(company.getIdx())
+                .companyName((request.getCompanyName() == null) ? company.getCompanyName() : request.getCompanyName())
+                .companyAddress((request.getCompanyAddress() == null) ? company.getCompanyAddress() : request.getCompanyAddress())
+                .companyPostCode((request.getCompanyPostCode() == null) ? company.getCompanyPostCode() : request.getCompanyPostCode())
+                .companyType((request.getCompanyType() == null) ? company.getCompanyType() : request.getCompanyType())
+                .companyIntro((request.getCompanyIntro() == null) ? company.getCompanyIntro() : request.getCompanyIntro())
+                .build();
+
+        companyRepository.save(company);
 
     }
 }
