@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GroupBuyRepository extends JpaRepository<GroupBuy,Long> {
-    Slice<GroupBuy> findSliceBy(Pageable pageable);
+    Slice<GroupBuy> findSliceByGpbuyStatus(Pageable pageable, String gpbuyStatus);
 }
