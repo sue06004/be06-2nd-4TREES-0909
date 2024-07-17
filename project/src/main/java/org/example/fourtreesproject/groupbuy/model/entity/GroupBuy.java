@@ -38,7 +38,7 @@ public class GroupBuy {
     @OneToMany(mappedBy = "groupBuy")
     private List<Bid> bidList;
 
-    @OneToMany(mappedBy = "groupBuy")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "groupBuy")
     private List<Orders> ordersList;
 
     //제목

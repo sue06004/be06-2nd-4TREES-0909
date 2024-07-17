@@ -8,14 +8,20 @@ import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
+import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
+import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.model.entity.ProductImg;
 import org.example.fourtreesproject.product.repository.ProductRepository;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -77,15 +83,60 @@ public class GroupBuyService {
         return responseList;
     }
 
-    public boolean start(Long gpbuyIdx) {
-        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).get();
-        groupBuy.updateStatus("시작");
-        GroupBuy updatedGroupBuy = groupBuy;
-        updatedGroupBuy = gpbuyRepository.save(updatedGroupBuy);
-        if (updatedGroupBuy == null){
-            return false;
+    public List<GroupBuyListResponse> list(Integer page, Integer size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "idx"));
+        Slice<GroupBuy> result = gpbuyRepository.findSliceBy(pageable);
+        List<GroupBuy> slicedResult = result.getContent();
+        List<GroupBuyListResponse> responseList = new ArrayList<>();
+        Product selectedProduct = null;
+        ProductImg selectedProductThumbnailImg = null;
+        Bid selectedBid = null;
+
+
+        for (GroupBuy g : slicedResult){
+            //현재 총 주문수량 확인
+            Integer gpbuyCurrentQuentity = 0;
+            for (Orders o: g.getOrdersList()){
+                gpbuyCurrentQuentity += o.getOrderQuantity();
+            }
+            //선정된 상품 확인 (입찰 목록에서 선정 상태 확인)
+            for (Bid b: g.getBidList()){
+                if (isSelected(b)){
+                    selectedBid = b;
+                    selectedProduct = selectedBid.getProduct();
+                    selectedProductThumbnailImg = extractThumbnailImg(selectedProduct.getProductImgList());
+                    break;
+                }
+            }
+
+            GroupBuyListResponse response = GroupBuyListResponse.builder()
+                    .gpbuyIdx(g.getIdx())
+                    .gpbuyQuantity(g.getGpbuyQuantity())
+                    .gpbuyCurrentQuantity(gpbuyCurrentQuentity)
+                    .productThumbnailImg(selectedProductThumbnailImg.getProductImgUrl())
+                    .productName(selectedProduct.getProductName())
+                    .bidPrice(selectedBid.getBidPrice())
+                    .companyName(selectedProduct.getCompany().getCompanyName())
+                    .build();
+            responseList.add(response);
         }
 
-        return true;
+        return responseList;
+    }
+
+
+
+    //-- 유틸, 추출 메소드 --
+    public Boolean isSelected(Bid b){
+        return b.getBidSelect();
+    }
+
+    public ProductImg extractThumbnailImg(List<ProductImg> imgList){
+        for (ProductImg img: imgList){
+            if (img.getProductImgSequence() == 0){
+                return img;
+            }
+        }
+        return null;
     }
 }
