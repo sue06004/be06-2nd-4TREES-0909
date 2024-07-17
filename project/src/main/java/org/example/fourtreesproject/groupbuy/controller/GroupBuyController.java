@@ -20,9 +20,10 @@ public class GroupBuyController {
             @RequestBody GroupBuyCreateRequest request
             ){
 
-        if (gpbuyService.save(request)){
+        if (!gpbuyService.save(request)) {
             return new BaseResponse();
-        };
+        }
+        return new BaseResponse();
 
     }
 }

@@ -11,6 +11,8 @@ import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class GroupBuyService {
@@ -28,7 +30,16 @@ public class GroupBuyService {
                 .gpbuyTitle(request.getTitle())
                 .gpbuyQuantity(request.getGpbuyQuantity())
                 .gpbuyContent(request.getContent())
+                .gpbuyRegedAt(LocalDateTime.now())
+                .gpbuyBidEndedAt(LocalDateTime.now().plusDays(2))
                 .build();
-        return false;
+
+        GroupBuy res = gpbuyRepository.save(groupbuy);
+        if (res == null){
+            return false;
+        }
+
+        return true;
+
     }
 }
