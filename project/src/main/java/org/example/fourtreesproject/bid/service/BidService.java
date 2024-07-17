@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
 import org.example.fourtreesproject.bid.model.response.BidMyListResponse;
+import org.example.fourtreesproject.bid.model.response.GpbuyWaitListResponse;
 import org.example.fourtreesproject.bid.repository.BidRepository;
+import org.example.fourtreesproject.common.BaseResponseStatus;
 import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
@@ -13,6 +15,10 @@ import org.example.fourtreesproject.product.model.entity.ProductImg;
 import org.example.fourtreesproject.product.repository.ProductRepository;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -79,5 +85,26 @@ public class BidService {
             bidMyListResponses.add(bidMyListResponse);
         }
         return bidMyListResponses;
+    }
+
+    // TODO : 예외처리
+    public List<GpbuyWaitListResponse> statusWaitList(Integer page, Integer size, Long categoryIdx, String gpbuyTitle) {
+        // 업체 회원이 업체가 입찰할 수 있는 공구 목록을 조회한다. (카테고리, 제목)
+        // TODO : 뭘로 정렬할지
+        Pageable pageable = PageRequest.of(page, size);
+
+        Slice<GroupBuy> result = groupBuyRepository.searchWaitList(pageable,categoryIdx, gpbuyTitle);
+
+        List<GroupBuy> groupBuyList = result.getContent();
+        List<GpbuyWaitListResponse> gpbuyWaitListResponseList = new ArrayList<>();
+        for(GroupBuy groupBuy : groupBuyList) {
+            GpbuyWaitListResponse gpbuyWaitListResponse = GpbuyWaitListResponse.builder()
+                    .gpbuyIdx(groupBuy.getIdx())
+                    .gpbuyTitle(groupBuy.getGpbuyTitle())
+                    .gpbuyQuantity(groupBuy.getGpbuyQuantity())
+                    .build();
+            gpbuyWaitListResponseList.add(gpbuyWaitListResponse);
+        }
+        return gpbuyWaitListResponseList;
     }
 }

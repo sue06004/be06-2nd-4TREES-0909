@@ -33,4 +33,10 @@ public class BidController {
     public BaseResponse<String> myList(@AuthenticationPrincipal CustomUserDetails customUserDetails, Boolean bidSelect) {
         return new BaseResponse(bidService.myList(customUserDetails.getIdx(), bidSelect));
     }
+
+    // TODO : 예외처리
+    @GetMapping("/gpbuy/status-wait/list")
+    public BaseResponse<String> gpbuyWaitList(@AuthenticationPrincipal CustomUserDetails customUserDetails, Integer page, Integer size, Long categoryIdx, String gpbuyTitle) {
+        return new BaseResponse(bidService.statusWaitList(page, size, categoryIdx, gpbuyTitle));
+    }
 }
