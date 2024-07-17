@@ -5,10 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.company.model.entity.Company;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="product")
@@ -33,7 +35,10 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private Company company;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "product")
-    private ProductImg productImg;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    private List<ProductImg> productImgList;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
+    private List<Bid> bidList;
 
 }
