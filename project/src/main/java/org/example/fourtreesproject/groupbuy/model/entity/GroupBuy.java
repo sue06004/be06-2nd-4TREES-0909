@@ -59,6 +59,9 @@ public class GroupBuy {
     private LocalDateTime gpbuyFinEndedAt;
 
 
+    public void updateStatus(String status){
+        this.gpbuyStatus = status;
+    }
 
 
 }

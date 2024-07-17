@@ -76,4 +76,16 @@ public class GroupBuyService {
         }
         return responseList;
     }
+
+    public boolean start(Long gpbuyIdx) {
+        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).get();
+        groupBuy.updateStatus("시작");
+        GroupBuy updatedGroupBuy = groupBuy;
+        updatedGroupBuy = gpbuyRepository.save(updatedGroupBuy);
+        if (updatedGroupBuy == null){
+            return false;
+        }
+
+        return true;
+    }
 }
