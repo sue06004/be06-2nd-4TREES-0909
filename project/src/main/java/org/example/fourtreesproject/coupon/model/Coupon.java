@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Builder
 @Table(name="coupon")
@@ -27,4 +29,6 @@ public class Coupon {
     @JoinColumn(name = "coupon_price")
     private Integer minOrderPrice;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "coupon")
+    private List<UserCoupon> userCouponList;
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.company.model.entity.Company;
+import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.delivery.model.DeliveryAddress;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -60,6 +61,10 @@ public class User {
     private List<GroupBuy> groupBuy;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private Company company;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<UserCoupon> userCouponList;
+
 
     public void updateEmailStatus() {
         this.emailStatus = true;
