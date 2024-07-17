@@ -41,8 +41,7 @@ public class GroupBuy {
     private String gpbuyContent;
     //등록일시
     @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime gpbuyRegedAt = LocalDateTime.now();
+    private LocalDateTime gpbuyRegedAt;
     //입찰마감일시
     private LocalDateTime gpbuyBidEndedAt;
     //공구상태
