@@ -29,7 +29,7 @@ public class Company {
     @Column(nullable = false, length = 20)
     private String companyType;
     @Column(columnDefinition = "TEXT", nullable = true)
-    private String companyInfo;
+    private String companyIntro;
 
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
