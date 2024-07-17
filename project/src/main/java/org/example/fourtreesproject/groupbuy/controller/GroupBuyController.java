@@ -1,10 +1,9 @@
-package org.example.fourtreesproject.gpbuy.controller;
+package org.example.fourtreesproject.groupbuy.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
-import org.example.fourtreesproject.common.BaseResponseStatus;
-import org.example.fourtreesproject.gpbuy.model.request.GpbuyCreateRequest;
-import org.example.fourtreesproject.gpbuy.service.GpbuyService;
+import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
+import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/gpbuy")
-public class GpbuyController {
-    private final GpbuyService gpbuyService;
+public class GroupBuyController {
+    private final GroupBuyService gpbuyService;
 
     @PostMapping("/register")
     public BaseResponse register(
-            @RequestBody GpbuyCreateRequest request
+            @RequestBody GroupBuyCreateRequest request
             ){
 
         if (gpbuyService.save(request)){
