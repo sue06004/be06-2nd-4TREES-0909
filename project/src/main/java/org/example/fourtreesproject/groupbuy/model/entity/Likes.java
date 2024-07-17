@@ -20,7 +20,7 @@ public class Likes {
 
     @ManyToOne
     @JoinColumn(name = "gpbuy_idx")
-    private GroupBuy groupbuy;
+    private GroupBuy groupBuy;
 
     @ManyToOne
     @JoinColumn(name = "user_idx")

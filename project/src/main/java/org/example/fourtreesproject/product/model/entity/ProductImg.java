@@ -21,6 +21,6 @@ public class ProductImg {
     @Column(nullable = false)
     private Integer productImgSequence;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "productImg")
+    @OneToOne(fetch = FetchType.LAZY)
     private Product product;
 }
