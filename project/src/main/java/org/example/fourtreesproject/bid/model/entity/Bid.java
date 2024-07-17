@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
+import org.example.fourtreesproject.product.model.entity.Product;
 
 import java.time.LocalDateTime;
 
@@ -38,11 +40,11 @@ public class Bid {
 
     private LocalDateTime bidModifiedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="product_idx")
     private Product product;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="gpbuy_idx")
     private GroupBuy groupBuy;
 }
