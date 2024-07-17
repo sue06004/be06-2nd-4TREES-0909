@@ -3,6 +3,7 @@ package org.example.fourtreesproject.coupon.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.user.model.entity.User;
 
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
 public class UserCoupon {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

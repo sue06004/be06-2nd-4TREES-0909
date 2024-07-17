@@ -55,7 +55,7 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<DeliveryAddress> deliveryAddress;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
-    private UserDetail userDetails;
+    private UserDetail userDetail;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private SellerDetail sellerDetail;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
