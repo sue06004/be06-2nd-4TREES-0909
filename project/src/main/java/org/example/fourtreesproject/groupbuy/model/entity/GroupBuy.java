@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
+import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.example.fourtreesproject.user.model.entity.User;
 
 import java.time.LocalDateTime;
@@ -37,6 +38,9 @@ public class GroupBuy {
     @OneToMany(mappedBy = "groupBuy")
     private List<Bid> bidList;
 
+    @OneToMany(mappedBy = "groupBuy")
+    private List<Orders> ordersList;
+
     //제목
     @Column(nullable = false, length = 100)
     private String gpbuyTitle;
@@ -59,6 +63,9 @@ public class GroupBuy {
     private LocalDateTime gpbuyFinEndedAt;
 
 
+    public void updateStatus(String status){
+        this.gpbuyStatus = status;
+    }
 
 
 }
