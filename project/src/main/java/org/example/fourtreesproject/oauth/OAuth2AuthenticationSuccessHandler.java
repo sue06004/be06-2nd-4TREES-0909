@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
 import org.example.fourtreesproject.jwt.JwtUtil;
-import org.example.fourtreesproject.jwt.RefreshToken;
+import org.example.fourtreesproject.jwt.model.entity.RefreshToken;
 import org.example.fourtreesproject.jwt.Repository.RefreshTokenRepository;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;

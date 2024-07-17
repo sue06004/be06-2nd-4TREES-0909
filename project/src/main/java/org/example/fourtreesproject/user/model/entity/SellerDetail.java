@@ -8,9 +8,10 @@ import org.joda.time.LocalDateTime;
 
 @Entity
 @Builder
+@Table(name = "seller_detail")
 @AllArgsConstructor
 @NoArgsConstructor
-public class SellerDetail{
+public class SellerDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

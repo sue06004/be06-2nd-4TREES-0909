@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Builder
+@Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -48,7 +49,7 @@ public class User {
         this.emailStatus = true;
     }
 
-    public void updateStatus(String status){
+    public void updateStatus(String status) {
         this.status = status;
     }
 }
