@@ -40,7 +40,7 @@ public class Bid {
 
     private LocalDateTime bidModifiedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="product_idx")
     private Product product;
 
