@@ -62,7 +62,7 @@ public class User {
     private List<GroupBuy> groupBuy;
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
     private Company company;
-    @OneToMany(mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
     private List<Orders> ordersList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
