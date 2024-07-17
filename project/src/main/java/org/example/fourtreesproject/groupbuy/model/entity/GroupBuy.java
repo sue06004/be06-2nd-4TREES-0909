@@ -59,6 +59,9 @@ public class GroupBuy {
     //목표 수량
     @Column(nullable = false)
     private Integer gpbuyQuantity;
+    //남은 수량
+    @Column(nullable = false)
+    private Integer gpbuyRemainQuantity;
     //최종 마감 일시(보류종료 시점)
     private LocalDateTime gpbuyFinEndedAt;
 

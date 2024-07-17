@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class GroupBuyListResponse {
     private Long gpbuyIdx;
     private Integer gpbuyQuantity;
-    private Integer gpbuyCurrentQuantity;
+    private Integer gpbuyRemainQuantity;
     private String productThumbnailImg;
     private String productName;
     private Integer bidPrice;
