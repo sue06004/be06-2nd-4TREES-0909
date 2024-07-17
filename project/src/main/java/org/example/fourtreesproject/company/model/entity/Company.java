@@ -35,6 +35,6 @@ public class Company {
     private User user;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "company")
-    private List<Product> product;
+    private List<Product> productList;
 
 }

@@ -18,7 +18,6 @@ public class GroupBuyService {
     private final GroupBuyRepository gpbuyRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
-    private final
 
     public boolean save(GroupBuyCreateRequest request) {
         User user = userRepository.findById(request.getUserIdx()).get();
@@ -30,6 +29,6 @@ public class GroupBuyService {
                 .gpbuyQuantity(request.getGpbuyQuantity())
                 .gpbuyContent(request.getContent())
                 .build();
-
+        return false;
     }
 }
