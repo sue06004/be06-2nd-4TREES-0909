@@ -61,17 +61,18 @@ public class CompanyController {
             return new BaseResponse<>(COMPANY_REGIST_DETAIL_FAIL);
         }
         CompanyDetailResponse detailResponse = companyService.detail(customUserDetails.getUser());
-        return  new BaseResponse<>(detailResponse);
-  
-    // 업체 정보 수정
-    @RequestMapping(method = RequestMethod.POST, value = "/modify")
-    public BaseResponse<String> modify(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                       @RequestBody CompanyModifyRequest request) {
-        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
-            return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
-        }
-        companyService.modify(request, customUserDetails.getUser());
-        return new BaseResponse<>();
-
+        return new BaseResponse<>(detailResponse);
     }
-}
+        // 업체 정보 수정
+        @RequestMapping(method = RequestMethod.POST, value = "/modify")
+        public BaseResponse<String> modify (@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                @RequestBody CompanyModifyRequest request){
+            if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+                return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
+            }
+            companyService.modify(request, customUserDetails.getUser());
+            return new BaseResponse<>();
+
+        }
+    }
+
