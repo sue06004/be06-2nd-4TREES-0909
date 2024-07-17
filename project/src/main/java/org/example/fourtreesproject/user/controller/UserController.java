@@ -2,14 +2,19 @@ package org.example.fourtreesproject.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
+import org.example.fourtreesproject.delivery.model.request.DeliveryAddressRegisterRequest;
 import org.example.fourtreesproject.emailVerify.model.dto.EmailVerifyDto;
 import org.example.fourtreesproject.emailVerify.service.EmailVerifyService;
+import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.request.SellerSignupRequest;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;
 import org.example.fourtreesproject.user.service.UserService;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.USER_EMAIL_AUTH_FAIL;
+import static org.example.fourtreesproject.common.BaseResponseStatus.USER_INFO_DETAIL_FAIL;
 
 
 @RestController
@@ -54,4 +59,13 @@ public class UserController {
         return new BaseResponse<>(USER_EMAIL_AUTH_FAIL);
     }
 
+    @PostMapping("/delivery/register")
+    public BaseResponse<String> deliveryRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                 @RequestBody DeliveryAddressRegisterRequest deliveryAddressRegisterRequest){
+        if (customUserDetails == null){
+            return new BaseResponse<>(USER_INFO_DETAIL_FAIL);
+        }
+        userService.registerDelivery(customUserDetails.getUser(), deliveryAddressRegisterRequest);
+        return new BaseResponse<>();
+    }
 }
