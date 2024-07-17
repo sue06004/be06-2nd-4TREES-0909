@@ -21,36 +21,36 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GroupBuyService {
-
-    private final GroupBuyRepository gpbuyRepository;
-    private final UserRepository userRepository;
-    private final CategoryRepository categoryRepository;
-    private final BidRepository bidRepository;
-    private final ProductRepository productRepository;
-
-    public boolean save(GroupBuyCreateRequest request) {
-        User user = userRepository.findById(request.getUserIdx()).get();
-        Category category = categoryRepository.findByCategoryName(request.getCategory());
-        GroupBuy groupbuy = GroupBuy.builder()
-                .user(user)
-                .category(category)
-                .gpbuyTitle(request.getTitle())
-                .gpbuyQuantity(request.getGpbuyQuantity())
-                .gpbuyContent(request.getContent())
-                .gpbuyRegedAt(LocalDateTime.now())
-                .gpbuyBidEndedAt(LocalDateTime.now().plusDays(2))
-                .build();
-
-        GroupBuy res = gpbuyRepository.save(groupbuy);
-        if (res == null){
-            return false;
-        }
-
-        return true;
-
-    }
-
-    public List<RegisteredBidListResponse> findBidList(Long gpbuyIdx) {
-        Bid bid = bidRepository.findByGpbuyIdx(gpbuyIdx);
-    }
+//
+//    private final GroupBuyRepository gpbuyRepository;
+//    private final UserRepository userRepository;
+//    private final CategoryRepository categoryRepository;
+//    private final BidRepository bidRepository;
+//    private final ProductRepository productRepository;
+//
+//    public boolean save(GroupBuyCreateRequest request) {
+//        User user = userRepository.findById(request.getUserIdx()).get();
+//        Category category = categoryRepository.findByCategoryName(request.getCategory());
+//        GroupBuy groupbuy = GroupBuy.builder()
+//                .user(user)
+//                .category(category)
+//                .gpbuyTitle(request.getTitle())
+//                .gpbuyQuantity(request.getGpbuyQuantity())
+//                .gpbuyContent(request.getContent())
+//                .gpbuyRegedAt(LocalDateTime.now())
+//                .gpbuyBidEndedAt(LocalDateTime.now().plusDays(2))
+//                .build();
+//
+//        GroupBuy res = gpbuyRepository.save(groupbuy);
+//        if (res == null){
+//            return false;
+//        }
+//
+//        return true;
+//
+//    }
+//
+//    public List<RegisteredBidListResponse> findBidList(Long gpbuyIdx) {
+//        Bid bid = bidRepository.findByGpbuyIdx(gpbuyIdx);
+//    }
 }

@@ -14,28 +14,28 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/gpbuy")
 public class GroupBuyController {
-    private final GroupBuyService gpbuyService;
-
-    @Operation(summary = "공구 등록 api")
-    @PostMapping("/register")
-    public BaseResponse register(
-            @RequestBody GroupBuyCreateRequest request
-            ){
-
-        if (!gpbuyService.save(request)) {
-            return new BaseResponse();
-        }
-        return new BaseResponse();
-
-    }
-
-
-    @GetMapping("/registered/bid/list")
-    public BaseResponse<List<RegisteredBidListResponse>> registeredBidList(
-            Long gpbuyIdx
-    ){
-        List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
-
-        return null;
-    }
+//    private final GroupBuyService gpbuyService;
+//
+//    @Operation(summary = "공구 등록 api")
+//    @PostMapping("/register")
+//    public BaseResponse register(
+//            @RequestBody GroupBuyCreateRequest request
+//            ){
+//
+//        if (!gpbuyService.save(request)) {
+//            return new BaseResponse();
+//        }
+//        return new BaseResponse();
+//
+//    }
+//
+//
+//    @GetMapping("/registered/bid/list")
+//    public BaseResponse<List<RegisteredBidListResponse>> registeredBidList(
+//            Long gpbuyIdx
+//    ){
+//        List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
+//
+//        return null;
+//    }
 }
