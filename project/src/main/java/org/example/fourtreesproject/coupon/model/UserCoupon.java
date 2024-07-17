@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.example.fourtreesproject.user.model.entity.User;
 
 import java.time.LocalDateTime;
@@ -27,4 +28,7 @@ public class UserCoupon {
 
     @ManyToOne
     private Coupon coupon;
+
+    @OneToOne(mappedBy = "userCoupon", fetch = FetchType.LAZY)
+    private Orders orders;
 }

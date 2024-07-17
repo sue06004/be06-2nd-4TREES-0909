@@ -70,5 +70,9 @@ public class GroupBuy {
         this.gpbuyStatus = status;
     }
 
+    public void updateRemainQuantity(Integer orderQuantity){
+        this.gpbuyRemainQuantity -= orderQuantity;
+    }
+
 
 }

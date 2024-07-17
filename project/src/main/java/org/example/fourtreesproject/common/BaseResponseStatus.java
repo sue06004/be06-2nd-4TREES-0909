@@ -131,6 +131,9 @@ public enum BaseResponseStatus {
     PRODUCT_REGIST_FAIL_CATEGORY_EMPTY(false, 3104, "카테고리를 입력해주세요."),
     // 상품 제목 미등록
     PRODUCT_REGIST_FAIL_TITLE_EMPTY(false, 3105,"제목을 입력해주세요."),
+    // 상품 조회 실패
+    PRODUCT_INFO_FAIL(false, 3106,"상품 조회에 실패했습니다."),
+
 
 //-------------------- 공구기능
     // 공구 관련
@@ -208,6 +211,8 @@ public enum BaseResponseStatus {
     BID_CAN_REGISTER_LIST_FAIL(false, 5101, "입찰 가능한 공구 조회에 실패하였습니다."),
     //업체 회원의 입찰 현황 조회
     BID_MY_LIST_FAIL(false, 5102, "입찰 현황 조회에 실패하였습니다."),
+    BID_INFO_FAIL(false, 5103, "입찰 조회에 실패하였습니다."),
+
 
     // 입찰 취소 5200 (입찰 선정과 동시성 문제 발생시)
     BID_DELETE_FAIL(false, 5201, "입찰 취소에 실패하였습니다."),
