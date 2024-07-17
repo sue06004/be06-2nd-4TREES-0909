@@ -1,4 +1,4 @@
-package org.example.fourtreesproject.gpbuy.model.request;
+package org.example.fourtreesproject.groupbuy.model.request;
 
 
 import lombok.*;
@@ -6,7 +6,7 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class GpbuyCreateRequest {
+public class GroupBuyCreateRequest {
 
     private Long userIdx;
     private String category;

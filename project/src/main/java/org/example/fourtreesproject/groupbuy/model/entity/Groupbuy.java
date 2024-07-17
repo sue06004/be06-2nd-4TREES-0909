@@ -1,11 +1,10 @@
-package org.example.fourtreesproject.gpbuy.model.entity;
+package org.example.fourtreesproject.groupbuy.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.checkerframework.checker.units.qual.Length;
 import org.example.fourtreesproject.user.model.entity.User;
 
 import java.time.LocalDateTime;
