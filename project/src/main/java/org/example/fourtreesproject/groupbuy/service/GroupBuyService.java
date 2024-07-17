@@ -45,6 +45,7 @@ public class GroupBuyService {
                 .category(category)
                 .gpbuyTitle(request.getTitle())
                 .gpbuyQuantity(request.getGpbuyQuantity())
+                .gpbuyRemainQuantity(request.getGpbuyQuantity())
                 .gpbuyContent(request.getContent())
                 .gpbuyRegedAt(LocalDateTime.now())
                 .gpbuyBidEndedAt(LocalDateTime.now().plusDays(2))
@@ -94,11 +95,6 @@ public class GroupBuyService {
 
 
         for (GroupBuy g : slicedResult){
-            //현재 총 주문수량 확인
-            Integer gpbuyCurrentQuentity = 0;
-            for (Orders o: g.getOrdersList()){
-                gpbuyCurrentQuentity += o.getOrderQuantity();
-            }
             //선정된 상품 확인 (입찰 목록에서 선정 상태 확인)
             for (Bid b: g.getBidList()){
                 if (isSelected(b)){
@@ -112,7 +108,7 @@ public class GroupBuyService {
             GroupBuyListResponse response = GroupBuyListResponse.builder()
                     .gpbuyIdx(g.getIdx())
                     .gpbuyQuantity(g.getGpbuyQuantity())
-                    .gpbuyCurrentQuantity(gpbuyCurrentQuentity)
+                    .gpbuyRemainQuantity(g.getGpbuyRemainQuantity())
                     .productThumbnailImg(selectedProductThumbnailImg.getProductImgUrl())
                     .productName(selectedProduct.getProductName())
                     .bidPrice(selectedBid.getBidPrice())
