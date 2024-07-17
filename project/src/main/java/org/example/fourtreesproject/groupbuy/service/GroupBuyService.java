@@ -193,12 +193,15 @@ public class GroupBuyService {
 
     public boolean likesSave(Long gpbuyIdx, Long userIdx) {
         Optional<GroupBuy> groupBuy = gpbuyRepository.findById(gpbuyIdx);
-        if (groupBuy.isPresent()){
+        Optional<User> user = userRepository.findById(userIdx);
+        if (groupBuy.isPresent() && user.isPresent()){
+            System.out.println(gpbuyIdx);
+            System.out.println(userIdx);
             Optional<Likes> likes = likesRepository.findByGpbuyIdxAndUserIdx(gpbuyIdx, userIdx);
             if (likes.isEmpty()){
                 Likes newLikes = Likes.builder()
                         .groupBuy(groupBuy.get())
-                        .user(groupBuy.get().getUser())
+                        .user(user.get())
                         .build();
                 likesRepository.save(newLikes);
             }else {

@@ -79,6 +79,7 @@ public class GroupBuyController {
     public BaseResponse likesSave(
             Long gpbuyIdx, Long userIdx
     ){
+
         if (!gpbuyService.likesSave(gpbuyIdx,userIdx)){
             return new BaseResponse<>(BaseResponseStatus.GROUPBUY_LIKES_CREATE_FAIL);
         }
