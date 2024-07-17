@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.company.model.entity.Company;
+import org.example.fourtreesproject.groupbuy.model.entity.Category;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,10 +27,12 @@ public class Product {
     private String productName;
     @Column(columnDefinition = "TEXT", nullable = true)
     private String productContent;
-    private LocalDate productRegedAt; //상품등록일
+    @Builder.Default
+    private LocalDateTime productRegedAt = LocalDateTime.now(); //상품등록일
     private LocalDateTime productModifiedAt; //상품수정일
     @Column(nullable = false, length = 50)
-    private String productStatus;
+    @Builder.Default
+    private String productStatus = "등록" ;
     private LocalDateTime productDelAt; //상품삭제일
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,5 +43,9 @@ public class Product {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
     private List<Bid> bidList;
+
+    @ManyToOne
+    @JoinColumn(name = "category_idx")
+    private Category category;
 
 }
