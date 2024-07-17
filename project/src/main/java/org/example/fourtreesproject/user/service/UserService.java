@@ -126,27 +126,8 @@ public class UserService {
             throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
         }
         UserDetail userDetails = user.getUserDetail();
-        List<DeliveryAddressResponse> deliveryAddressResponseList = new ArrayList<>();
-        for (DeliveryAddress deliveryAddress: user.getDeliveryAddress()) {
-            DeliveryAddressResponse deliveryAddressResponse = DeliveryAddressResponse.builder()
-                    .addressDefault(deliveryAddress.getAddressDefault())
-                    .addressName(deliveryAddress.getAddressName())
-                    .addressInfo(deliveryAddress.getAddressInfo())
-                    .postCode(deliveryAddress.getPostCode())
-                    .build();
-            deliveryAddressResponseList.add(deliveryAddressResponse);
-        }
-        List<CouponResponse> couponResponseList = new ArrayList<>();
-        for (UserCoupon userCoupon : user.getUserCouponList()) {
-            Coupon coupon = userCoupon.getCoupon();
-            CouponResponse couponResponse = CouponResponse.builder()
-                    .couponContent(coupon.getCouponContent())
-                    .couponName(coupon.getCouponName())
-                    .couponPrice(coupon.getCouponPrice())
-                    .minOrderPrice(coupon.getMinOrderPrice())
-                    .build();
-            couponResponseList.add(couponResponse);
-        }
+        List<DeliveryAddressResponse> deliveryAddressResponseList = getDeliveryAddressResponseList(user);
+        List<CouponResponse> couponResponseList = getCouponResponseList(user);
         return UserInfoResponse.builder()
                 .address(user.getAddress())
                 .postCode(user.getPostCode())
@@ -159,6 +140,35 @@ public class UserService {
                 .couponList(couponResponseList)
                 .userPoint(userDetails.getPoint())
                 .build();
+    }
+
+    private List<CouponResponse> getCouponResponseList(User user) {
+        List<CouponResponse> couponResponseList = new ArrayList<>();
+        for (UserCoupon userCoupon : user.getUserCouponList()) {
+            Coupon coupon = userCoupon.getCoupon();
+            CouponResponse couponResponse = CouponResponse.builder()
+                    .couponContent(coupon.getCouponContent())
+                    .couponName(coupon.getCouponName())
+                    .couponPrice(coupon.getCouponPrice())
+                    .minOrderPrice(coupon.getMinOrderPrice())
+                    .build();
+            couponResponseList.add(couponResponse);
+        }
+        return couponResponseList;
+    }
+
+    private List<DeliveryAddressResponse> getDeliveryAddressResponseList(User user) {
+        List<DeliveryAddressResponse> deliveryAddressResponseList = new ArrayList<>();
+        for (DeliveryAddress deliveryAddress: user.getDeliveryAddress()) {
+            DeliveryAddressResponse deliveryAddressResponse = DeliveryAddressResponse.builder()
+                    .addressDefault(deliveryAddress.getAddressDefault())
+                    .addressName(deliveryAddress.getAddressName())
+                    .addressInfo(deliveryAddress.getAddressInfo())
+                    .postCode(deliveryAddress.getPostCode())
+                    .build();
+            deliveryAddressResponseList.add(deliveryAddressResponse);
+        }
+        return deliveryAddressResponseList;
     }
 
 }
