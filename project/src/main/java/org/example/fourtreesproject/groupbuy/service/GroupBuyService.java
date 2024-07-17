@@ -75,9 +75,5 @@ public class GroupBuyService {
             responseList.add(response);
         }
         return responseList;
-
-
-
-
     }
 }
