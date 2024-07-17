@@ -14,6 +14,7 @@ import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
 import org.example.fourtreesproject.user.model.request.SellerSignupRequest;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;
+import org.example.fourtreesproject.user.model.response.SellerInfoResponse;
 import org.example.fourtreesproject.user.model.response.UserInfoResponse;
 import org.example.fourtreesproject.user.repository.SellerDetailRepository;
 import org.example.fourtreesproject.user.repository.UserDetailRepository;
@@ -169,6 +170,31 @@ public class UserService {
             deliveryAddressResponseList.add(deliveryAddressResponse);
         }
         return deliveryAddressResponseList;
+    }
+
+
+    public SellerInfoResponse getSellerInfoDetail(Long userIdx) throws Exception {
+        User seller = userRepository.findById(userIdx).orElse(null);
+        if (seller == null) {
+            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
+        }
+        SellerDetail sellerDetail = seller.getSellerDetail();
+        return SellerInfoResponse.builder()
+                .address(seller.getAddress())
+                .postCode(seller.getPostCode())
+                .sex(seller.getSex())
+                .birth(seller.getBirth())
+                .name(seller.getName())
+                .email(seller.getEmail())
+                .phoneNumber(seller.getPhoneNumber())
+                .sellerAccount(sellerDetail.getSellerAccount())
+                .sellerBank(sellerDetail.getSellerBank())
+                .sellerDepoName(sellerDetail.getSellerDepoName())
+                .sellerMosNum(sellerDetail.getSellerMosNum())
+                .sellerRegNum(sellerDetail.getSellerRegNum())
+                .sellerOpenedAt(sellerDetail.getSellerOpenedAt())
+                .build();
+
     }
 
 }

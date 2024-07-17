@@ -9,6 +9,7 @@ import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.request.SellerSignupRequest;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;
+import org.example.fourtreesproject.user.model.response.SellerInfoResponse;
 import org.example.fourtreesproject.user.model.response.UserInfoResponse;
 import org.example.fourtreesproject.user.service.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,13 +19,12 @@ import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 
 
 @RestController
-@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final EmailVerifyService emailVerifyService;
 
-    @PostMapping("/basic/signup")
+    @PostMapping("/user/basic/signup")
     public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) throws Exception{
         String uuid = userService.sendEmail(userSignupRequest.getEmail());
         userService.signup(userSignupRequest);
@@ -46,7 +46,7 @@ public class UserController {
         return new BaseResponse<>();
     }
 
-    @GetMapping("/verify")
+    @GetMapping("/user/verify")
     public BaseResponse<String> verify(String email, String uuid) throws Exception{
         Boolean verify = emailVerifyService.verifyEmail(EmailVerifyDto.builder()
                 .email(email)
@@ -59,7 +59,7 @@ public class UserController {
         return new BaseResponse<>(USER_EMAIL_AUTH_FAIL);
     }
 
-    @PostMapping("/delivery/register")
+    @PostMapping("/user/delivery/register")
     public BaseResponse<String> deliveryRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                  @RequestBody DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws Exception{
         if (customUserDetails == null){
@@ -69,12 +69,21 @@ public class UserController {
         return new BaseResponse<>();
     }
 
-    @GetMapping("/info/detail")
+    @GetMapping("/user/info/detail")
     public BaseResponse<UserInfoResponse> userInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception{
         if (customUserDetails == null){
             throw new InvalidUserException(USER_NOT_LOGIN);
         }
-        UserInfoResponse userInfoDetail = userService.getUserInfoDetail(customUserDetails.getIdx());
-        return new BaseResponse<>(userInfoDetail);
+        UserInfoResponse userInfoResponse = userService.getUserInfoDetail(customUserDetails.getIdx());
+        return new BaseResponse<>(userInfoResponse);
+    }
+
+    @GetMapping("/seller/info/detail")
+    public BaseResponse<SellerInfoResponse> sellerInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception{
+        if (customUserDetails == null){
+            throw new InvalidUserException(USER_NOT_LOGIN);
+        }
+        SellerInfoResponse sellerInfoResponse = userService.getSellerInfoDetail(customUserDetails.getIdx());
+        return new BaseResponse<>(sellerInfoResponse);
     }
 }
