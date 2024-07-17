@@ -1,6 +1,9 @@
 package org.example.fourtreesproject.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fourtreesproject.delivery.model.DeliveryAddress;
+import org.example.fourtreesproject.delivery.model.request.DeliveryAddressRegisterRequest;
+import org.example.fourtreesproject.delivery.repository.DeliveryAddressRepository;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;
@@ -19,6 +22,8 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserDetailRepository userDetailRepository;
+    private final DeliveryAddressRepository deliveryAddressRepository;
+
     private final JavaMailSender emailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -58,6 +63,22 @@ public class UserService {
             user.updateStatus("활동");
             userRepository.save(user);
         }
+    }
+
+    public void registerDelivery(User user, DeliveryAddressRegisterRequest deliveryAddressRegisterRequest){
+        DeliveryAddress defaultDelivery = deliveryAddressRepository.findByUserIdxAndAddressDefaultTrue(user.getIdx()).orElse(null);
+        if(defaultDelivery != null){
+            defaultDelivery.updateDefault();
+        }
+
+        DeliveryAddress deliveryAddress = DeliveryAddress.builder()
+                .addressDefault(deliveryAddressRegisterRequest.getAddressDefault())
+                .addressName(deliveryAddressRegisterRequest.getAddressName())
+                .addressInfo(deliveryAddressRegisterRequest.getAddressInfo())
+                .postCode(deliveryAddressRegisterRequest.getPostCode())
+                .user(user)
+                .build();
+        deliveryAddressRepository.save(deliveryAddress);
     }
 
 }

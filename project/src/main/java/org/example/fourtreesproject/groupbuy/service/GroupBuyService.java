@@ -50,7 +50,7 @@ public class GroupBuyService {
 
     }
 
-    public List<RegisteredBidListResponse> findBidList(Long gpbuyIdx) {
-        Bid bid = bidRepository.findByGpbuyIdx(gpbuyIdx);
-    }
+//    public List<RegisteredBidListResponse> findBidList(Long gpbuyIdx) {
+//        Bid bid = bidRepository.findByGpbuyIdx(gpbuyIdx);
+//    }
 }

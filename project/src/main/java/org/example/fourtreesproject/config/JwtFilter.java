@@ -32,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
         String accessToken = authorization.split(" ")[1];
-        if (!jwtUtil.isExpired(accessToken)) {
+        if (jwtUtil.isExpired(accessToken)) {
             System.out.println("토큰 만료됨");
             Cookie[] cookieArray = request.getCookies();
             Cookie cookie = findRefreshTokenAtCookies(cookieArray);

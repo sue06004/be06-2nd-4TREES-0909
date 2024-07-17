@@ -29,5 +29,8 @@ public class DeliveryAddress {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    public void updateDefault(){
+        this.addressDefault = !this.addressDefault;
+    }
 
 }

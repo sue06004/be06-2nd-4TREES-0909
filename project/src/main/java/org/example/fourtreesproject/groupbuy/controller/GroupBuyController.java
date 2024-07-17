@@ -34,7 +34,7 @@ public class GroupBuyController {
     public BaseResponse<List<RegisteredBidListResponse>> registeredBidList(
             Long gpbuyIdx
     ){
-        List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
+//        List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
 
         return null;
     }
