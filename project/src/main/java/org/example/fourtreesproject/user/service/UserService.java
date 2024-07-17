@@ -1,9 +1,12 @@
 package org.example.fourtreesproject.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fourtreesproject.user.model.entity.SellerDetail;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
+import org.example.fourtreesproject.user.model.request.SellerSignupRequest;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;
+import org.example.fourtreesproject.user.repository.SellerDetailRepository;
 import org.example.fourtreesproject.user.repository.UserDetailRepository;
 import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.mail.SimpleMailMessage;
@@ -18,11 +21,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final SellerDetailRepository sellerDetailRepository;
     private final UserDetailRepository userDetailRepository;
     private final JavaMailSender emailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void signup(UserSignupRequest userSignupReq) {
+    public void signup(UserSignupRequest userSignupReq) throws Exception{
         User user = User.builder()
                 .type("inapp")
                 .email(userSignupReq.getEmail())
@@ -39,7 +43,32 @@ public class UserService {
         userDetailRepository.save(userDetail);
     }
 
-    public String sendEmail(String email){
+    public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws Exception {
+        User user = User.builder()
+                .type("inapp")
+                .email(sellerSignupRequest.getEmail())
+                .password(bCryptPasswordEncoder.encode(sellerSignupRequest.getPassword()))
+                .name(sellerSignupRequest.getName())
+                .phoneNumber(sellerSignupRequest.getPhoneNumber())
+                .birth(sellerSignupRequest.getBirth())
+                .sex(sellerSignupRequest.getSex())
+                .address(sellerSignupRequest.getAddress())
+                .postCode(sellerSignupRequest.getPostCode())
+                .build();
+        SellerDetail sellerDetail = SellerDetail.builder()
+                .sellerAccount(sellerSignupRequest.getSellerAccount())
+                .sellerBank(sellerSignupRequest.getSellerBank())
+                .sellerOpenedAt(sellerSignupRequest.getSellerOpenedAt())
+                .sellerMosNum(sellerSignupRequest.getSellerMosNum())
+                .sellerRegNum(sellerSignupRequest.getSellerRegNum())
+                .sellerDepoName(sellerSignupRequest.getSellerDepoName())
+                .user(user)
+                .build();
+        userRepository.save(user);
+        sellerDetailRepository.save(sellerDetail);
+    }
+
+    public String sendEmail(String email) throws Exception{
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(email); // 받는 사람 메일
         simpleMailMessage.setSubject("[내 사이트] 가입 환영"); // 메일 제목
@@ -50,7 +79,7 @@ public class UserService {
         return uuid;
     }
 
-    public void activeMember(String email){
+    public void activeMember(String email) throws Exception {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if(userOptional.isPresent()){
             User user = userOptional.get();

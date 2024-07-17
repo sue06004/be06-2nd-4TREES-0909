@@ -4,7 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.joda.time.LocalDateTime;
+
+import java.time.LocalDate;
 
 @Entity
 @Builder
@@ -26,7 +27,7 @@ public class SellerDetail {
     private String sellerRegNum;     // 사업자등록번호
     @Column(nullable = false, length = 20)
     private String sellerMosNum;     // 통신판매업신고번호
-    private LocalDateTime sellerOpenedAt;  // 개업일자
+    private LocalDate sellerOpenedAt;  // 개업일자
 
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
