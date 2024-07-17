@@ -1,5 +1,6 @@
 package org.example.fourtreesproject.groupbuy.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GroupBuyController {
     private final GroupBuyService gpbuyService;
 
+    @Operation(summary = "공구 등록 api")
     @PostMapping("/register")
     public BaseResponse register(
             @RequestBody GroupBuyCreateRequest request
