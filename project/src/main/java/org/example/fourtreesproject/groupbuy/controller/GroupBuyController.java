@@ -4,11 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
+import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
 import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,5 +27,15 @@ public class GroupBuyController {
         }
         return new BaseResponse();
 
+    }
+
+
+    @GetMapping("/registered/bid/list")
+    public BaseResponse<List<RegisteredBidListResponse>> registeredBidList(
+            Long gpbuyIdx
+    ){
+        List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
+
+        return null;
     }
 }
