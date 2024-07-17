@@ -52,6 +52,10 @@ public class GroupBuy {
     private LocalDateTime gpbuyRegedAt;
     //입찰마감일시
     private LocalDateTime gpbuyBidEndedAt;
+    //공구 시작 일시
+    private LocalDateTime gpbuyStartedAt;
+    //공구 마감 일시
+    private LocalDateTime gpbuyEndedAt;
     //공구상태
     @Column(nullable = false,length = 50)
     @Builder.Default
@@ -68,6 +72,9 @@ public class GroupBuy {
 
     public void updateStatus(String status){
         this.gpbuyStatus = status;
+    }
+    public void updateStartedAt(LocalDateTime time){
+        this.gpbuyStartedAt = time;
     }
 
 

@@ -3,7 +3,9 @@ package org.example.fourtreesproject.groupbuy.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
+import org.example.fourtreesproject.common.BaseResponseStatus;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
+import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
 import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
@@ -41,6 +43,16 @@ public class GroupBuyController {
         return new BaseResponse<>(result);
     }
 
+    @GetMapping("/start")
+    public BaseResponse start(
+            Long gpbuyIdx
+    ){
+        if (!gpbuyService.start(gpbuyIdx)){
+            return new BaseResponse(BaseResponseStatus.GROUPBUY_START_FAIL);
+        }
+        return new BaseResponse();
+    }
+
     @GetMapping("/list")
     public BaseResponse<List<GroupBuyListResponse>> list(
             Integer page, Integer size
@@ -48,5 +60,15 @@ public class GroupBuyController {
         List<GroupBuyListResponse> result = gpbuyService.list(page, size);
 
         return new BaseResponse<>(result);
+    }
+
+    @GetMapping("/detail")
+    public BaseResponse<GroupBuyDetailResponse> detail(
+            Long gpbuyIdx
+    ){
+        GroupBuyDetailResponse result = gpbuyService.findByGpbuyIdx(gpbuyIdx);
+
+        return new BaseResponse<>(result);
+
     }
 }
