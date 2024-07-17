@@ -20,4 +20,6 @@ public class UserDetail {
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
+
+
 }
