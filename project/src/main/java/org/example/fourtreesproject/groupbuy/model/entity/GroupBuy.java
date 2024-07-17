@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.user.model.entity.User;
 
 import java.time.LocalDateTime;
@@ -33,6 +34,9 @@ public class GroupBuy {
     @OneToMany(mappedBy = "groupBuy")
     private List<Likes> likesList;
 
+    @OneToMany(mappedBy = "groupBuy")
+    private List<Bid> bidList;
+
     //제목
     @Column(nullable = false, length = 100)
     private String gpbuyTitle;
@@ -41,8 +45,7 @@ public class GroupBuy {
     private String gpbuyContent;
     //등록일시
     @Column(nullable = false)
-    @Builder.Default
-    private LocalDateTime gpbuyRegedAt = LocalDateTime.now();
+    private LocalDateTime gpbuyRegedAt;
     //입찰마감일시
     private LocalDateTime gpbuyBidEndedAt;
     //공구상태
@@ -54,6 +57,8 @@ public class GroupBuy {
     private Integer gpbuyQuantity;
     //최종 마감 일시(보류종료 시점)
     private LocalDateTime gpbuyFinEndedAt;
+
+
 
 
 }
