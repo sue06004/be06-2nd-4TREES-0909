@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Table(name = "group_buy")
-public class Groupbuy {
+public class GroupBuy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;

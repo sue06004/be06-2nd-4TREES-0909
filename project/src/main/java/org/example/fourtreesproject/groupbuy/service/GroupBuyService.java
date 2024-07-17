@@ -3,7 +3,7 @@ package org.example.fourtreesproject.groupbuy.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
-import org.example.fourtreesproject.groupbuy.model.entity.Groupbuy;
+import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
@@ -23,10 +23,12 @@ public class GroupBuyService {
     public boolean save(GroupBuyCreateRequest request) {
         User user = userRepository.findById(request.getUserIdx()).get();
         Category category = categoryRepository.findByCategoryName(request.getCategory());
-        Groupbuy groupbuy = Groupbuy.builder()
+        GroupBuy groupbuy = GroupBuy.builder()
                 .user(user)
                 .category(category)
-                .
+                .gpbuyTitle(request.getTitle())
+                .gpbuyQuantity(request.getGpbuyQuantity())
+                .gpbuyContent(request.getContent())
                 .build();
 
     }

@@ -21,5 +21,5 @@ public class Category {
     private String categoryName;
 
     @OneToMany(mappedBy = "category")
-    private List<Groupbuy> groupbuyList;
+    private List<GroupBuy> groupbuyList;
 }
