@@ -12,4 +12,12 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
 
     @Query("SELECT b FROM Bid b WHERE b.groupBuy.idx = :gpbuyIdx AND (b.bidStatus = '등록' OR b.bidStatus = '수정') ORDER BY b.bidPrice ASC")
     List<Bid> findAllByGpbuyIdx(Long gpbuyIdx);
+
+    @Query("SELECT b FROM Bid b " +
+            "JOIN FETCH b.product p " +
+            "JOIN FETCH p.company c " +
+            "JOIN FETCH c.user u " +
+            "WHERE u.idx = :userIdx AND b.bidSelect = :bidSelect")
+    List<Bid> findAllByUserIdxAndBidSelect(Long userIdx, Boolean bidSelect);
+
 }
