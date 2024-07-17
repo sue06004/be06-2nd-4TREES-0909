@@ -2,6 +2,7 @@ package org.example.fourtreesproject.company.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
+import org.example.fourtreesproject.company.model.request.CompanyModifyRequest;
 import org.example.fourtreesproject.company.model.request.CompanyRegisterRequest;
 import org.example.fourtreesproject.company.service.CompanyService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
@@ -24,7 +25,7 @@ public class CompanyController {
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                          @RequestBody CompanyRegisterRequest request) {
-        if (!customUserDetails.getAuthorities().equals("ROLE_USER")){
+        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
         }
 
@@ -45,8 +46,19 @@ public class CompanyController {
             return new BaseResponse<>(USER_INFO_MODIFY_FAIL_POST_CODE);
         }
 
-      companyService.register(request, customUserDetails.getUser());
+        companyService.register(request, customUserDetails.getUser());
         return new BaseResponse<>();
     }
 
+    // 업체 정보 수정
+    @RequestMapping(method = RequestMethod.POST, value = "/modify")
+    public BaseResponse<String> modify(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                       @RequestBody CompanyModifyRequest request) {
+        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+            return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
+        }
+        companyService.modify(request, customUserDetails.getUser());
+        return new BaseResponse<>();
+
+    }
 }
