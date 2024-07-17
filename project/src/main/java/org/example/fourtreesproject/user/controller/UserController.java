@@ -20,7 +20,7 @@ public class UserController {
     private final EmailVerifyService emailVerifyService;
 
     @PostMapping("/basic/signup")
-    public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) {
+    public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) throws Exception{
         String uuid = userService.sendEmail(userSignupRequest.getEmail());
         userService.signup(userSignupRequest);
         emailVerifyService.save(EmailVerifyDto.builder()
@@ -31,18 +31,18 @@ public class UserController {
     }
 
     @PostMapping("/seller/signup")
-    public BaseResponse sellerSignup(@RequestBody SellerSignupRequest sellerSignupRequest) {
+    public BaseResponse<String> sellerSignup(@RequestBody SellerSignupRequest sellerSignupRequest) throws Exception{
         String uuid = userService.sendEmail(sellerSignupRequest.getEmail());
         userService.sellerSignup(sellerSignupRequest);
         emailVerifyService.save(EmailVerifyDto.builder()
                 .email(sellerSignupRequest.getEmail())
                 .uuid(uuid)
                 .build());
-        return new BaseResponse();
+        return new BaseResponse<>();
     }
 
     @GetMapping("/verify")
-    public BaseResponse<String> verify(String email, String uuid) {
+    public BaseResponse<String> verify(String email, String uuid) throws Exception{
         Boolean verify = emailVerifyService.verifyEmail(EmailVerifyDto.builder()
                 .email(email)
                 .uuid(uuid)
