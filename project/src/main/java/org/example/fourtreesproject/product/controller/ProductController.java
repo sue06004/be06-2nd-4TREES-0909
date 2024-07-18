@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.file.FileUploadService;
 import org.example.fourtreesproject.product.model.request.ProductRegisterRequest;
+import org.example.fourtreesproject.product.model.response.ProductMylistResponse;
 import org.example.fourtreesproject.product.service.ProductService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,4 +34,15 @@ public class ProductController {
         productService.register(customUserDetails.getUser(), productInfo, ImgUrlList);
         return new BaseResponse<>();
     }
+
+    //상품 조회
+    @RequestMapping(method = RequestMethod.GET, value = "/mylist")
+    public BaseResponse<List<ProductMylistResponse>> mylist(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+            return new BaseResponse<>(COMPANY_REGIST_FAIL);
+        }
+        List<ProductMylistResponse> mylistResponse = productService.mylist(customUserDetails.getUser());
+        return new BaseResponse<>(mylistResponse);
+    }
 }
+
