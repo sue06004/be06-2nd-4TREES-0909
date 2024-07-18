@@ -1,5 +1,6 @@
 package org.example.fourtreesproject.coupon.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.coupon.model.request.CouponRegisterRequest;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CouponController {
     private final CouponService couponService;
 
+    @Operation(summary = "쿠폰 등록 api")
     @PostMapping("/register")
     public BaseResponse<String> register(@RequestBody CouponRegisterRequest couponRegisterRequest){
         couponService.couponRegister(couponRegisterRequest);
