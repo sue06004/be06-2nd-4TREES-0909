@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.repository.BidRepository;
+import org.example.fourtreesproject.coupon.model.Coupon;
 import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.coupon.repository.UserCouponRepository;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
@@ -18,16 +19,19 @@ import org.example.fourtreesproject.orders.exception.custom.InvalidOrderExceptio
 import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.example.fourtreesproject.orders.repository.OrdersRepository;
 import org.example.fourtreesproject.product.repository.ProductRepository;
+import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.entity.User;
+import org.example.fourtreesproject.user.model.entity.UserDetail;
+import org.example.fourtreesproject.user.repository.UserDetailRepository;
+import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import static org.example.fourtreesproject.common.BaseResponseStatus.BID_INFO_FAIL;
-import static org.example.fourtreesproject.common.BaseResponseStatus.PAYMENT_FAIL;
+import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 
 @Service
 @Slf4j
@@ -40,9 +44,14 @@ public class OrdersService {
     private final UserCouponRepository userCouponRepository;
     private final BidRepository bidRepository;
     private final GroupBuyRepository groupBuyRepository;
+    private final UserRepository userRepository;
+    private final UserDetailRepository userDetailRepository;
 
-    public void registerOrder(CustomUserDetails customUserDetails, String impUid) throws IamportResponseException, IOException, RuntimeException {
-        User user = customUserDetails.getUser();
+    public void registerOrder(Long userIdx, String impUid) throws IamportResponseException, IOException, RuntimeException {
+        User user = userRepository.findById(userIdx).orElse(null);
+        if (user == null) {
+            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
+        }
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(impUid);
         Payment payment = iamportResponse.getResponse();
 
@@ -53,8 +62,8 @@ public class OrdersService {
 
         Long bidIdx = (Double.valueOf(data.get("bidIdx").toString())).longValue();
         Long couponIdx = null;
-        if (data.get("couponIdx") != null){
-            couponIdx = (Double.valueOf(data.get("couponIdx").toString())).longValue();
+        if (data.get("userCouponIdx") != null){
+            couponIdx = (Double.valueOf(data.get("userCouponIdx").toString())).longValue();
         }
         Integer orderQuantity = (Double.valueOf(data.get("orderQuantity").toString())).intValue();
         Integer usePoint = (Double.valueOf(data.get("usePoint").toString())).intValue();
@@ -64,15 +73,30 @@ public class OrdersService {
         String recipientPhoneNumber = data.get("recipientPhoneNumber").toString();
 
         Bid bid = bidRepository.findById(bidIdx).orElse(null);
-        UserCoupon userCoupon = null;
-        if (couponIdx != null){
-            userCoupon = userCouponRepository.findFirstByUserIdxAndCouponIdxAndCouponStatusTrueOrderByIdx(user.getIdx(), couponIdx).orElse(null);
-        }
         if (bid == null) {
             throw new InvalidOrderException(BID_INFO_FAIL);
         }
+
+        UserDetail userDetail = user.getUserDetail();
+        UserCoupon userCoupon = null;
+        Coupon coupon = null;
+        Integer couponPrice = 0;
+        if (couponIdx != null){
+            userCoupon = userCouponRepository.findFirstByUserIdxAndCouponIdxAndCouponStatusTrueOrderByIdx(user.getIdx(), couponIdx).orElse(null);
+            if (userCoupon == null){
+                throw new InvalidOrderException(COUPON_NOT_FOUND);
+            }
+            coupon = userCoupon.getCoupon();
+            couponPrice = coupon.getCouponPrice();
+        }
+
+
+        if (userDetail.getPoint() < usePoint){
+            throw new InvalidOrderException(USER_POINT_LACK);
+        }
+
         GroupBuy groupBuy = bid.getGroupBuy();
-        if (bid.getBidPrice() * orderQuantity == amount.intValue()) {
+        if (bid.getBidPrice() * orderQuantity - usePoint - couponPrice == amount.intValue()) {
             Orders orders = Orders.builder()
                     .orderQuantity(orderQuantity)
                     .recipientName(recipientName)
@@ -89,6 +113,12 @@ public class OrdersService {
             ordersRepository.save(orders);
             groupBuy.updateRemainQuantity(orderQuantity);
             groupBuyRepository.save(groupBuy);
+            if (userCoupon != null){
+                userCoupon.useCoupon();
+                userCouponRepository.save(userCoupon);
+            }
+            userDetail.updatePoint(usePoint);
+            userDetailRepository.save(userDetail);
             log.info("결제 성공");
         } else {
             CancelData cancelData = new CancelData(impUid, true, amount);

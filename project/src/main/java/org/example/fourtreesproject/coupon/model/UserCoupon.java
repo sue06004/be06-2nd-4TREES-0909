@@ -31,4 +31,8 @@ public class UserCoupon {
 
     @OneToOne(mappedBy = "userCoupon", fetch = FetchType.LAZY)
     private Orders orders;
+
+    public void useCoupon(){
+        this.couponStatus = false;
+    }
 }

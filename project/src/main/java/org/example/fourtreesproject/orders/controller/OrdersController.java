@@ -23,7 +23,7 @@ public class OrdersController {
     public BaseResponse<String> orderRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                               String impUid) throws IamportResponseException, IOException, RuntimeException {
 
-        ordersService.registerOrder(customUserDetails,impUid);
+        ordersService.registerOrder(customUserDetails.getIdx(),impUid);
         return new BaseResponse<>();
     }
 }

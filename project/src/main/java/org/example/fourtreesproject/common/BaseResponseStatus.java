@@ -221,8 +221,12 @@ public enum BaseResponseStatus {
     BID_SELECT_FAIL(false, 5301, "입찰 선정에 실패하였습니다."),
 
     // 결제 관련 6000
-    PAYMENT_FAIL(false, 6001, "결제에 실패하였습니다.");
+    PAYMENT_FAIL(false, 6001, "결제에 실패하였습니다."),
+    COUPON_NOT_FOUND(false, 7002, "쿠폰 조회에 실패하였습니다."),
+    USER_POINT_LACK(false, 7002, "포인트가 부족합니다.");
 
+
+    // 쿠폰 관련 7000;
     private final boolean isSuccess;
     private final Integer code;
     private final String message;
