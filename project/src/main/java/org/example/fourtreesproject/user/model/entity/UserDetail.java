@@ -23,6 +23,8 @@ public class UserDetail {
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-
+    public void updatePoint(Integer usePoint){
+        this.point -= usePoint;
+    }
 
 }
