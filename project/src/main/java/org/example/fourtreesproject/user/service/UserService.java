@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.USER_INFO_DETAIL_FAIL;
@@ -125,10 +124,7 @@ public class UserService {
     }
 
     public UserInfoResponse getUserInfoDetail(Long userIdx) throws RuntimeException {
-        User user = userRepository.findById(userIdx).orElse(null);
-        if (user == null) {
-            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
-        }
+        User user = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
         UserDetail userDetails = user.getUserDetail();
         List<DeliveryAddressResponse> deliveryAddressResponseList = getDeliveryAddressResponseList(user);
         List<CouponResponse> couponResponseList = getCouponResponseList(user);
@@ -163,7 +159,7 @@ public class UserService {
 
     private List<DeliveryAddressResponse> getDeliveryAddressResponseList(User user) {
         List<DeliveryAddressResponse> deliveryAddressResponseList = new ArrayList<>();
-        for (DeliveryAddress deliveryAddress: user.getDeliveryAddress()) {
+        for (DeliveryAddress deliveryAddress : user.getDeliveryAddress()) {
             DeliveryAddressResponse deliveryAddressResponse = DeliveryAddressResponse.builder()
                     .addressDefault(deliveryAddress.getAddressDefault())
                     .addressName(deliveryAddress.getAddressName())
@@ -177,10 +173,7 @@ public class UserService {
 
 
     public SellerInfoResponse getSellerInfoDetail(Long userIdx) throws RuntimeException {
-        User seller = userRepository.findById(userIdx).orElse(null);
-        if (seller == null) {
-            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
-        }
+        User seller = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
         SellerDetail sellerDetail = seller.getSellerDetail();
         return SellerInfoResponse.builder()
                 .address(seller.getAddress())
