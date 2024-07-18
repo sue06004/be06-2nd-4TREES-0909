@@ -22,5 +22,6 @@ public class SellerSignupRequest {
     private String sellerRegNum;     // 사업자등록번호
     private String sellerMosNum;     // 통신판매업신고번호
     private LocalDate sellerOpenedAt;  // 개업일자
+    private String comUuid; // 사업자등록번호 인증
 
 }

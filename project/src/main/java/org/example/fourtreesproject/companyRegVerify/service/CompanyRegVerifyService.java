@@ -31,6 +31,12 @@ public class CompanyRegVerifyService {
 
     private final CompanyRegVerifyRepository companyRegVerifyRepository;
 
+
+    public Boolean verify(String sellerRegNum, String comUuid) {
+        Optional<CompanyRegVerify> result = companyRegVerifyRepository.findByCompanyRegAndUuid(sellerRegNum, comUuid);
+        return result.isPresent();
+    }
+
     // 사업자동륵번호 진위확인 API
     private ResponseEntity<String> sendValidateApi(CompanyRegVerifyRequest companyRegVerifyRequest) {
         Map<String, Object> payload = new HashMap<>();
@@ -56,7 +62,7 @@ public class CompanyRegVerifyService {
     }
 
     // TODO : 예외처리
-    public BaseResponse verify(CompanyRegVerifyRequest companyRegVerifyRequest) {
+    public BaseResponse validate(CompanyRegVerifyRequest companyRegVerifyRequest) {
 
         ResponseEntity<String> response = sendValidateApi(companyRegVerifyRequest);
 

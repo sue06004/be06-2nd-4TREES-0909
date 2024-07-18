@@ -2,6 +2,7 @@ package org.example.fourtreesproject.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
+import org.example.fourtreesproject.companyRegVerify.service.CompanyRegVerifyService;
 import org.example.fourtreesproject.delivery.model.request.DeliveryAddressRegisterRequest;
 import org.example.fourtreesproject.emailVerify.model.dto.EmailVerifyDto;
 import org.example.fourtreesproject.emailVerify.service.EmailVerifyService;
@@ -23,6 +24,7 @@ import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 public class UserController {
     private final UserService userService;
     private final EmailVerifyService emailVerifyService;
+    private final CompanyRegVerifyService companyRegVerifyService;
 
     @PostMapping("/user/basic/signup")
     public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) throws Exception{
@@ -36,14 +38,19 @@ public class UserController {
     }
 
     @PostMapping("/seller/signup")
-    public BaseResponse<String> sellerSignup(@RequestBody SellerSignupRequest sellerSignupRequest) throws Exception{
-        String uuid = userService.sendEmail(sellerSignupRequest.getEmail());
-        userService.sellerSignup(sellerSignupRequest);
-        emailVerifyService.save(EmailVerifyDto.builder()
-                .email(sellerSignupRequest.getEmail())
-                .uuid(uuid)
-                .build());
-        return new BaseResponse<>();
+    public BaseResponse<String> sellerSignup(@RequestBody SellerSignupRequest sellerSignupRequest) throws Exception {
+        // 사업자등록번호 검증
+        if(companyRegVerifyService.verify(sellerSignupRequest.getSellerRegNum(), sellerSignupRequest.getComUuid())) {
+            String emailUuid = userService.sendEmail(sellerSignupRequest.getEmail());
+            userService.sellerSignup(sellerSignupRequest);
+            emailVerifyService.save(EmailVerifyDto.builder()
+                    .email(sellerSignupRequest.getEmail())
+                    .uuid(emailUuid)
+                    .build());
+            return new BaseResponse<>();
+        } else {
+            return new BaseResponse<>(USER_BUSINESS_NUMBER_AUTH_FAIL);
+        }
     }
 
     @GetMapping("/user/verify")
