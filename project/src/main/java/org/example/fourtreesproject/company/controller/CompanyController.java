@@ -2,7 +2,6 @@ package org.example.fourtreesproject.company.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
-import org.example.fourtreesproject.company.model.entity.Company;
 import org.example.fourtreesproject.company.model.request.CompanyModifyRequest;
 import org.example.fourtreesproject.company.model.request.CompanyRegisterRequest;
 import org.example.fourtreesproject.company.model.response.CompanyDetailResponse;
@@ -10,9 +9,6 @@ import org.example.fourtreesproject.company.service.CompanyService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import javax.management.relation.Role;
-import java.util.Optional;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 
@@ -63,16 +59,17 @@ public class CompanyController {
         CompanyDetailResponse detailResponse = companyService.detail(customUserDetails.getUser());
         return new BaseResponse<>(detailResponse);
     }
-        // 업체 정보 수정
-        @RequestMapping(method = RequestMethod.POST, value = "/modify")
-        public BaseResponse<String> modify (@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                @RequestBody CompanyModifyRequest request){
-            if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
-                return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
-            }
-            companyService.modify(request, customUserDetails.getUser());
-            return new BaseResponse<>();
 
+    // 업체 정보 수정
+    @RequestMapping(method = RequestMethod.POST, value = "/modify")
+    public BaseResponse<String> modify(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                       @RequestBody CompanyModifyRequest request) {
+        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+            return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
         }
+        companyService.modify(request, customUserDetails.getUser());
+        return new BaseResponse<>();
+
     }
+}
 

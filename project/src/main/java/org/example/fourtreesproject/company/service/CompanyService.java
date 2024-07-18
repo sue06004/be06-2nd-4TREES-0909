@@ -7,10 +7,7 @@ import org.example.fourtreesproject.company.model.request.CompanyRegisterRequest
 import org.example.fourtreesproject.company.model.response.CompanyDetailResponse;
 import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.user.model.entity.User;
-import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
