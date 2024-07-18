@@ -145,6 +145,9 @@ public class UserService {
     private List<CouponResponse> getCouponResponseList(User user) {
         List<CouponResponse> couponResponseList = new ArrayList<>();
         for (UserCoupon userCoupon : user.getUserCouponList()) {
+            if(!userCoupon.getCouponStatus()){
+                continue;
+            }
             Coupon coupon = userCoupon.getCoupon();
             CouponResponse couponResponse = CouponResponse.builder()
                     .couponContent(coupon.getCouponContent())
