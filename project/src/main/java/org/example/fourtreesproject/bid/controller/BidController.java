@@ -1,6 +1,7 @@
 package org.example.fourtreesproject.bid.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
 import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
 import org.example.fourtreesproject.bid.service.BidService;
 import org.example.fourtreesproject.common.BaseResponse;
@@ -38,5 +39,16 @@ public class BidController {
     @GetMapping("/gpbuy/status-wait/list")
     public BaseResponse<String> gpbuyWaitList(@AuthenticationPrincipal CustomUserDetails customUserDetails, Integer page, Integer size, Long categoryIdx, String gpbuyTitle) {
         return new BaseResponse(bidService.statusWaitList(page, size, categoryIdx, gpbuyTitle));
+    }
+
+    // TODO : 예외처리
+    @PostMapping("/modify")
+    public BaseResponse<String> modify(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody BidModifyRequest bidModifyRequest) {
+        if (customUserDetails == null) {
+            return new BaseResponse<>("사용자 인증 실패");
+        }
+        Long userIdx = customUserDetails.getIdx();
+        bidService.modify(userIdx, bidModifyRequest);
+        return new BaseResponse<>();
     }
 }

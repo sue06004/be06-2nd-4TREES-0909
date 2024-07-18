@@ -47,4 +47,16 @@ public class Bid {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="gpbuy_idx")
     private GroupBuy groupBuy;
+
+
+    public void updateBid(Product product, Integer price) {
+        this.product = product;
+        this.bidPrice = price;
+        this.bidModifiedAt = LocalDateTime.now();
+    }
+
+    public void updataStatus(String status) {
+        this.bidStatus = status;
+    }
+
 }
