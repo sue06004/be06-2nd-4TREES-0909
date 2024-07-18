@@ -18,7 +18,6 @@ import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
 import org.example.fourtreesproject.groupbuy.repository.LikesRepository;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.model.entity.ProductImg;
-import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +26,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -130,6 +130,9 @@ public class GroupBuyService {
                     .productName(selectedProduct.getProductName())
                     .bidPrice(selectedBid.getBidPrice())
                     .companyName(selectedProduct.getCompany().getCompanyName())
+                    .gpbuyStartedAt(g.getGpbuyStartedAt())
+                    .gpbuyEndedAt(g.getGpbuyEndedAt())
+                    .duration(calcDuration(g.getGpbuyEndedAt()))
                     .build();
             responseList.add(response);
         }
@@ -170,25 +173,10 @@ public class GroupBuyService {
                 .gpbuyQuantity(groupBuy.getGpbuyQuantity())
                 .gpbuyStartedAt(groupBuy.getGpbuyStartedAt())
                 .gpbuyEndedAt(groupBuy.getGpbuyEndedAt())
+                .duration(calcDuration(groupBuy.getGpbuyEndedAt()))
                 .build();
         return response;
     }
-
-
-    //-- 유틸, 추출 메소드 --
-    public Boolean isSelected(Bid b){
-        return b.getBidSelect();
-    }
-
-    public ProductImg extractThumbnailImg(List<ProductImg> imgList){
-        for (ProductImg img: imgList){
-            if (img.getProductImgSequence() == 0){
-                return img;
-            }
-        }
-        return null;
-    }
-
 
     public boolean likesSave(Long gpbuyIdx, Long userIdx) {
         Optional<GroupBuy> groupBuy = gpbuyRepository.findById(gpbuyIdx);
@@ -234,6 +222,7 @@ public class GroupBuyService {
                     .companyName(bid.getProduct().getCompany().getCompanyName())
                     .gpbuyStartedAt(l.getGroupBuy().getGpbuyStartedAt())
                     .gpbuyEndedAt(l.getGroupBuy().getGpbuyEndedAt())
+                    .duration(calcDuration(l.getGroupBuy().getGpbuyEndedAt()))
                     .build();
             responseList.add(response);
         }
@@ -269,10 +258,40 @@ public class GroupBuyService {
                     .productName(selectedProduct.getProductName())
                     .bidPrice(selectedBid.getBidPrice())
                     .companyName(selectedProduct.getCompany().getCompanyName())
+                    .gpbuyStartedAt(g.getGpbuyStartedAt())
+                    .gpbuyEndedAt(g.getGpbuyEndedAt())
+                    .duration(calcDuration(g.getGpbuyEndedAt()))
                     .build();
             responseList.add(response);
         }
 
         return responseList;
+    }
+
+    //-- 유틸, 추출 메소드 --
+    public Boolean isSelected(Bid b){
+        return b.getBidSelect();
+    }
+
+    public ProductImg extractThumbnailImg(List<ProductImg> imgList){
+        for (ProductImg img: imgList){
+            if (img.getProductImgSequence() == 0){
+                return img;
+            }
+        }
+        return null;
+    }
+
+    public String calcDuration(LocalDateTime gpbuyEndedAt){
+        //현재 시간과 마감기한의 차이를 구함
+        Duration duration = Duration.between(LocalDateTime.now(), gpbuyEndedAt);
+        long days = duration.toDays();
+        long hours = duration.toHoursPart();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+
+        //문자열 형태로 변환
+        return String.format("%dT%02d:%02d:%02d",
+                days, hours, minutes, seconds);
     }
 }

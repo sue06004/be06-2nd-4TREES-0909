@@ -23,4 +23,5 @@ public class GroupBuyDetailResponse {
     private Integer gpbuyQuantity;
     private LocalDateTime gpbuyStartedAt;
     private LocalDateTime gpbuyEndedAt;
+    private String duration;
 }
