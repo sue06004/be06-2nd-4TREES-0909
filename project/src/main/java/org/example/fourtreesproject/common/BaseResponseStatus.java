@@ -7,6 +7,8 @@ public enum BaseResponseStatus {
     // 모든 요청 성공 1000
     SUCCESS(true, 1000, "요청이 성공하였습니다."),
 
+    USER_AUTHENTICATION_FAILED(false, 1001, "사용자 인증에 실패하였습니다."),
+
     //-------------------- 회원기능 (일반 & 업체)
     // 일반 회원 관련 2000
     // 이메일 2010
@@ -133,6 +135,8 @@ public enum BaseResponseStatus {
     PRODUCT_REGIST_FAIL_TITLE_EMPTY(false, 3105,"제목을 입력해주세요."),
     // 상품 조회 실패
     PRODUCT_INFO_FAIL(false, 3106,"상품 조회에 실패했습니다."),
+    // 상품 검증 실패
+    PRODUCT_VERIFICATION_FAIL(false, 3107,"상품 검증에 실패했습니다."),
 
 
 //-------------------- 공구기능
@@ -200,11 +204,11 @@ public enum BaseResponseStatus {
     // 입찰 등록 5000
 
     // 등록 실패,
-    BID_REGIST_FAIL(false, 5001, "입찰 등록에 실패하였습니다."),
+    BID_REGISTER_FAIL(false, 5001, "입찰 등록에 실패하였습니다."),
     // 상품 미입력,
-    BID_REGIST_PRODUCT_EMPTY(false, 5002, "상품을 선택하지 않았습니다."),
+    BID_REGISTER_PRODUCT_EMPTY(false, 5002, "상품을 선택하지 않았습니다."),
     // 가격 미입력,
-    BID_REGIST_PRICE_EMPTY(false, 5003, "가격을 입력하지 않았습니다."),
+    BID_REGISTER_PRICE_EMPTY(false, 5003, "가격을 입력하지 않았습니다."),
 
     // 입찰 조회 5100
     //입찰 가능한 공구조회
@@ -219,6 +223,9 @@ public enum BaseResponseStatus {
 
     // 입찰 선정 5300
     BID_SELECT_FAIL(false, 5301, "입찰 선정에 실패하였습니다."),
+
+    // 입찰 수정 5400
+    BID_MODIFY_FAIL(false, 5401, "입찰 수정에 실패하였습니다."),
 
     // 결제 관련 6000
     PAYMENT_FAIL(false, 6001, "결제에 실패하였습니다."),

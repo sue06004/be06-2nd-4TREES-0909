@@ -1,6 +1,7 @@
 package org.example.fourtreesproject.bid.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fourtreesproject.bid.exception.customs.InvalidBidException;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.model.request.BidCancelRequest;
 import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
@@ -8,25 +9,20 @@ import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
 import org.example.fourtreesproject.bid.model.response.BidMyListResponse;
 import org.example.fourtreesproject.bid.model.response.GpbuyWaitListResponse;
 import org.example.fourtreesproject.bid.repository.BidRepository;
-import org.example.fourtreesproject.common.BaseResponseStatus;
-import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.model.entity.ProductImg;
 import org.example.fourtreesproject.product.repository.ProductRepository;
-import org.example.fourtreesproject.user.model.entity.User;
-import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,43 +30,25 @@ public class BidService {
     private final BidRepository bidRepository;
     private final ProductRepository productRepository;
     private final GroupBuyRepository groupBuyRepository;
-    private final UserRepository userRepository;
 
-    // TODO : 예외처리
     public void register(Long userIdx, BidRegisterRequest bidRegisterRequest) {
-        // 공구
-        Optional<GroupBuy> resultGroupBuy = groupBuyRepository.findById(bidRegisterRequest.getGpbuyIdx());
-        if(resultGroupBuy.isPresent()) {
-            GroupBuy groupBuy = resultGroupBuy.get();
-            System.out.println();
+        GroupBuy groupBuy = groupBuyRepository.findById(bidRegisterRequest.getGpbuyIdx())
+                .orElseThrow(() -> new InvalidBidException((GROUPBUY_LIST_FAIL)));
+        Product product = productRepository.findById(bidRegisterRequest.getProductIdx())
+                .orElseThrow(() -> new InvalidBidException((PRODUCT_INFO_FAIL)));
 
-            // 등록 상품 조회
-            Optional<Product> resultProduct = productRepository.findById(bidRegisterRequest.getProductIdx());
-            if(resultProduct.isPresent()) {
-                Product product = resultProduct.get();
-
-                // 자기 상품인지 검증
-                if(product.getCompany().getUser().getIdx().equals(userIdx)) {
-                    System.out.println(product.getCompany().getUser().getIdx());
-                    // save
-                    Bid bid = Bid.builder()
-                            .bidPrice(bidRegisterRequest.getBidPrice())
-                            .product(product)
-                            .groupBuy(groupBuy)
-                            .build();
-                    bidRepository.save(bid);
-                } else {
-                    // 본인 상품 아님
-                }
-            } else {
-                // 상품조회실패
-            }
+        if(product.getCompany().getUser().getIdx().equals(userIdx)) {
+            Bid bid = Bid.builder()
+                    .bidPrice(bidRegisterRequest.getBidPrice())
+                    .product(product)
+                    .groupBuy(groupBuy)
+                    .build();
+            bidRepository.save(bid);
         } else {
-            // 공구 조회 실패
+            throw new InvalidBidException(PRODUCT_VERIFICATION_FAIL);
         }
     }
 
-    // TODO : 예외처리
     public List<BidMyListResponse> myList(Long userIdx, Boolean bidSelect) {
         List<Bid> bidResults = bidRepository.findAllByUserIdxAndBidSelect(userIdx, bidSelect);
 
@@ -90,12 +68,8 @@ public class BidService {
         return bidMyListResponses;
     }
 
-    // TODO : 예외처리
     public List<GpbuyWaitListResponse> statusWaitList(Integer page, Integer size, Long categoryIdx, String gpbuyTitle) {
-        // 업체 회원이 업체가 입찰할 수 있는 공구 목록을 조회한다. (카테고리, 제목)
-        // TODO : 뭘로 정렬할지
         Pageable pageable = PageRequest.of(page, size);
-
         Slice<GroupBuy> result = groupBuyRepository.searchWaitList(pageable,categoryIdx, gpbuyTitle);
 
         List<GroupBuy> groupBuyList = result.getContent();
@@ -111,52 +85,28 @@ public class BidService {
         return gpbuyWaitListResponseList;
     }
 
-    // TODO : 예외처리
     public void modify(Long userIdx, BidModifyRequest bidModifyRequest) {
-        // 등록 상품 조회
-        Optional<Bid> resultBid = bidRepository.findById(bidModifyRequest.getBidIdx());
-        if(resultBid.isPresent()) {
-            Bid bid = resultBid.get();
-            Optional<Product> resultProduct = productRepository.findById(bidModifyRequest.getProductIdx());
-            if(resultProduct.isPresent()) {
-                Product product = resultProduct.get();
-
-                // 자기 상품인지 검증
-                if(product.getCompany().getUser().getIdx().equals(userIdx)) {
-                    // update
-                    if(bid.getGroupBuy().getGpbuyStatus().equals("대기")) {
-                        bid.updateBid(product, bidModifyRequest.getBidPrice());
-                        bid.updataStatus("수정");
-                        bidRepository.save(bid);
-                    } else {
-                        // 공구 시작 -> 수정불가능
-                    }
-                } else {
-                    // 본인 상품 아님
-                    System.out.println("자기상품아님");
-                }
-            } else {
-                // 상품조회실패
-            }
-        }
+        Bid bid = bidRepository.findById(bidModifyRequest.getBidIdx())
+                .orElseThrow(() -> new InvalidBidException(BID_INFO_FAIL));
+        Product product = productRepository.findById(bidModifyRequest.getProductIdx())
+                .orElseThrow(() -> new InvalidBidException(PRODUCT_INFO_FAIL));
+        if(product.getCompany().getUser().getIdx().equals(userIdx)) {
+            if(bid.getGroupBuy().getGpbuyStatus().equals("대기")) {
+                bid.updateBid(product, bidModifyRequest.getBidPrice());
+                bid.updataStatus("수정");
+                bidRepository.save(bid);
+            } else throw new InvalidBidException(BID_MODIFY_FAIL);
+        } else throw new InvalidBidException(PRODUCT_VERIFICATION_FAIL);
     }
 
-    // TODO : 예외처리
     public void cancel(Long userIdx, BidCancelRequest bidCancelRequest) {
-        // 등록 상품 조회
-        Optional<Bid> resultBid = bidRepository.findById(bidCancelRequest.getBidIdx());
-        if(resultBid.isPresent()) {
-            Bid bid = resultBid.get();
-            if (bid.getProduct().getCompany().getUser().getIdx().equals(userIdx)) {
-                if(bid.getGroupBuy().getGpbuyStatus().equals("대기")) {
-                    bid.updataStatus("삭제");
-                    bidRepository.save(bid);
-                } else {
-                    // 공구 시작 -> 취소불가능
-                }
-            } else {
-                // 자신의 입찰인지 검증 실패
-            }
+        Bid bid = bidRepository.findById(bidCancelRequest.getBidIdx())
+                .orElseThrow(() -> new InvalidBidException(BID_INFO_FAIL));
+        if (bid.getProduct().getCompany().getUser().getIdx().equals(userIdx)) {
+            if(bid.getGroupBuy().getGpbuyStatus().equals("대기")) {
+                bid.updataStatus("삭제");
+                bidRepository.save(bid);
+            } else throw new InvalidBidException(BID_DELETE_FAIL);
         }
     }
 }
