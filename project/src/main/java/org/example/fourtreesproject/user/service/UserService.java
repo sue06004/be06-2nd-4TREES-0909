@@ -42,7 +42,7 @@ public class UserService {
     private final JavaMailSender emailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void signup(UserSignupRequest userSignupReq) throws Exception {
+    public void signup(UserSignupRequest userSignupReq) throws RuntimeException {
         User user = User.builder()
                 .type("inapp")
                 .email(userSignupReq.getEmail())
@@ -59,7 +59,7 @@ public class UserService {
         userDetailRepository.save(userDetail);
     }
 
-    public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws Exception {
+    public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws RuntimeException {
         User user = User.builder()
                 .type("inapp")
                 .role("ROLE_SELLER")
@@ -85,7 +85,7 @@ public class UserService {
         sellerDetailRepository.save(sellerDetail);
     }
 
-    public String sendEmail(String email) throws Exception {
+    public String sendEmail(String email) throws RuntimeException {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(email); // 받는 사람 메일
         simpleMailMessage.setSubject("[내 사이트] 가입 환영"); // 메일 제목
@@ -96,7 +96,7 @@ public class UserService {
         return uuid;
     }
 
-    public void activeMember(String email) throws Exception {
+    public void activeMember(String email) throws RuntimeException {
         Optional<User> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -106,7 +106,7 @@ public class UserService {
         }
     }
 
-    public void registerDelivery(User user, DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws Exception {
+    public void registerDelivery(User user, DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws RuntimeException {
         DeliveryAddress defaultDelivery = deliveryAddressRepository.findByUserIdxAndAddressDefaultTrue(user.getIdx()).orElse(null);
         if (defaultDelivery != null) {
             defaultDelivery.updateDefault();
@@ -122,7 +122,7 @@ public class UserService {
         deliveryAddressRepository.save(deliveryAddress);
     }
 
-    public UserInfoResponse getUserInfoDetail(Long userIdx) throws Exception {
+    public UserInfoResponse getUserInfoDetail(Long userIdx) throws RuntimeException {
         User user = userRepository.findById(userIdx).orElse(null);
         if (user == null) {
             throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
@@ -174,7 +174,7 @@ public class UserService {
     }
 
 
-    public SellerInfoResponse getSellerInfoDetail(Long userIdx) throws Exception {
+    public SellerInfoResponse getSellerInfoDetail(Long userIdx) throws RuntimeException {
         User seller = userRepository.findById(userIdx).orElse(null);
         if (seller == null) {
             throw new InvalidUserException(USER_INFO_DETAIL_FAIL);

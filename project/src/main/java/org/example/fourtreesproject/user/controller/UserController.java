@@ -27,7 +27,7 @@ public class UserController {
     private final CompanyRegVerifyService companyRegVerifyService;
 
     @PostMapping("/user/basic/signup")
-    public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) throws Exception{
+    public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) throws RuntimeException{
         String uuid = userService.sendEmail(userSignupRequest.getEmail());
         userService.signup(userSignupRequest);
         emailVerifyService.save(EmailVerifyDto.builder()
@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/seller/signup")
-    public BaseResponse<String> sellerSignup(@RequestBody SellerSignupRequest sellerSignupRequest) throws Exception {
+    public BaseResponse<String> sellerSignup(@RequestBody SellerSignupRequest sellerSignupRequest) throws RuntimeException {
         // 사업자등록번호 검증
         if(companyRegVerifyService.verify(sellerSignupRequest.getSellerRegNum(), sellerSignupRequest.getComUuid())) {
             String emailUuid = userService.sendEmail(sellerSignupRequest.getEmail());
@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @GetMapping("/user/verify")
-    public BaseResponse<String> verify(String email, String uuid) throws Exception{
+    public BaseResponse<String> verify(String email, String uuid) throws RuntimeException{
         Boolean verify = emailVerifyService.verifyEmail(EmailVerifyDto.builder()
                 .email(email)
                 .uuid(uuid)
@@ -68,7 +68,7 @@ public class UserController {
 
     @PostMapping("/user/delivery/register")
     public BaseResponse<String> deliveryRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                 @RequestBody DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws Exception{
+                                                 @RequestBody DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws RuntimeException{
         if (customUserDetails == null){
             return new BaseResponse<>(USER_NOT_LOGIN);
         }
@@ -77,7 +77,7 @@ public class UserController {
     }
 
     @GetMapping("/user/info/detail")
-    public BaseResponse<UserInfoResponse> userInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception{
+    public BaseResponse<UserInfoResponse> userInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws RuntimeException{
         if (customUserDetails == null){
             throw new InvalidUserException(USER_NOT_LOGIN);
         }
@@ -86,7 +86,7 @@ public class UserController {
     }
 
     @GetMapping("/seller/info/detail")
-    public BaseResponse<SellerInfoResponse> sellerInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws Exception{
+    public BaseResponse<SellerInfoResponse> sellerInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws RuntimeException{
         if (customUserDetails == null){
             throw new InvalidUserException(USER_NOT_LOGIN);
         }
