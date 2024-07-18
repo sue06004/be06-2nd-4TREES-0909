@@ -14,22 +14,33 @@ import org.example.fourtreesproject.bid.repository.BidRepository;
 import org.example.fourtreesproject.coupon.model.Coupon;
 import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.coupon.repository.UserCouponRepository;
+import org.example.fourtreesproject.delivery.model.DeliveryAddress;
+import org.example.fourtreesproject.delivery.model.response.DeliveryAddressResponse;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
 import org.example.fourtreesproject.orders.exception.custom.InvalidOrderException;
 import org.example.fourtreesproject.orders.model.entity.Orders;
+import org.example.fourtreesproject.orders.model.response.OrderPageResponse;
+import org.example.fourtreesproject.orders.model.response.OrdersListResponse;
 import org.example.fourtreesproject.orders.repository.OrdersRepository;
+import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.repository.ProductRepository;
 import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
+import org.example.fourtreesproject.user.model.response.UserCouponResponse;
 import org.example.fourtreesproject.user.repository.UserDetailRepository;
 import org.example.fourtreesproject.user.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.*;
@@ -162,6 +173,87 @@ public class OrdersService {
         CancelData cancelData = new CancelData(impUid, true, amount);
         iamportClient.cancelPaymentByImpUid(cancelData);
         log.info("결제 취소");
+    }
+
+    public List<OrdersListResponse> getOrderInfoList(Integer page, Integer size, Long userIdx) throws RuntimeException {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Orders> ordersList = ordersRepository.findByUserIdxAndOrderStatusOrderByOrderStartedAtDesc(pageable, userIdx, "주문");
+        List<OrdersListResponse> ordersListResponseList = new ArrayList<>();
+        for (Orders orders : ordersList) {
+            GroupBuy groupBuy = orders.getGroupBuy();
+
+            String groupBuyStatus = groupBuy.getGpbuyStatus();
+            if (groupBuyStatus.equals("진행") && LocalDateTime.now().isAfter(groupBuy.getGpbuyFinEndedAt())) {
+                groupBuyStatus = "실패";
+            } else if (groupBuyStatus.equals("진행") && LocalDateTime.now().isAfter(groupBuy.getGpbuyEndedAt()) &&
+                    LocalDateTime.now().isBefore(groupBuy.getGpbuyFinEndedAt())) {
+                groupBuyStatus = "보류";
+            }
+
+            String deliveryNumber = orders.getDeliveryNumber();
+            if (deliveryNumber == null) {
+                deliveryNumber = "-";
+            }
+
+            Bid bid = bidRepository.findByGroupBuyIdxAndBidSelectIsTrue(groupBuy.getIdx()).orElse(null);
+            if (bid == null) {
+                throw new InvalidOrderException(BID_INFO_FAIL);
+            }
+            Product product = bid.getProduct();
+
+            OrdersListResponse ordersListResponse = OrdersListResponse.builder()
+                    .groupBuyIdx(groupBuy.getIdx())
+                    .groupBuyStatus(groupBuyStatus)
+                    .deliveryNumber(deliveryNumber)
+                    .productName(product.getProductName())
+                    .build();
+            ordersListResponseList.add(ordersListResponse);
+        }
+        return ordersListResponseList;
+    }
+
+    public OrderPageResponse loadOrderPage(Long userIdx, Long orderIdx) throws RuntimeException {
+        User user = userRepository.findById(userIdx).orElse(null);
+        if (user == null) {
+            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
+        }
+        UserDetail userDetail = user.getUserDetail();
+        List<UserCoupon> userCouponList = user.getUserCouponList();
+        List<UserCouponResponse> userCouponResponseList = new ArrayList<>();
+        for (UserCoupon userCoupon : userCouponList) {
+            if (!userCoupon.getCouponStatus()){
+                continue;
+            }
+            Coupon coupon = userCoupon.getCoupon();
+            UserCouponResponse userCouponResponse = UserCouponResponse.builder()
+                    .couponPrice(coupon.getCouponPrice())
+                    .couponContent(coupon.getCouponContent())
+                    .couponName(coupon.getCouponName())
+                    .userCouponIdx(userCoupon.getIdx())
+                    .minOrderPrice(coupon.getMinOrderPrice())
+                    .build();
+            userCouponResponseList.add(userCouponResponse);
+        }
+        List<DeliveryAddress> deliveryAddressList = user.getDeliveryAddress();
+        List<DeliveryAddressResponse> deliveryAddressResponseList = new ArrayList<>();
+        for (DeliveryAddress deliveryAddress : deliveryAddressList) {
+            DeliveryAddressResponse deliveryAddressResponse = DeliveryAddressResponse.builder()
+                    .addressDefault(deliveryAddress.getAddressDefault())
+                    .addressName(deliveryAddress.getAddressName())
+                    .addressInfo(deliveryAddress.getAddressInfo())
+                    .postCode(deliveryAddress.getPostCode())
+                    .build();
+            deliveryAddressResponseList.add(deliveryAddressResponse);
+        }
+
+        return OrderPageResponse.builder()
+                .email(user.getEmail())
+                .name(user.getName())
+                .phoneNumber(user.getPhoneNumber())
+                .point(user.getUserDetail().getPoint())
+                .deliveryAddressResponseList(deliveryAddressResponseList)
+                .userCouponResponseList(userCouponResponseList)
+                .build();
     }
 
 }
