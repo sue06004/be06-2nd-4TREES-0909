@@ -20,7 +20,7 @@ public class UserDetail {
     @Builder.Default
     private Integer point = 0;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 
     public void updatePoint(Integer usePoint){

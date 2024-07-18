@@ -24,7 +24,6 @@ import org.example.fourtreesproject.orders.model.response.OrderPageResponse;
 import org.example.fourtreesproject.orders.model.response.OrdersListResponse;
 import org.example.fourtreesproject.orders.repository.OrdersRepository;
 import org.example.fourtreesproject.product.model.entity.Product;
-import org.example.fourtreesproject.product.repository.ProductRepository;
 import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
@@ -52,7 +51,6 @@ public class OrdersService {
 
     private final IamportClient iamportClient;
     private final OrdersRepository ordersRepository;
-    private final ProductRepository productRepository;
     private final UserCouponRepository userCouponRepository;
     private final BidRepository bidRepository;
     private final GroupBuyRepository groupBuyRepository;
@@ -120,7 +118,7 @@ public class OrdersService {
             throw new InvalidOrderException(GROUPBUY_RECRUITING_FAIL_DEADLINE);
         }
 
-        UserDetail userDetail = user.getUserDetail();
+        UserDetail userDetail = userDetailRepository.findByUserIdx(user.getIdx()).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
         UserCoupon userCoupon = null;
         Integer couponPrice = 0;
         if (userCouponIdx != null) {
@@ -212,12 +210,9 @@ public class OrdersService {
         return ordersListResponseList;
     }
 
-    public OrderPageResponse loadOrderPage(Long userIdx, Long orderIdx) throws RuntimeException {
-        User user = userRepository.findById(userIdx).orElse(null);
-        if (user == null) {
-            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
-        }
-        UserDetail userDetail = user.getUserDetail();
+    public OrderPageResponse loadOrderPage(Long userIdx) throws RuntimeException {
+        User user = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
+        UserDetail userDetail = userDetailRepository.findByUserIdx(user.getIdx()).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
         List<UserCoupon> userCouponList = user.getUserCouponList();
         List<UserCouponResponse> userCouponResponseList = new ArrayList<>();
         for (UserCoupon userCoupon : userCouponList) {
@@ -250,7 +245,7 @@ public class OrdersService {
                 .email(user.getEmail())
                 .name(user.getName())
                 .phoneNumber(user.getPhoneNumber())
-                .point(user.getUserDetail().getPoint())
+                .point(userDetail.getPoint())
                 .deliveryAddressResponseList(deliveryAddressResponseList)
                 .userCouponResponseList(userCouponResponseList)
                 .build();

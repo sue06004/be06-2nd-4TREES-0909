@@ -103,6 +103,8 @@ public enum BaseResponseStatus {
     USER_INFO_MODIFY_FAIL_POST_CODE(false, 2605, "우편번호가 올바르지 않습니다."),
     // 탈퇴시 비밀번호 문제
     USER_QUIT_FAIL(false, 2606, "비밀번호가 일치하지 않습니다."),
+    USER_NOT_BASIC(false, 2607, "일반 회원이 아닙니다."),
+    USER_NOT_SELLER(false, 2608, "업체 회원이 아닙니다."),
 
 // -------------------------------------------------------
 //-------------------- 업체기능
