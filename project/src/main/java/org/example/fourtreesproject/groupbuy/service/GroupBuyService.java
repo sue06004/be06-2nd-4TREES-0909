@@ -7,12 +7,14 @@ import org.example.fourtreesproject.bid.repository.BidRepository;
 import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
+import org.example.fourtreesproject.groupbuy.model.entity.Likes;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
+import org.example.fourtreesproject.groupbuy.repository.LikesRepository;
 import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.model.entity.ProductImg;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +40,7 @@ public class GroupBuyService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final BidRepository bidRepository;
+    private final LikesRepository likesRepository;
 
     public boolean save(GroupBuyCreateRequest request) {
         User user = userRepository.findById(request.getUserIdx()).get();
@@ -187,4 +191,25 @@ public class GroupBuyService {
     }
 
 
+    public boolean likesSave(Long gpbuyIdx, Long userIdx) {
+        Optional<GroupBuy> groupBuy = gpbuyRepository.findById(gpbuyIdx);
+        Optional<User> user = userRepository.findById(userIdx);
+        if (groupBuy.isPresent() && user.isPresent()){
+            System.out.println(gpbuyIdx);
+            System.out.println(userIdx);
+            Optional<Likes> likes = likesRepository.findByGpbuyIdxAndUserIdx(gpbuyIdx, userIdx);
+            if (likes.isEmpty()){
+                Likes newLikes = Likes.builder()
+                        .groupBuy(groupBuy.get())
+                        .user(user.get())
+                        .build();
+                likesRepository.save(newLikes);
+            }else {
+                likesRepository.deleteById(likes.get().getIdx());
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
