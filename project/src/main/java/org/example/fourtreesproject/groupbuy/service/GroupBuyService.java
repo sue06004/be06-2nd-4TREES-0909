@@ -4,7 +4,6 @@ package org.example.fourtreesproject.groupbuy.service;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.repository.BidRepository;
-import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.entity.Likes;
@@ -17,10 +16,9 @@ import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListRes
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
 import org.example.fourtreesproject.groupbuy.repository.LikesRepository;
-import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.model.entity.ProductImg;
-import org.example.fourtreesproject.product.repository.ProductRepository;
+import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
@@ -44,8 +42,8 @@ public class GroupBuyService {
     private final BidRepository bidRepository;
     private final LikesRepository likesRepository;
 
-    public boolean save(GroupBuyCreateRequest request) {
-        User user = userRepository.findById(request.getUserIdx()).get();
+    public boolean save(Long user_idx, GroupBuyCreateRequest request) {
+        User user = userRepository.findById(user_idx).get();
         Category category = categoryRepository.findByCategoryName(request.getCategory());
         GroupBuy groupbuy = GroupBuy.builder()
                 .user(user)
@@ -104,7 +102,7 @@ public class GroupBuyService {
     }
 
     public List<GroupBuyListResponse> list(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "idx"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "gpbuy_remain_quantity"));
         Slice<GroupBuy> result = gpbuyRepository.findSliceByGpbuyStatus(pageable,"진행");
         List<GroupBuy> slicedResult = result.getContent();
         List<GroupBuyListResponse> responseList = new ArrayList<>();
