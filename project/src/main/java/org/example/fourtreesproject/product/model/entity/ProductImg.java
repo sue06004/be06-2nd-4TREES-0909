@@ -19,7 +19,7 @@ public class ProductImg {
     @Column(nullable = false, length = 255)
     private String productImgUrl;
     @Column(nullable = false)
-    private Integer productImgSequence;
+    private Integer productImgSequence; //이미지 순서
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="product_idx")

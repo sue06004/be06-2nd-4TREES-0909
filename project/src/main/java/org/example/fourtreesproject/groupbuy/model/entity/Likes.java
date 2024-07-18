@@ -12,17 +12,18 @@ import org.example.fourtreesproject.user.model.entity.User;
 @AllArgsConstructor
 @Builder
 @Getter
+@Table(name = "likes")
 public class Likes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idx;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gpbuy_idx")
     private GroupBuy groupBuy;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_idx")
-    User user;
+    private User user;
 }

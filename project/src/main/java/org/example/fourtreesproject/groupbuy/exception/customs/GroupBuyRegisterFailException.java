@@ -1,4 +1,5 @@
 package org.example.fourtreesproject.groupbuy.exception.customs;
 
-public class GroupBuyRegisterFailException extends Exception{
+public class GroupBuyRegisterFailException extends RuntimeException{
+
 }
