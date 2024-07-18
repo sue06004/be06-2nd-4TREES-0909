@@ -18,5 +18,6 @@ public class GroupBuyLikesListResponse {
     private String companyName;
     private LocalDateTime gpbuyStartedAt;
     private LocalDateTime gpbuyEndedAt;
+    private String duration;
 
 }
