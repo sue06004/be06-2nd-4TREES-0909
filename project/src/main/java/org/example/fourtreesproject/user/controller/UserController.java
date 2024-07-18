@@ -34,7 +34,7 @@ public class UserController {
                 .email(userSignupRequest.getEmail())
                 .uuid(uuid)
                 .build());
-        return new BaseResponse<>("");
+        return new BaseResponse<>();
     }
 
     @PostMapping("/seller/signup")
@@ -61,7 +61,7 @@ public class UserController {
                 .build());
         if (verify){
             userService.activeMember(email);
-            return new BaseResponse<>("");
+            return new BaseResponse<>();
         }
         return new BaseResponse<>(USER_EMAIL_AUTH_FAIL);
     }
