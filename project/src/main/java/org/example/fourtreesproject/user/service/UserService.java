@@ -1,5 +1,6 @@
 package org.example.fourtreesproject.user.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.coupon.model.Coupon;
 import org.example.fourtreesproject.coupon.model.UserCoupon;
@@ -26,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.USER_INFO_DETAIL_FAIL;
@@ -42,7 +42,8 @@ public class UserService {
     private final JavaMailSender emailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void signup(UserSignupRequest userSignupReq) throws Exception {
+    @Transactional
+    public void signup(UserSignupRequest userSignupReq) throws RuntimeException {
         User user = User.builder()
                 .type("inapp")
                 .email(userSignupReq.getEmail())
@@ -59,7 +60,8 @@ public class UserService {
         userDetailRepository.save(userDetail);
     }
 
-    public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws Exception {
+    @Transactional
+    public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws RuntimeException {
         User user = User.builder()
                 .type("inapp")
                 .role("ROLE_SELLER")
@@ -85,7 +87,7 @@ public class UserService {
         sellerDetailRepository.save(sellerDetail);
     }
 
-    public String sendEmail(String email) throws Exception {
+    public String sendEmail(String email) throws RuntimeException {
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setTo(email); // 받는 사람 메일
         simpleMailMessage.setSubject("[내 사이트] 가입 환영"); // 메일 제목
@@ -96,20 +98,19 @@ public class UserService {
         return uuid;
     }
 
-    public void activeMember(String email) throws Exception {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.updateEmailStatus();
-            user.updateStatus("활동");
-            userRepository.save(user);
-        }
+    public void activeMember(String email) throws RuntimeException {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
+        user.updateEmailStatus();
+        user.updateStatus("활동");
+        userRepository.save(user);
     }
 
-    public void registerDelivery(User user, DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws Exception {
+    @Transactional
+    public void registerDelivery(User user, DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws RuntimeException {
         DeliveryAddress defaultDelivery = deliveryAddressRepository.findByUserIdxAndAddressDefaultTrue(user.getIdx()).orElse(null);
-        if (defaultDelivery != null) {
+        if (defaultDelivery != null && deliveryAddressRegisterRequest.getAddressDefault()) {
             defaultDelivery.updateDefault();
+            deliveryAddressRepository.save(defaultDelivery);
         }
 
         DeliveryAddress deliveryAddress = DeliveryAddress.builder()
@@ -122,11 +123,8 @@ public class UserService {
         deliveryAddressRepository.save(deliveryAddress);
     }
 
-    public UserInfoResponse getUserInfoDetail(Long userIdx) throws Exception {
-        User user = userRepository.findById(userIdx).orElse(null);
-        if (user == null) {
-            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
-        }
+    public UserInfoResponse getUserInfoDetail(Long userIdx) throws RuntimeException {
+        User user = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
         UserDetail userDetails = user.getUserDetail();
         List<DeliveryAddressResponse> deliveryAddressResponseList = getDeliveryAddressResponseList(user);
         List<CouponResponse> couponResponseList = getCouponResponseList(user);
@@ -161,7 +159,7 @@ public class UserService {
 
     private List<DeliveryAddressResponse> getDeliveryAddressResponseList(User user) {
         List<DeliveryAddressResponse> deliveryAddressResponseList = new ArrayList<>();
-        for (DeliveryAddress deliveryAddress: user.getDeliveryAddress()) {
+        for (DeliveryAddress deliveryAddress : user.getDeliveryAddress()) {
             DeliveryAddressResponse deliveryAddressResponse = DeliveryAddressResponse.builder()
                     .addressDefault(deliveryAddress.getAddressDefault())
                     .addressName(deliveryAddress.getAddressName())
@@ -174,11 +172,8 @@ public class UserService {
     }
 
 
-    public SellerInfoResponse getSellerInfoDetail(Long userIdx) throws Exception {
-        User seller = userRepository.findById(userIdx).orElse(null);
-        if (seller == null) {
-            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
-        }
+    public SellerInfoResponse getSellerInfoDetail(Long userIdx) throws RuntimeException {
+        User seller = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
         SellerDetail sellerDetail = seller.getSellerDetail();
         return SellerInfoResponse.builder()
                 .address(seller.getAddress())
