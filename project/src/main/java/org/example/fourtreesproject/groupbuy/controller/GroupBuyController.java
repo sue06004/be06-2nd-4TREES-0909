@@ -11,9 +11,13 @@ import org.example.fourtreesproject.groupbuy.model.response.GroupBuyLikesListRes
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
 import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
+import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.example.fourtreesproject.common.BaseResponseStatus.USER_NOT_LOGIN;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,14 +29,17 @@ public class GroupBuyController {
     @Operation(summary = "공구 등록 api")
     @PostMapping("/register")
     public BaseResponse register(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody GroupBuyCreateRequest request
             ){
+        if (customUserDetails == null){
+            return new BaseResponse<>(USER_NOT_LOGIN);
+        }
 
-        if (!gpbuyService.save(request)) {
+        if (!gpbuyService.save(customUserDetails.getUser().getIdx(),request)) {
             return new BaseResponse();
         }
         return new BaseResponse();
-
     }
 
     @Operation(summary = "공구에 입찰한 입찰정보 조회 api")
@@ -79,10 +86,13 @@ public class GroupBuyController {
     @Operation(summary = "관심 공구 등록/취소 api")
     @GetMapping("/likes/save")
     public BaseResponse likesSave(
-            Long gpbuyIdx, Long userIdx
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            Long gpbuyIdx
     ){
-
-        if (!gpbuyService.likesSave(gpbuyIdx,userIdx)){
+        if (customUserDetails == null){
+            return new BaseResponse<>(USER_NOT_LOGIN);
+        }
+        if (!gpbuyService.likesSave(gpbuyIdx, customUserDetails.getIdx())){
             return new BaseResponse<>(BaseResponseStatus.GROUPBUY_LIKES_CREATE_FAIL);
         }
         return new BaseResponse();
@@ -92,9 +102,12 @@ public class GroupBuyController {
     @Operation(summary = "관심 공구 목록 조회 api")
     @GetMapping("/likes/list")
     public BaseResponse likesList(
-            Long userIdx
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
-        List<GroupBuyLikesListResponse> result = gpbuyService.likesList(userIdx);
+        if (customUserDetails == null){
+            return new BaseResponse<>(USER_NOT_LOGIN);
+        }
+        List<GroupBuyLikesListResponse> result = gpbuyService.likesList(customUserDetails.getIdx());
         return new BaseResponse(result);
     }
 

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -18,4 +20,7 @@ public class GroupBuyListResponse {
     private String productName;
     private Integer bidPrice;
     private String companyName;
+    private LocalDateTime gpbuyStartedAt;
+    private LocalDateTime gpbuyEndedAt;
+    private String duration;
 }
