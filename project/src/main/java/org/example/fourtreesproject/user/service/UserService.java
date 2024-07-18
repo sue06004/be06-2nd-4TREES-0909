@@ -1,5 +1,6 @@
 package org.example.fourtreesproject.user.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.coupon.model.Coupon;
 import org.example.fourtreesproject.coupon.model.UserCoupon;
@@ -42,6 +43,7 @@ public class UserService {
     private final JavaMailSender emailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Transactional
     public void signup(UserSignupRequest userSignupReq) throws RuntimeException {
         User user = User.builder()
                 .type("inapp")
@@ -59,6 +61,7 @@ public class UserService {
         userDetailRepository.save(userDetail);
     }
 
+    @Transactional
     public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws RuntimeException {
         User user = User.builder()
                 .type("inapp")
@@ -97,19 +100,18 @@ public class UserService {
     }
 
     public void activeMember(String email) throws RuntimeException {
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.updateEmailStatus();
-            user.updateStatus("활동");
-            userRepository.save(user);
-        }
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
+        user.updateEmailStatus();
+        user.updateStatus("활동");
+        userRepository.save(user);
     }
 
+    @Transactional
     public void registerDelivery(User user, DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws RuntimeException {
         DeliveryAddress defaultDelivery = deliveryAddressRepository.findByUserIdxAndAddressDefaultTrue(user.getIdx()).orElse(null);
-        if (defaultDelivery != null) {
+        if (defaultDelivery != null && deliveryAddressRegisterRequest.getAddressDefault()) {
             defaultDelivery.updateDefault();
+            deliveryAddressRepository.save(defaultDelivery);
         }
 
         DeliveryAddress deliveryAddress = DeliveryAddress.builder()

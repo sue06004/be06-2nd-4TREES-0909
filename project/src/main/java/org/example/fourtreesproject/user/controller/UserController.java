@@ -26,7 +26,7 @@ public class UserController {
     private final EmailVerifyService emailVerifyService;
     private final CompanyRegVerifyService companyRegVerifyService;
 
-    @PostMapping("/user/basic/signup")
+    @PostMapping("/user/signup")
     public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) throws RuntimeException{
         String uuid = userService.sendEmail(userSignupRequest.getEmail());
         userService.signup(userSignupRequest);
