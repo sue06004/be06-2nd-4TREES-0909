@@ -4,6 +4,7 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.sun.jna.platform.unix.X11;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
+import org.example.fourtreesproject.orders.model.response.OrderPageResponse;
 import org.example.fourtreesproject.orders.model.response.OrdersListResponse;
 import org.example.fourtreesproject.orders.service.OrdersService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
@@ -35,5 +36,12 @@ public class OrdersController {
                                                                    Integer page, Integer size) throws RuntimeException {
         List<OrdersListResponse> orderInfoList = ordersService.getOrderInfoList(page, size, customUserDetails.getIdx());
         return new BaseResponse<>(orderInfoList);
+    }
+
+    @GetMapping("/page")
+    public BaseResponse<OrderPageResponse> getOrderPageInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                            Long orderIdx) throws RuntimeException {
+        OrderPageResponse orderPageResponse = ordersService.loadOrderPage(customUserDetails.getIdx(), orderIdx);
+        return new BaseResponse<>(orderPageResponse);
     }
 }
