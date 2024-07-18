@@ -10,6 +10,7 @@ import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.entity.Likes;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
+import org.example.fourtreesproject.groupbuy.model.response.GroupBuyLikesListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
@@ -211,5 +212,36 @@ public class GroupBuyService {
         } else {
             return false;
         }
+    }
+
+
+    //관심 공구 목록 조회
+    public List<GroupBuyLikesListResponse> likesList(Long userIdx) {
+        List<Likes> likesList = likesRepository.findAllByIdx(userIdx);
+        List<GroupBuyLikesListResponse> responseList = new ArrayList<>();
+
+        for (Likes l : likesList){
+            Bid bid = null;
+            for (Bid b : l.getGroupBuy().getBidList()) {
+                if (isSelected(b)){
+                    bid = b;
+                    break;
+                }
+            }
+            GroupBuyLikesListResponse response = GroupBuyLikesListResponse.builder()
+                    .gpbuyIdx(l.getGroupBuy().getIdx())
+                    .gpbuyQuantity(l.getGroupBuy().getGpbuyQuantity())
+                    .gpbuyRemainQuantity(l.getGroupBuy().getGpbuyRemainQuantity())
+                    .productThumbnailImg(extractThumbnailImg(bid.getProduct().getProductImgList()).getProductImgUrl())
+                    .productName(bid.getProduct().getProductName())
+                    .bidPrice(bid.getBidPrice())
+                    .companyName(bid.getProduct().getCompany().getCompanyName())
+                    .gpbuyStartedAt(l.getGroupBuy().getGpbuyStartedAt())
+                    .gpbuyEndedAt(l.getGroupBuy().getGpbuyEndedAt())
+                    .build();
+            responseList.add(response);
+            System.out.println(response.toString());
+        }
+        return responseList;
     }
 }

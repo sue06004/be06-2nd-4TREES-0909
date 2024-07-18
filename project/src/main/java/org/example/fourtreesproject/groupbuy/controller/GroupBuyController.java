@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.common.BaseResponseStatus;
+import org.example.fourtreesproject.groupbuy.exception.customs.GroupBuyRegisterFailException;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
+import org.example.fourtreesproject.groupbuy.model.response.GroupBuyLikesListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
 import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
@@ -84,5 +86,15 @@ public class GroupBuyController {
             return new BaseResponse<>(BaseResponseStatus.GROUPBUY_LIKES_CREATE_FAIL);
         }
         return new BaseResponse();
+    }
+
+    //todo: list가 비어있으면 응답에서 result빼기
+    @Operation(summary = "관심 공구 목록 조회 api")
+    @GetMapping("/likes/list")
+    public BaseResponse likesList(
+            Long userIdx
+    ){
+        List<GroupBuyLikesListResponse> result = gpbuyService.likesList(userIdx);
+        return new BaseResponse(result);
     }
 }
