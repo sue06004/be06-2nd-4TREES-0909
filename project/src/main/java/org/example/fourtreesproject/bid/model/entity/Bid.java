@@ -52,11 +52,12 @@ public class Bid {
     public void updateBid(Product product, Integer price) {
         this.product = product;
         this.bidPrice = price;
-        this.bidModifiedAt = LocalDateTime.now();
     }
 
     public void updataStatus(String status) {
         this.bidStatus = status;
+        if(status.equals("수정")) this.bidModifiedAt = LocalDateTime.now();
+        else if(status.equals("삭제")) this.bidDeletedAt= LocalDateTime.now();
     }
 
 }
