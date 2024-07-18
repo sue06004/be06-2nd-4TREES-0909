@@ -1,6 +1,7 @@
 package org.example.fourtreesproject.bid.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fourtreesproject.bid.model.request.BidCancelRequest;
 import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
 import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
 import org.example.fourtreesproject.bid.service.BidService;
@@ -49,6 +50,17 @@ public class BidController {
         }
         Long userIdx = customUserDetails.getIdx();
         bidService.modify(userIdx, bidModifyRequest);
+        return new BaseResponse<>();
+    }
+
+    // TODO : 예외처리
+    @PostMapping("/cancel")
+    public BaseResponse<String> cancel(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody BidCancelRequest bidCancelRequest) {
+        if (customUserDetails == null) {
+            return new BaseResponse<>("사용자 인증 실패");
+        }
+        Long userIdx = customUserDetails.getIdx();
+        bidService.cancel(userIdx, bidCancelRequest);
         return new BaseResponse<>();
     }
 }

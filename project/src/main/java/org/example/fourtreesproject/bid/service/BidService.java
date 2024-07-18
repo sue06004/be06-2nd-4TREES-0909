@@ -2,6 +2,7 @@ package org.example.fourtreesproject.bid.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
+import org.example.fourtreesproject.bid.model.request.BidCancelRequest;
 import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
 import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
 import org.example.fourtreesproject.bid.model.response.BidMyListResponse;
@@ -134,6 +135,25 @@ public class BidService {
                 // 상품조회실패
             }
         }
+    }
 
+    // TODO : 예외처리
+    public void cancel(Long userIdx, BidCancelRequest bidCancelRequest) {
+        // 등록 상품 조회
+        Optional<Bid> resultBid = bidRepository.findById(bidCancelRequest.getBidIdx());
+        if(resultBid.isPresent()) {
+            Bid bid = resultBid.get();
+            if (bid.getProduct().getCompany().getUser().getIdx().equals(userIdx)) {
+                // 공구의 상태가 대기일때만 가능?
+                if(bid.getGroupBuy().getGpbuyStatus().equals("대기")) {
+                    bid.updataStatus("삭제");
+                    bidRepository.save(bid);
+                } else {
+                    // 공구 시작 -> 취소불가능
+                }
+            } else {
+                // 자신의 입찰인지 검증 실패
+            }
+        }
     }
 }
