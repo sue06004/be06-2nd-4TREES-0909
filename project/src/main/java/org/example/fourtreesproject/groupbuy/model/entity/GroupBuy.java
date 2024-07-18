@@ -47,11 +47,16 @@ public class GroupBuy {
     //내용
     @Column(nullable = false)
     private String gpbuyContent;
+
+    private LocalDateTime gpbuyBidEndedAt;
     //등록일시
     @Column(nullable = false)
     private LocalDateTime gpbuyRegedAt;
+    private LocalDateTime gpbuyStartedAt;
+    private LocalDateTime gpbuyEndedAt;
+    //최종 마감 일시(보류종료 시점)
+    private LocalDateTime gpbuyFinEndedAt;
     //입찰마감일시
-    private LocalDateTime gpbuyBidEndedAt;
     //공구상태
     @Column(nullable = false,length = 50)
     @Builder.Default
@@ -62,8 +67,7 @@ public class GroupBuy {
     //남은 수량
     @Column(nullable = false)
     private Integer gpbuyRemainQuantity;
-    //최종 마감 일시(보류종료 시점)
-    private LocalDateTime gpbuyFinEndedAt;
+
 
 
     public void updateStatus(String status){
@@ -72,6 +76,13 @@ public class GroupBuy {
 
     public void updateRemainQuantity(Integer orderQuantity){
         this.gpbuyRemainQuantity -= orderQuantity;
+    }
+
+    public void startGroupBuy(Integer deadline){
+        this.gpbuyStatus = "진행";
+        this.gpbuyStartedAt = LocalDateTime.now();
+        this.gpbuyEndedAt = LocalDateTime.now().plusDays(deadline);
+        this.gpbuyFinEndedAt = this.gpbuyEndedAt.plusDays(1);
     }
 
 

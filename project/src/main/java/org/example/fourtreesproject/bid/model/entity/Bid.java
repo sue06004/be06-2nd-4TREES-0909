@@ -47,4 +47,8 @@ public class Bid {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="gpbuy_idx")
     private GroupBuy groupBuy;
+
+    public void selectBid(){
+        this.bidSelect = true;
+    }
 }

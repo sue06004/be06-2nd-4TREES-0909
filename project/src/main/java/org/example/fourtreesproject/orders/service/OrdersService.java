@@ -6,6 +6,7 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.fourtreesproject.bid.model.entity.Bid;
@@ -20,7 +21,6 @@ import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.example.fourtreesproject.orders.repository.OrdersRepository;
 import org.example.fourtreesproject.product.repository.ProductRepository;
 import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
-import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
 import org.example.fourtreesproject.user.repository.UserDetailRepository;
@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.*;
@@ -47,26 +48,38 @@ public class OrdersService {
     private final UserRepository userRepository;
     private final UserDetailRepository userDetailRepository;
 
+    @Transactional
     public void registerOrder(Long userIdx, String impUid) throws IamportResponseException, IOException, RuntimeException {
+        // 1. 공구 상태 확인(대기 or 진행)
+        //- 대기이면 bid 선정 - 완
+        //- 진행으로 바꾸고 - 완
+        //- 시작시간 기록 - 완
+        //- 마감 시간, 보류 마감 시간 기록 - 완
+
+        //2. 공구 remain quantity 확인 - 완
+
         User user = userRepository.findById(userIdx).orElse(null);
-        if (user == null) {
-            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
-        }
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(impUid);
         Payment payment = iamportResponse.getResponse();
-
         BigDecimal amount = payment.getAmount();
+        if (user == null) {
+            refund(impUid, amount);
+            throw new InvalidUserException(USER_INFO_DETAIL_FAIL);
+        }
+
+
         String customData = payment.getCustomData();
         Gson gson = new Gson();
         Map<String, Object> data = gson.fromJson(customData, Map.class);
 
         Long bidIdx = (Double.valueOf(data.get("bidIdx").toString())).longValue();
-        Long couponIdx = null;
-        if (data.get("userCouponIdx") != null){
-            couponIdx = (Double.valueOf(data.get("userCouponIdx").toString())).longValue();
+        Long userCouponIdx = null;
+        if (data.get("userCouponIdx") != null) {
+            userCouponIdx = (Double.valueOf(data.get("userCouponIdx").toString())).longValue();
         }
         Integer orderQuantity = (Double.valueOf(data.get("orderQuantity").toString())).intValue();
         Integer usePoint = (Double.valueOf(data.get("usePoint").toString())).intValue();
+        Integer deadline = (Double.valueOf(data.get("deadline").toString())).intValue();
         String recipientName = data.get("recipientName").toString();
         String recipientAddress = data.get("recipientAddress").toString();
         Integer recipientPostCode = (Double.valueOf(data.get("recipientPostCode").toString())).intValue();
@@ -74,28 +87,47 @@ public class OrdersService {
 
         Bid bid = bidRepository.findById(bidIdx).orElse(null);
         if (bid == null) {
+            refund(impUid, amount);
             throw new InvalidOrderException(BID_INFO_FAIL);
+        }
+        GroupBuy groupBuy = bid.getGroupBuy();
+        if (groupBuy.getGpbuyRemainQuantity() < orderQuantity) { // 공구 수량 초과
+            refund(impUid, amount);
+            throw new InvalidOrderException(GROUPBUY_JOIN_FAIL_QUANTITY_OVER);
+        }
+        String gpbuyStatus = groupBuy.getGpbuyStatus();
+        if (gpbuyStatus.equals("대기")) {
+            groupBuy.startGroupBuy(deadline);
+            groupBuyRepository.save(groupBuy);
+            bid.selectBid();
+            bidRepository.save(bid);
+        } else if (!gpbuyStatus.equals("진행")) {
+            refund(impUid, amount);
+            throw new InvalidOrderException(GROUPBUY_JOIN_FAIL);
+        } else if (LocalDateTime.now().isAfter(groupBuy.getGpbuyEndedAt())) {
+            refund(impUid, amount);
+            throw new InvalidOrderException(GROUPBUY_RECRUITING_FAIL_DEADLINE);
         }
 
         UserDetail userDetail = user.getUserDetail();
         UserCoupon userCoupon = null;
-        Coupon coupon = null;
         Integer couponPrice = 0;
-        if (couponIdx != null){
-            userCoupon = userCouponRepository.findFirstByUserIdxAndCouponIdxAndCouponStatusTrueOrderByIdx(user.getIdx(), couponIdx).orElse(null);
-            if (userCoupon == null){
+        if (userCouponIdx != null) {
+            userCoupon = userCouponRepository.findFirstByIdxAndUserIdxAndCouponStatusTrueOrderByIdx(userCouponIdx, userIdx).orElse(null);
+            if (userCoupon == null) {
+                refund(impUid, amount);
                 throw new InvalidOrderException(COUPON_NOT_FOUND);
             }
-            coupon = userCoupon.getCoupon();
+            Coupon coupon = userCoupon.getCoupon();
             couponPrice = coupon.getCouponPrice();
         }
 
 
-        if (userDetail.getPoint() < usePoint){
+        if (userDetail.getPoint() < usePoint) {
+            refund(impUid, amount);
             throw new InvalidOrderException(USER_POINT_LACK);
         }
 
-        GroupBuy groupBuy = bid.getGroupBuy();
         if (bid.getBidPrice() * orderQuantity - usePoint - couponPrice == amount.intValue()) {
             Orders orders = Orders.builder()
                     .orderQuantity(orderQuantity)
@@ -113,7 +145,7 @@ public class OrdersService {
             ordersRepository.save(orders);
             groupBuy.updateRemainQuantity(orderQuantity);
             groupBuyRepository.save(groupBuy);
-            if (userCoupon != null){
+            if (userCoupon != null) {
                 userCoupon.useCoupon();
                 userCouponRepository.save(userCoupon);
             }
@@ -121,11 +153,15 @@ public class OrdersService {
             userDetailRepository.save(userDetail);
             log.info("결제 성공");
         } else {
-            CancelData cancelData = new CancelData(impUid, true, amount);
-            iamportClient.cancelPaymentByImpUid(cancelData);
-            log.info("결제 취소");
+            refund(impUid, amount);
             throw new InvalidOrderException(PAYMENT_FAIL);
         }
+    }
+
+    private void refund(String impUid, BigDecimal amount) throws IamportResponseException, IOException {
+        CancelData cancelData = new CancelData(impUid, true, amount);
+        iamportClient.cancelPaymentByImpUid(cancelData);
+        log.info("결제 취소");
     }
 
 }
