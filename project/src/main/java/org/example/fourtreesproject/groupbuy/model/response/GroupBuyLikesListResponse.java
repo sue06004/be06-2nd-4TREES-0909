@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class GroupBuyLikesListResponse {
     private Long gpbuyIdx;
     private Integer gpbuyQuantity;

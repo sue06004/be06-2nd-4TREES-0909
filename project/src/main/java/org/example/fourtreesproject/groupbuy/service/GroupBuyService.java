@@ -9,6 +9,7 @@ import org.example.fourtreesproject.groupbuy.model.entity.Category;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.entity.Likes;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
+import org.example.fourtreesproject.groupbuy.model.request.GroupBuySearchRequest;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyLikesListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
@@ -81,7 +82,6 @@ public class GroupBuyService {
 
     public List<RegisteredBidListResponse> findBidList(Long gpbuyIdx) {
         List<Bid> bidList = bidRepository.findAllByGpbuyIdx(gpbuyIdx);
-        System.out.println(bidList.get(0).getProduct().getProductName());
         List<RegisteredBidListResponse> responseList = new ArrayList<>();
         for (Bid bid: bidList){
             String productThumbnailImg = "";
@@ -196,8 +196,6 @@ public class GroupBuyService {
         Optional<GroupBuy> groupBuy = gpbuyRepository.findById(gpbuyIdx);
         Optional<User> user = userRepository.findById(userIdx);
         if (groupBuy.isPresent() && user.isPresent()){
-            System.out.println(gpbuyIdx);
-            System.out.println(userIdx);
             Optional<Likes> likes = likesRepository.findByGpbuyIdxAndUserIdx(gpbuyIdx, userIdx);
             if (likes.isEmpty()){
                 Likes newLikes = Likes.builder()
@@ -240,8 +238,43 @@ public class GroupBuyService {
                     .gpbuyEndedAt(l.getGroupBuy().getGpbuyEndedAt())
                     .build();
             responseList.add(response);
-            System.out.println(response.toString());
         }
+        return responseList;
+    }
+
+    public List<GroupBuyListResponse> search(GroupBuySearchRequest request) {
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), Sort.by(Sort.Direction.ASC, "gpbuy_remain_quantity"));
+        Slice<GroupBuy> result = gpbuyRepository.searchList(pageable, request);
+        List<GroupBuy> slicedResult = result.getContent();
+        List<GroupBuyListResponse> responseList = new ArrayList<>();
+        Product selectedProduct = null;
+        ProductImg selectedProductThumbnailImg = null;
+        Bid selectedBid = null;
+
+
+        for (GroupBuy g : slicedResult){
+            //선정된 상품 확인 (입찰 목록에서 선정 상태 확인)
+            for (Bid b: g.getBidList()){
+                if (isSelected(b)){
+                    selectedBid = b;
+                    selectedProduct = selectedBid.getProduct();
+                    selectedProductThumbnailImg = extractThumbnailImg(selectedProduct.getProductImgList());
+                    break;
+                }
+            }
+
+            GroupBuyListResponse response = GroupBuyListResponse.builder()
+                    .gpbuyIdx(g.getIdx())
+                    .gpbuyQuantity(g.getGpbuyQuantity())
+                    .gpbuyRemainQuantity(g.getGpbuyRemainQuantity())
+                    .productThumbnailImg(selectedProductThumbnailImg.getProductImgUrl())
+                    .productName(selectedProduct.getProductName())
+                    .bidPrice(selectedBid.getBidPrice())
+                    .companyName(selectedProduct.getCompany().getCompanyName())
+                    .build();
+            responseList.add(response);
+        }
+
         return responseList;
     }
 }

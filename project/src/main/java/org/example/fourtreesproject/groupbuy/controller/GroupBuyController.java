@@ -4,8 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.common.BaseResponseStatus;
-import org.example.fourtreesproject.groupbuy.exception.customs.GroupBuyRegisterFailException;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
+import org.example.fourtreesproject.groupbuy.model.request.GroupBuySearchRequest;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyLikesListResponse;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
@@ -97,4 +97,15 @@ public class GroupBuyController {
         List<GroupBuyLikesListResponse> result = gpbuyService.likesList(userIdx);
         return new BaseResponse(result);
     }
+
+    @Operation(summary = "공구 검색 api")
+    @GetMapping("/search")
+    public BaseResponse search(
+            GroupBuySearchRequest request
+    ){
+        List<GroupBuyListResponse> result = gpbuyService.search(request);
+
+        return new BaseResponse<>(result);
+    }
+
 }
