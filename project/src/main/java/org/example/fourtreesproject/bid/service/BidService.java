@@ -2,6 +2,7 @@ package org.example.fourtreesproject.bid.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
+import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
 import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
 import org.example.fourtreesproject.bid.model.response.BidMyListResponse;
 import org.example.fourtreesproject.bid.model.response.GpbuyWaitListResponse;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -106,5 +108,32 @@ public class BidService {
             gpbuyWaitListResponseList.add(gpbuyWaitListResponse);
         }
         return gpbuyWaitListResponseList;
+    }
+
+    // TODO : 예외처리
+    public void modify(Long userIdx, BidModifyRequest bidModifyRequest) {
+        // 등록 상품 조회
+        Optional<Bid> resultBid = bidRepository.findById(bidModifyRequest.getBidIdx());
+        if(resultBid.isPresent()) {
+            Bid bid = resultBid.get();
+            Optional<Product> resultProduct = productRepository.findById(bidModifyRequest.getProductIdx());
+            if(resultProduct.isPresent()) {
+                Product product = resultProduct.get();
+
+                // 자기 상품인지 검증
+                if(product.getCompany().getUser().getIdx().equals(userIdx)) {
+                    // update
+                    bid.updateBid(product, bidModifyRequest.getBidPrice());
+                    bid.updataStatus("수정");
+                    bidRepository.save(bid);
+                } else {
+                    // 본인 상품 아님
+                    System.out.println("자기상품아님");
+                }
+            } else {
+                // 상품조회실패
+            }
+        }
+
     }
 }
