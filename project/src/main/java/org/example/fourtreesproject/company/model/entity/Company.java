@@ -11,7 +11,7 @@ import org.example.fourtreesproject.user.model.entity.User;
 import java.util.List;
 
 @Entity
-@Table(name="company")
+@Table(name = "company")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
