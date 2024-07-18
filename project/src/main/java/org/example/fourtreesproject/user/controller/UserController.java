@@ -1,5 +1,6 @@
 package org.example.fourtreesproject.user.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.companyRegVerify.service.CompanyRegVerifyService;
@@ -26,6 +27,7 @@ public class UserController {
     private final EmailVerifyService emailVerifyService;
     private final CompanyRegVerifyService companyRegVerifyService;
 
+    @Operation(summary = "일반 유저 회원 가입 api")
     @PostMapping("/user/signup")
     public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) throws RuntimeException{
         String uuid = userService.sendEmail(userSignupRequest.getEmail());
@@ -37,6 +39,7 @@ public class UserController {
         return new BaseResponse<>();
     }
 
+    @Operation(summary = "업체 유저 회원 가입 api")
     @PostMapping("/seller/signup")
     public BaseResponse<String> sellerSignup(@RequestBody SellerSignupRequest sellerSignupRequest) throws RuntimeException {
         // 사업자등록번호 검증
@@ -53,6 +56,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "이메일 인증 api")
     @GetMapping("/user/verify")
     public BaseResponse<String> verify(String email, String uuid) throws RuntimeException{
         Boolean verify = emailVerifyService.verifyEmail(EmailVerifyDto.builder()
@@ -66,6 +70,7 @@ public class UserController {
         return new BaseResponse<>(USER_EMAIL_AUTH_FAIL);
     }
 
+    @Operation(summary = "배송지 등록 api")
     @PostMapping("/user/delivery/register")
     public BaseResponse<String> deliveryRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                  @RequestBody DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws RuntimeException{
@@ -76,6 +81,7 @@ public class UserController {
         return new BaseResponse<>();
     }
 
+    @Operation(summary = "일반 유저 상세 정보 조회 api")
     @GetMapping("/user/info/detail")
     public BaseResponse<UserInfoResponse> userInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws RuntimeException{
         if (customUserDetails == null){
@@ -85,6 +91,7 @@ public class UserController {
         return new BaseResponse<>(userInfoResponse);
     }
 
+    @Operation(summary = "업체 유저 상세 정보 조회 api")
     @GetMapping("/seller/info/detail")
     public BaseResponse<SellerInfoResponse> sellerInfoRead(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws RuntimeException{
         if (customUserDetails == null){
