@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BidRepository extends JpaRepository<Bid, Long> {
@@ -19,5 +20,7 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
             "JOIN FETCH c.user u " +
             "WHERE u.idx = :userIdx AND b.bidSelect = :bidSelect")
     List<Bid> findAllByUserIdxAndBidSelect(Long userIdx, Boolean bidSelect);
+
+    Optional<Bid> findByGroupBuyIdxAndBidSelectIsTrue(Long groupBuyIdx);
 
 }

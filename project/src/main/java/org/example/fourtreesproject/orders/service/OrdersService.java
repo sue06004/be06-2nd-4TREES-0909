@@ -18,18 +18,25 @@ import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
 import org.example.fourtreesproject.orders.exception.custom.InvalidOrderException;
 import org.example.fourtreesproject.orders.model.entity.Orders;
+import org.example.fourtreesproject.orders.model.response.OrdersListResponse;
 import org.example.fourtreesproject.orders.repository.OrdersRepository;
+import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.repository.ProductRepository;
 import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
 import org.example.fourtreesproject.user.repository.UserDetailRepository;
 import org.example.fourtreesproject.user.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.*;
@@ -162,6 +169,43 @@ public class OrdersService {
         CancelData cancelData = new CancelData(impUid, true, amount);
         iamportClient.cancelPaymentByImpUid(cancelData);
         log.info("결제 취소");
+    }
+
+    public List<OrdersListResponse> getOrderInfoList(Integer page, Integer size, Long userIdx) throws RuntimeException {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Orders> ordersList = ordersRepository.findByUserIdxAndOrderStatusOrderByOrderStartedAtDesc(pageable, userIdx, "주문");
+        List<OrdersListResponse> ordersListResponseList = new ArrayList<>();
+        for (Orders orders : ordersList) {
+            GroupBuy groupBuy = orders.getGroupBuy();
+
+            String groupBuyStatus = groupBuy.getGpbuyStatus();
+            if (groupBuyStatus.equals("진행") && LocalDateTime.now().isAfter(groupBuy.getGpbuyFinEndedAt())) {
+                groupBuyStatus = "실패";
+            } else if (groupBuyStatus.equals("진행") && LocalDateTime.now().isAfter(groupBuy.getGpbuyEndedAt()) &&
+                    LocalDateTime.now().isBefore(groupBuy.getGpbuyFinEndedAt())) {
+                groupBuyStatus = "보류";
+            }
+
+            String deliveryNumber = orders.getDeliveryNumber();
+            if (deliveryNumber == null) {
+                deliveryNumber = "-";
+            }
+
+            Bid bid = bidRepository.findByGroupBuyIdxAndBidSelectIsTrue(groupBuy.getIdx()).orElse(null);
+            if (bid == null) {
+                throw new InvalidOrderException(BID_INFO_FAIL);
+            }
+            Product product = bid.getProduct();
+
+            OrdersListResponse ordersListResponse = OrdersListResponse.builder()
+                    .groupBuyIdx(groupBuy.getIdx())
+                    .groupBuyStatus(groupBuyStatus)
+                    .deliveryNumber(deliveryNumber)
+                    .productName(product.getProductName())
+                    .build();
+            ordersListResponseList.add(ordersListResponse);
+        }
+        return ordersListResponseList;
     }
 
 }
