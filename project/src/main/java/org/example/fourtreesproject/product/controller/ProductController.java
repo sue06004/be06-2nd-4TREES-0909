@@ -27,7 +27,7 @@ public class ProductController {
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                          @RequestPart ProductRegisterRequest productInfo,
                                          @RequestPart MultipartFile[] images) {
-        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+        if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
         }
         List<String> ImgUrlList = fileUploadService.upload(images); //경로를 productImgList 반환하고
@@ -38,7 +38,7 @@ public class ProductController {
     //상품 조회
     @RequestMapping(method = RequestMethod.GET, value = "/mylist")
     public BaseResponse<List<ProductMylistResponse>> mylist(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+        if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL);
         }
         List<ProductMylistResponse> mylistResponse = productService.mylist(customUserDetails.getUser());

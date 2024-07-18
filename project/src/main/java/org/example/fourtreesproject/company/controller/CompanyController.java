@@ -24,7 +24,7 @@ public class CompanyController {
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                          @RequestBody CompanyRegisterRequest request) {
 
-        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+        if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
         }
 
@@ -53,7 +53,7 @@ public class CompanyController {
     //업체 정보 조회
     @RequestMapping(method = RequestMethod.GET, value = "/detail")
     public BaseResponse<CompanyDetailResponse> detail(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+        if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_DETAIL_FAIL);
         }
         CompanyDetailResponse detailResponse = companyService.detail(customUserDetails.getUser());
@@ -64,7 +64,7 @@ public class CompanyController {
     @RequestMapping(method = RequestMethod.POST, value = "/modify")
     public BaseResponse<String> modify(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                        @RequestBody CompanyModifyRequest request) {
-        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+        if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
         }
         companyService.modify(request, customUserDetails.getUser());

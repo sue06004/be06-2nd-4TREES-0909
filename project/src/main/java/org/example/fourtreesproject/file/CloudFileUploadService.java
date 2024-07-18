@@ -42,7 +42,6 @@ public class CloudFileUploadService implements FileUploadService {
             String uploadPath = makeFolder();
             try {
                 String fileName = uploadPath + "/" + UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
-                // 2024/07/17/fhdksfhuefhehfkzsdhfszjdfhszhf_도지민통장사본
                 amazonS3.putObject(bucketName, fileName, multipartFile.getInputStream(), metadata);
                 imgUrlList.add(amazonS3.getUrl(bucketName, fileName).toString());
 
