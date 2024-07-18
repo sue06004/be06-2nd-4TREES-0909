@@ -124,9 +124,13 @@ public class BidService {
                 // 자기 상품인지 검증
                 if(product.getCompany().getUser().getIdx().equals(userIdx)) {
                     // update
-                    bid.updateBid(product, bidModifyRequest.getBidPrice());
-                    bid.updataStatus("수정");
-                    bidRepository.save(bid);
+                    if(bid.getGroupBuy().getGpbuyStatus().equals("대기")) {
+                        bid.updateBid(product, bidModifyRequest.getBidPrice());
+                        bid.updataStatus("수정");
+                        bidRepository.save(bid);
+                    } else {
+                        // 공구 시작 -> 수정불가능
+                    }
                 } else {
                     // 본인 상품 아님
                     System.out.println("자기상품아님");
@@ -144,7 +148,6 @@ public class BidService {
         if(resultBid.isPresent()) {
             Bid bid = resultBid.get();
             if (bid.getProduct().getCompany().getUser().getIdx().equals(userIdx)) {
-                // 공구의 상태가 대기일때만 가능?
                 if(bid.getGroupBuy().getGpbuyStatus().equals("대기")) {
                     bid.updataStatus("삭제");
                     bidRepository.save(bid);
