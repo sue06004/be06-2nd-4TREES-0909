@@ -1,6 +1,5 @@
 package org.example.fourtreesproject.companyRegVerify.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.companyRegVerify.model.request.CompanyRegVerifyRequest;
@@ -18,6 +17,6 @@ public class CompanyRegVerifyController {
 
     @PostMapping("/verify")
     public BaseResponse verify(@RequestBody CompanyRegVerifyRequest companyRegVerifyRequest) {
-        return companyRegVerifyService.verify(companyRegVerifyRequest);
+        return companyRegVerifyService.validate(companyRegVerifyRequest);
     }
 }

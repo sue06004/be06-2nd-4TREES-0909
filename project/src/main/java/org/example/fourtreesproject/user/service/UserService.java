@@ -62,6 +62,7 @@ public class UserService {
     public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws Exception {
         User user = User.builder()
                 .type("inapp")
+                .role("ROLE_SELLER")
                 .email(sellerSignupRequest.getEmail())
                 .password(bCryptPasswordEncoder.encode(sellerSignupRequest.getPassword()))
                 .name(sellerSignupRequest.getName())
@@ -196,5 +197,4 @@ public class UserService {
                 .build();
 
     }
-
 }
