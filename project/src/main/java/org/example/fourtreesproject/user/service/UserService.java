@@ -124,7 +124,7 @@ public class UserService {
     }
 
     public UserInfoResponse getUserInfoDetail(Long userIdx) throws RuntimeException {
-        User user = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
+        User user = userRepository.findUserInfoDetail(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
         UserDetail userDetail = userDetailRepository.findByUserIdx(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
         List<DeliveryAddressResponse> deliveryAddressResponseList = getDeliveryAddressResponseList(user);
         List<CouponResponse> couponResponseList = getCouponResponseList(user);
