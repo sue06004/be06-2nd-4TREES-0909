@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.orders.model.entity.Orders;
 import org.example.fourtreesproject.user.model.entity.User;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +26,7 @@ public class GroupBuy {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_idx")
+    @BatchSize(size = 20)
     private Category category;
 
 
@@ -36,6 +38,7 @@ public class GroupBuy {
     private List<Likes> likesList;
 
     @OneToMany(mappedBy = "groupBuy")
+    @BatchSize(size = 20)
     private List<Bid> bidList;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "groupBuy")
