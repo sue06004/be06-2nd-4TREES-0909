@@ -1,5 +1,6 @@
 package org.example.fourtreesproject.product.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.file.FileUploadService;
@@ -22,7 +23,7 @@ public class ProductController {
     private final ProductService productService;
     private final FileUploadService fileUploadService;
 
-    //상품 등록
+    @Operation(summary = "상품 등록 api")
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                          @RequestPart ProductRegisterRequest productInfo,
@@ -35,7 +36,7 @@ public class ProductController {
         return new BaseResponse<>();
     }
 
-    //상품 조회
+    @Operation(summary = "등록 상품 조회 api")
     @RequestMapping(method = RequestMethod.GET, value = "/mylist")
     public BaseResponse<List<ProductMylistResponse>> mylist(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
