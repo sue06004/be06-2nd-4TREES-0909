@@ -7,7 +7,7 @@ import org.example.fourtreesproject.companyRegVerify.service.CompanyRegVerifySer
 import org.example.fourtreesproject.delivery.model.request.DeliveryAddressRegisterRequest;
 import org.example.fourtreesproject.emailVerify.model.dto.EmailVerifyDto;
 import org.example.fourtreesproject.emailVerify.service.EmailVerifyService;
-import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
+import org.example.fourtreesproject.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.request.SellerSignupRequest;
 import org.example.fourtreesproject.user.model.request.UserSignupRequest;

@@ -1,7 +1,6 @@
 package org.example.fourtreesproject.bid.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.fourtreesproject.bid.exception.customs.InvalidBidException;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.model.request.BidCancelRequest;
 import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
@@ -9,6 +8,7 @@ import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
 import org.example.fourtreesproject.bid.model.response.BidMyListResponse;
 import org.example.fourtreesproject.bid.model.response.GpbuyWaitListResponse;
 import org.example.fourtreesproject.bid.repository.BidRepository;
+import org.example.fourtreesproject.exception.custom.InvalidBidException;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
 import org.example.fourtreesproject.product.model.entity.Product;

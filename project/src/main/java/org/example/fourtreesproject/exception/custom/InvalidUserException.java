@@ -1,4 +1,4 @@
-package org.example.fourtreesproject.user.exception.custom;
+package org.example.fourtreesproject.exception.custom;
 
 import lombok.Getter;
 import org.example.fourtreesproject.common.BaseResponseStatus;

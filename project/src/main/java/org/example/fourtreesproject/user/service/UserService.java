@@ -9,7 +9,7 @@ import org.example.fourtreesproject.delivery.model.DeliveryAddress;
 import org.example.fourtreesproject.delivery.model.request.DeliveryAddressRegisterRequest;
 import org.example.fourtreesproject.delivery.model.response.DeliveryAddressResponse;
 import org.example.fourtreesproject.delivery.repository.DeliveryAddressRepository;
-import org.example.fourtreesproject.user.exception.custom.InvalidUserException;
+import org.example.fourtreesproject.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.user.model.entity.SellerDetail;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
