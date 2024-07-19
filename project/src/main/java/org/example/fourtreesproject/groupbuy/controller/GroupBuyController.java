@@ -127,9 +127,9 @@ public class GroupBuyController {
     @GetMapping("/cancle")
     public BaseResponse cancle(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            Long gpbuyIdx
+            Long ordersIdx
     ) throws IamportResponseException, IOException {
-        if (gpbuyService.cancle(customUserDetails.getIdx(), gpbuyIdx)){
+        if (gpbuyService.cancle(customUserDetails.getIdx(), ordersIdx)){
             return new BaseResponse();
         };
 

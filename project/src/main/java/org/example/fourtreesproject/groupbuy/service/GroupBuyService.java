@@ -117,7 +117,7 @@ public class GroupBuyService {
     }
 
     public List<GroupBuyListResponse> list(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "gpbuy_remain_quantity"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "idx"));
         Slice<GroupBuy> result = gpbuyRepository.findSliceByGpbuyStatus(pageable,"진행");
         List<GroupBuy> slicedResult = result.getContent();
         List<GroupBuyListResponse> responseList = new ArrayList<>();
@@ -298,8 +298,8 @@ public class GroupBuyService {
     }
 
     @Transactional
-    public Boolean cancle(Long userIdx, Long gpbuyIdx) throws IamportResponseException, IOException {
-        Optional<Orders> optionalOrders = ordersRepository.findByGroupBuyIdxAndUserIdx(gpbuyIdx,userIdx);
+    public Boolean cancle(Long userIdx, Long ordersIdx) throws IamportResponseException, IOException {
+        Optional<Orders> optionalOrders = ordersRepository.findByIdxAndUserIdx(ordersIdx,userIdx);
         if (optionalOrders.isPresent()){
             //주문 테이블 상태수정, 취소시간 기록
             Orders orders = optionalOrders.get();
@@ -308,8 +308,8 @@ public class GroupBuyService {
             ordersRepository.save(orders);
 
             //공구의 남은 수량 수정
-            GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).orElseThrow();
-            groupBuy.updateRemainQuantity(groupBuy.getGpbuyRemainQuantity()+orders.getOrderQuantity());
+            GroupBuy groupBuy = gpbuyRepository.findById(orders.getGroupBuy().getIdx()).orElseThrow();
+            groupBuy.cancleRemainQuantity(orders.getOrderQuantity());
             gpbuyRepository.save(groupBuy);
 
             //사용자 쿠폰과 포인트 복구
@@ -318,8 +318,10 @@ public class GroupBuyService {
             userDetailRepository.save(userDetail);
 
             UserCoupon userCoupon = orders.getUserCoupon();
-            userCoupon.cancleCoupon();
-            userCouponRepository.save(userCoupon);
+            if (userCoupon != null){
+                userCoupon.cancleCoupon();
+                userCouponRepository.save(userCoupon);
+            }
 
             //결제 취소 요청
             Bid bid = null;
