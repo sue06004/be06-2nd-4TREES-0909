@@ -26,7 +26,6 @@ public class GroupBuy {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_idx")
-    @BatchSize(size = 20)
     private Category category;
 
 
@@ -35,6 +34,7 @@ public class GroupBuy {
     private User user;
 
     @OneToMany(mappedBy = "groupBuy")
+    @BatchSize(size = 10)
     private List<Likes> likesList;
 
     @OneToMany(mappedBy = "groupBuy")
