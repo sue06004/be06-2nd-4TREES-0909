@@ -25,6 +25,8 @@ import org.example.fourtreesproject.orders.service.OrdersService;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.model.entity.ProductImg;
 import org.example.fourtreesproject.user.model.entity.User;
+import org.example.fourtreesproject.user.model.entity.UserDetail;
+import org.example.fourtreesproject.user.repository.UserDetailRepository;
 import org.example.fourtreesproject.user.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -53,6 +55,7 @@ public class GroupBuyService {
     private final OrdersRepository ordersRepository;
     private final UserCouponRepository userCouponRepository;
     private final OrdersService ordersService;
+    private final UserDetailRepository userDetailRepository;
 
     public boolean save(Long user_idx, GroupBuyCreateRequest request) {
         User user = userRepository.findById(user_idx).get();
@@ -310,9 +313,9 @@ public class GroupBuyService {
             gpbuyRepository.save(groupBuy);
 
             //사용자 쿠폰과 포인트 복구
-            User user = groupBuy.getUser();
-            user.getUserDetail().restorePoint(orders.getUsePoint());
-            userRepository.save(user);
+            UserDetail userDetail = userDetailRepository.findByUserIdx(userIdx).orElseThrow();
+            userDetail.restorePoint(orders.getUsePoint());
+            userDetailRepository.save(userDetail);
 
             UserCoupon userCoupon = orders.getUserCoupon();
             userCoupon.cancleCoupon();
