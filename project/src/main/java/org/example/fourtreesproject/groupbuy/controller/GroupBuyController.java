@@ -1,5 +1,6 @@
 package org.example.fourtreesproject.groupbuy.controller;
 
+import com.siot.IamportRestClient.exception.IamportResponseException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
@@ -15,6 +16,7 @@ import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.USER_NOT_LOGIN;
@@ -119,6 +121,20 @@ public class GroupBuyController {
         List<GroupBuyListResponse> result = gpbuyService.search(request);
 
         return new BaseResponse<>(result);
+    }
+
+    @Operation(summary = "공구 취소 api")
+    @GetMapping("/cancle")
+    public BaseResponse cancle(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            Long gpbuyIdx
+    ) throws IamportResponseException, IOException {
+        if (gpbuyService.cancle(customUserDetails.getIdx(), gpbuyIdx)){
+            return new BaseResponse();
+        };
+
+        //Todo: 캔슬 리스폰스 작성
+        return new BaseResponse();
     }
 
 }

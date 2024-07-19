@@ -71,4 +71,11 @@ public class Orders {
     @JoinColumn(name = "user_coupon_idx")
     private UserCoupon userCoupon;
 
+    public void updateCancledAt(LocalDateTime dateTime){
+        this.orderCancledAt = dateTime;
+    }
+
+    public void updateOrderStatus(String status){
+        this.orderStatus = status;
+    }
 }

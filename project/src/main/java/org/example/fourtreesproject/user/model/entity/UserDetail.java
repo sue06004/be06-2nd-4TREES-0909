@@ -26,5 +26,8 @@ public class UserDetail {
     public void updatePoint(Integer usePoint){
         this.point -= usePoint;
     }
+    public void restorePoint(Integer usedPoint){
+        this.point += usedPoint;
+    }
 
 }

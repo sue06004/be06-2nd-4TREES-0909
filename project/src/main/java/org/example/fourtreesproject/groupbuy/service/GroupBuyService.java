@@ -1,9 +1,12 @@
 package org.example.fourtreesproject.groupbuy.service;
 
 
+import com.siot.IamportRestClient.exception.IamportResponseException;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.repository.BidRepository;
+import org.example.fourtreesproject.coupon.model.UserCoupon;
+import org.example.fourtreesproject.coupon.repository.UserCouponRepository;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.entity.Likes;
@@ -16,6 +19,9 @@ import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListRes
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
 import org.example.fourtreesproject.groupbuy.repository.LikesRepository;
+import org.example.fourtreesproject.orders.model.entity.Orders;
+import org.example.fourtreesproject.orders.repository.OrdersRepository;
+import org.example.fourtreesproject.orders.service.OrdersService;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.model.entity.ProductImg;
 import org.example.fourtreesproject.user.model.entity.User;
@@ -25,7 +31,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +50,9 @@ public class GroupBuyService {
     private final CategoryRepository categoryRepository;
     private final BidRepository bidRepository;
     private final LikesRepository likesRepository;
+    private final OrdersRepository ordersRepository;
+    private final UserCouponRepository userCouponRepository;
+    private final OrdersService ordersService;
 
     public boolean save(Long user_idx, GroupBuyCreateRequest request) {
         User user = userRepository.findById(user_idx).get();
@@ -282,6 +294,47 @@ public class GroupBuyService {
         return null;
     }
 
+    @Transactional
+    public Boolean cancle(Long userIdx, Long gpbuyIdx) throws IamportResponseException, IOException {
+        Optional<Orders> optionalOrders = ordersRepository.findByGroupBuyIdxAndUserIdx(gpbuyIdx,userIdx);
+        if (optionalOrders.isPresent()){
+            //주문 테이블 상태수정, 취소시간 기록
+            Orders orders = optionalOrders.get();
+            orders.updateCancledAt(LocalDateTime.now());
+            orders.updateOrderStatus("취소");
+            ordersRepository.save(orders);
+
+            //공구의 남은 수량 수정
+            GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).orElseThrow();
+            groupBuy.updateRemainQuantity(groupBuy.getGpbuyRemainQuantity()+orders.getOrderQuantity());
+            gpbuyRepository.save(groupBuy);
+
+            //사용자 쿠폰과 포인트 복구
+            User user = groupBuy.getUser();
+            user.getUserDetail().restorePoint(orders.getUsePoint());
+            userRepository.save(user);
+
+            UserCoupon userCoupon = orders.getUserCoupon();
+            userCoupon.cancleCoupon();
+            userCouponRepository.save(userCoupon);
+
+            //결제 취소 요청
+            Bid bid = null;
+            for (Bid b: groupBuy.getBidList()){
+                if (isSelected(b)){
+                    bid = b;
+                    break;
+                }
+            }
+            BigDecimal amount = new BigDecimal(orders.getOrderQuantity()*bid.getBidPrice());
+            ordersService.refund(orders.getImpUid(), amount);
+
+            return true;
+        }
+        return false;
+    }
+
+
     public String calcDuration(LocalDateTime gpbuyEndedAt){
         //현재 시간과 마감기한의 차이를 구함
         Duration duration = Duration.between(LocalDateTime.now(), gpbuyEndedAt);
@@ -294,4 +347,6 @@ public class GroupBuyService {
         return String.format("%dT%02d:%02d:%02d",
                 days, hours, minutes, seconds);
     }
+
+
 }
