@@ -55,6 +55,10 @@ public class BidService {
         List<BidMyListResponse> bidMyListResponses = new ArrayList<>();
         for(Bid bid : bidResults) {
             BidMyListResponse bidMyListResponse = BidMyListResponse.builder()
+                    .bidIdx(bid.getIdx())
+                    .gpbuyIdx(bid.getGroupBuy().getIdx())
+                    .gpbuyTitle(bid.getGroupBuy().getGpbuyTitle())
+                    .gpbuyStatus(bid.getGroupBuy().getGpbuyStatus())
                     .productName(bid.getProduct().getProductName())
                     .productImgUrl(bid.getProduct().getProductImgList().stream()
                             .filter(img -> img.getProductImgSequence() == 0)

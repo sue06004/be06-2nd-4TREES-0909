@@ -18,6 +18,9 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
             "JOIN FETCH b.product p " +
             "JOIN FETCH p.company c " +
             "JOIN FETCH c.user u " +
+            "JOIN FETCH b.groupBuy g " +
+            "JOIN FETCH p.productImgList pi " +
+
             "WHERE u.idx = :userIdx AND b.bidSelect = :bidSelect")
     List<Bid> findAllByUserIdxAndBidSelect(Long userIdx, Boolean bidSelect);
 
