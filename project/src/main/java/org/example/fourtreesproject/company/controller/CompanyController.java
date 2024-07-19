@@ -15,7 +15,6 @@ import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin("*")
 @RequestMapping("/company")
 public class CompanyController {
     private final CompanyService companyService;
