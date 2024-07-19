@@ -31,12 +31,13 @@ public class BidController {
 
     @GetMapping("/mylist")
     public BaseResponse<String> myList(@AuthenticationPrincipal CustomUserDetails customUserDetails, Boolean bidSelect) {
+        if (customUserDetails == null) throw new InvalidBidException(USER_AUTHENTICATION_FAILED);
         Long userIdx = customUserDetails.getIdx();
         return new BaseResponse(bidService.myList(userIdx, bidSelect));
     }
 
     @GetMapping("/gpbuy/status-wait/list")
-    public BaseResponse<String> gpbuyWaitList(Integer page, Integer size, @PathVariable @Min(1) Long categoryIdx, String gpbuyTitle) {
+    public BaseResponse<String> gpbuyWaitList(Integer page, Integer size, Long categoryIdx, String gpbuyTitle) {
         return new BaseResponse(bidService.statusWaitList(page, size, categoryIdx, gpbuyTitle));
     }
 
