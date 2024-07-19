@@ -29,9 +29,6 @@ public class UserCoupon {
     @ManyToOne
     private Coupon coupon;
 
-    @OneToOne(mappedBy = "userCoupon", fetch = FetchType.LAZY)
-    private Orders orders;
-
     public void useCoupon(){
         this.couponStatus = false;
     }

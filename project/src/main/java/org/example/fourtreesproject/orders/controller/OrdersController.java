@@ -43,9 +43,8 @@ public class OrdersController {
 
     @Operation(summary = "주문 페이지 정보 조회 api")
     @GetMapping("/page")
-    public BaseResponse<OrderPageResponse> getOrderPageInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                            Long orderIdx) throws RuntimeException {
-        OrderPageResponse orderPageResponse = ordersService.loadOrderPage(customUserDetails.getIdx(), orderIdx);
+    public BaseResponse<OrderPageResponse> getOrderPageInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws RuntimeException {
+        OrderPageResponse orderPageResponse = ordersService.loadOrderPage(customUserDetails.getIdx());
         return new BaseResponse<>(orderPageResponse);
     }
 }

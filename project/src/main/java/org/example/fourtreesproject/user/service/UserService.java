@@ -124,8 +124,8 @@ public class UserService {
     }
 
     public UserInfoResponse getUserInfoDetail(Long userIdx) throws RuntimeException {
-        User user = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
-        UserDetail userDetails = user.getUserDetail();
+        User user = userRepository.findUserInfoDetail(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
+        UserDetail userDetail = userDetailRepository.findByUserIdx(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
         List<DeliveryAddressResponse> deliveryAddressResponseList = getDeliveryAddressResponseList(user);
         List<CouponResponse> couponResponseList = getCouponResponseList(user);
         return UserInfoResponse.builder()
@@ -138,14 +138,14 @@ public class UserService {
                 .phoneNumber(user.getPhoneNumber())
                 .deliveryAddressList(deliveryAddressResponseList)
                 .couponList(couponResponseList)
-                .userPoint(userDetails.getPoint())
+                .userPoint(userDetail.getPoint())
                 .build();
     }
 
     private List<CouponResponse> getCouponResponseList(User user) {
         List<CouponResponse> couponResponseList = new ArrayList<>();
         for (UserCoupon userCoupon : user.getUserCouponList()) {
-            if(!userCoupon.getCouponStatus()){
+            if (!userCoupon.getCouponStatus()) {
                 continue;
             }
             Coupon coupon = userCoupon.getCoupon();
@@ -177,7 +177,8 @@ public class UserService {
 
     public SellerInfoResponse getSellerInfoDetail(Long userIdx) throws RuntimeException {
         User seller = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
-        SellerDetail sellerDetail = seller.getSellerDetail();
+        SellerDetail sellerDetail = sellerDetailRepository.findByUserIdx(seller.getIdx()).orElseThrow(() -> new InvalidUserException(USER_INFO_DETAIL_FAIL));
+//        SellerDetail sellerDetail = seller.getSellerDetail();
         return SellerInfoResponse.builder()
                 .address(seller.getAddress())
                 .postCode(seller.getPostCode())

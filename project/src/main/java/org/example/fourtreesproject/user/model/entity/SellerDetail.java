@@ -31,6 +31,6 @@ public class SellerDetail {
     private String sellerMosNum;     // 통신판매업신고번호
     private LocalDate sellerOpenedAt;  // 개업일자
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     private User user;
 }
