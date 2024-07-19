@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.company.model.entity.Company;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

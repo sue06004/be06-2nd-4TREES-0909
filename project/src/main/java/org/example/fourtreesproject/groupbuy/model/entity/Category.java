@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.fourtreesproject.product.model.entity.Product;
+import org.hibernate.annotations.BatchSize;
 
 import java.util.List;
 
