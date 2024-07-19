@@ -84,6 +84,10 @@ public class GroupBuy {
         this.gpbuyRemainQuantity -= orderQuantity;
     }
 
+    public void cancleRemainQuantity(Integer orderQuantity){
+        this.gpbuyRemainQuantity += orderQuantity;
+    }
+
     public void startGroupBuy(Integer deadline){
         this.gpbuyStatus = "진행";
         this.gpbuyStartedAt = LocalDateTime.now();
