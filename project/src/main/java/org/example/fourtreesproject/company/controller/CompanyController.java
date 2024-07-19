@@ -1,5 +1,6 @@
 package org.example.fourtreesproject.company.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.company.model.request.CompanyModifyRequest;
@@ -19,7 +20,7 @@ import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 public class CompanyController {
     private final CompanyService companyService;
 
-    //업체 정보 등록
+    @Operation(summary = "업체 정보 등록 api")
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                          @RequestBody CompanyRegisterRequest request) {
@@ -50,7 +51,7 @@ public class CompanyController {
     }
 
 
-    //업체 정보 조회
+    @Operation(summary = "업체 정보 조회 api")
     @RequestMapping(method = RequestMethod.GET, value = "/detail")
     public BaseResponse<CompanyDetailResponse> detail(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
@@ -59,8 +60,8 @@ public class CompanyController {
         CompanyDetailResponse detailResponse = companyService.detail(customUserDetails.getUser());
         return new BaseResponse<>(detailResponse);
     }
-
-    // 업체 정보 수정
+    
+    @Operation(summary = "업체 정보 수정 api")
     @RequestMapping(method = RequestMethod.POST, value = "/modify")
     public BaseResponse<String> modify(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                        @RequestBody CompanyModifyRequest request) {
