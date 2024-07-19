@@ -24,7 +24,7 @@ public class CompanyController {
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                          @RequestBody CompanyRegisterRequest request) {
 
-        if (!customUserDetails.getUser().getRole().equals("ROLE_USER")) {
+        if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
         }
 

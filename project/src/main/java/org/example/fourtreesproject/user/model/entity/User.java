@@ -79,4 +79,5 @@ public class User {
     public void updateStatus(String status) {
         this.status = status;
     }
+
 }

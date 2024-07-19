@@ -35,4 +35,7 @@ public class UserCoupon {
     public void useCoupon(){
         this.couponStatus = false;
     }
+    public void cancleCoupon(){
+        this.couponStatus = true;
+    }
 }

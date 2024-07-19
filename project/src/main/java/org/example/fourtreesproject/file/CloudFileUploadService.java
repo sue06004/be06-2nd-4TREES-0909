@@ -21,6 +21,9 @@ public class CloudFileUploadService implements FileUploadService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
 
     public String makeFolder() {
         String folderPath = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
@@ -44,7 +47,7 @@ public class CloudFileUploadService implements FileUploadService {
                 String fileName = uploadPath + "/" + UUID.randomUUID() + "_" + multipartFile.getOriginalFilename();
                 // 2024/07/17/fhdksfhuefhehfkzsdhfszjdfhszhf_도지민통장사본
                 amazonS3.putObject(bucketName, fileName, multipartFile.getInputStream(), metadata);
-                imgUrlList.add(amazonS3.getUrl(bucketName, fileName).toString());
+                imgUrlList.add(String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName));
 
             } catch (IOException e) {
                 throw new RuntimeException(e);

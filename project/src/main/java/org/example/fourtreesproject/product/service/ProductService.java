@@ -58,6 +58,7 @@ public class ProductService {
         for (int i = 0; i < productList.size(); i++) {
             Product product = productList.get(i);
             List<ProductImg> productImgList = product.getProductImgList();
+            System.out.println(productImgList.get(0).getProductImgUrl());
             List<ProductImgResponse> productImgResponseList = new ArrayList<>(); //한 상품의 이미지들 넣음
             for (ProductImg productImg : productImgList) {
                 ProductImgResponse productImgResponse = ProductImgResponse.builder()

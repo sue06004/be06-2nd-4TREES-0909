@@ -169,7 +169,7 @@ public class OrdersService {
         }
     }
 
-    private void refund(String impUid, BigDecimal amount) throws IamportResponseException, IOException {
+    public void refund(String impUid, BigDecimal amount) throws IamportResponseException, IOException {
         CancelData cancelData = new CancelData(impUid, true, amount);
         iamportClient.cancelPaymentByImpUid(cancelData);
         log.info("결제 취소");

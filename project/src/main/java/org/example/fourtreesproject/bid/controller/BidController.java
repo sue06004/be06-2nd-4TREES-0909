@@ -36,7 +36,7 @@ public class BidController {
     }
 
     @GetMapping("/gpbuy/status-wait/list")
-    public BaseResponse<String> gpbuyWaitList(Integer page, Integer size, @PathVariable @Min(1) Long categoryIdx, String gpbuyTitle) {
+    public BaseResponse<String> gpbuyWaitList(Integer page, Integer size, Long categoryIdx, String gpbuyTitle) {
         return new BaseResponse(bidService.statusWaitList(page, size, categoryIdx, gpbuyTitle));
     }
 
