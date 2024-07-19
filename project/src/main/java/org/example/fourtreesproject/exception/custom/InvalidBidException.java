@@ -1,4 +1,4 @@
-package org.example.fourtreesproject.bid.exception.customs;
+package org.example.fourtreesproject.exception.custom;
 
 
 import lombok.Getter;
