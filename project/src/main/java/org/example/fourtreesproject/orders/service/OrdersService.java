@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.repository.BidRepository;
+import org.example.fourtreesproject.common.annotation.Timer;
 import org.example.fourtreesproject.coupon.model.Coupon;
 import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.coupon.repository.UserCouponRepository;
@@ -173,6 +174,7 @@ public class OrdersService {
         log.info("결제 취소");
     }
 
+    @Timer
     public List<OrdersListResponse> getOrderInfoList(Integer page, Integer size, Long userIdx) throws RuntimeException {
         Pageable pageable = PageRequest.of(page, size);
         Slice<OrdersListResponse> ordersListResponseSlice = ordersRepository.findMyOrders(pageable, userIdx, "주문");
