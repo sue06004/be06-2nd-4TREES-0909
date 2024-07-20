@@ -117,7 +117,7 @@ public class GroupBuyService {
     }
 
     public List<GroupBuyListResponse> list(Integer page, Integer size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "gpbuy_remain_quantity"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "idx"));
         Slice<GroupBuy> result = gpbuyRepository.findSliceByGpbuyStatus(pageable,"진행");
         List<GroupBuy> slicedResult = result.getContent();
         List<GroupBuyListResponse> responseList = new ArrayList<>();
