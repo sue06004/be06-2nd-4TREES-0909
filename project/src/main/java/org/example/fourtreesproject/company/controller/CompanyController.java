@@ -22,7 +22,7 @@ public class CompanyController {
     @Operation(summary = "업체 정보 등록 api")
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                         @RequestBody CompanyRegisterRequest request) {
+                                         @RequestBody CompanyRegisterRequest request) throws RuntimeException{
 
         if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리

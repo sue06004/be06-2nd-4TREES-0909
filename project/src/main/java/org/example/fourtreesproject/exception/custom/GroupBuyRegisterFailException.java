@@ -1,5 +1,10 @@
 package org.example.fourtreesproject.exception.custom;
 
-public class GroupBuyRegisterFailException extends RuntimeException{
+import org.example.fourtreesproject.common.BaseResponseStatus;
 
+public class GroupBuyRegisterFailException extends InvalidCustomException{
+
+    public GroupBuyRegisterFailException(BaseResponseStatus status) {
+        super(status);
+    }
 }
