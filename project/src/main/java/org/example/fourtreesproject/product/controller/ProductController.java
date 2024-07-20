@@ -8,6 +8,7 @@ import org.example.fourtreesproject.product.model.request.ProductRegisterRequest
 import org.example.fourtreesproject.product.model.response.ProductMylistResponse;
 import org.example.fourtreesproject.product.service.ProductService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +25,7 @@ public class ProductController {
     private final FileUploadService fileUploadService;
 
     @Operation(summary = "상품 등록 api")
-    @RequestMapping(method = RequestMethod.POST, value = "/register")
+    @RequestMapping(method = RequestMethod.POST, value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                          @RequestPart ProductRegisterRequest productInfo,
                                          @RequestPart MultipartFile[] images) {
