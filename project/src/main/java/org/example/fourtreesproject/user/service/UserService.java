@@ -62,7 +62,7 @@ public class UserService {
         userDetailRepository.save(userDetail);
     }
 
-    private void checkDuplicateEmail(String email) {
+    private void checkDuplicateEmail(String email) throws RuntimeException{
         User existingUser = userRepository.findByEmail(email).orElse(null);
         if (existingUser != null) {
             throw new InvalidUserException(USER_REGISTER_FAIL_EMAIL_DUPLICATION);

@@ -30,8 +30,8 @@ public class UserController {
     @Operation(summary = "일반 유저 회원 가입 api")
     @PostMapping("/user/signup")
     public BaseResponse<String> signup(@RequestBody UserSignupRequest userSignupRequest) throws RuntimeException{
-        String uuid = userService.sendEmail(userSignupRequest.getEmail());
         userService.signup(userSignupRequest);
+        String uuid = userService.sendEmail(userSignupRequest.getEmail());
         emailVerifyService.save(EmailVerifyDto.builder()
                 .email(userSignupRequest.getEmail())
                 .uuid(uuid)
