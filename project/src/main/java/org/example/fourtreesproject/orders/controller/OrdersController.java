@@ -29,19 +29,21 @@ public class OrdersController {
     public BaseResponse<String> orderRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                               String impUid) throws IamportResponseException, IOException, RuntimeException {
 
-        ordersService.registerOrder(customUserDetails.getIdx(),impUid);
+        ordersService.registerOrder(customUserDetails.getIdx(), impUid);
         return new BaseResponse<>();
     }
 
-    @Operation(summary = "자신의 주문 정보 조회 api")
+    @Operation(summary = "자신의 주문 정보 조회 api",
+            description = "일반 회원이 결제 완료된 공구에 대해서 현재 상태를 조회")
     @GetMapping("/info/list")
     public BaseResponse<List<OrdersListResponse>> readOrderInfoList(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                                                   Integer page, Integer size) throws RuntimeException {
+                                                                    Integer page, Integer size) throws RuntimeException {
         List<OrdersListResponse> orderInfoList = ordersService.getOrderInfoList(page, size, customUserDetails.getIdx());
         return new BaseResponse<>(orderInfoList);
     }
 
-    @Operation(summary = "주문 페이지 정보 조회 api")
+    @Operation(summary = "주문 페이지 정보 조회 api",
+            description = "회원이 주문 페이지에서 사용할 배송지 정보, 쿠폰 정보, 포인트를 반환")
     @GetMapping("/page")
     public BaseResponse<OrderPageResponse> getOrderPageInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws RuntimeException {
         OrderPageResponse orderPageResponse = ordersService.loadOrderPage(customUserDetails.getIdx());
