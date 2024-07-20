@@ -176,11 +176,7 @@ public class OrdersService {
     public List<OrdersListResponse> getOrderInfoList(Integer page, Integer size, Long userIdx) throws RuntimeException {
         Pageable pageable = PageRequest.of(page, size);
         Slice<OrdersListResponse> ordersListResponseSlice = ordersRepository.findMyOrders(pageable, userIdx, "주문");
-        List<OrdersListResponse> ordersListResponseList = new ArrayList<>();
-        for(OrdersListResponse ordersListResponse : ordersListResponseSlice){
-            ordersListResponseList.add(ordersListResponse);
-        }
-        return ordersListResponseList;
+        return ordersListResponseSlice.stream().toList();
     }
 
     public OrderPageResponse loadOrderPage(Long userIdx) throws RuntimeException {
