@@ -1,7 +1,9 @@
 package org.example.fourtreesproject.product.service;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fourtreesproject.company.model.entity.Company;
 import org.example.fourtreesproject.company.repository.CompanyRepository;
+import org.example.fourtreesproject.exception.custom.InvalidCompanyException;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
 import org.example.fourtreesproject.product.model.entity.Product;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.example.fourtreesproject.common.BaseResponseStatus.COMPANY_REGIST_DETAIL_FAIL;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +55,8 @@ public class ProductService {
 
     // 상품 전체 조회
     public List<ProductMylistResponse> mylist(User user) {
-
-        List<Product> productList = productRepository.findByCompanyIdx(user.getIdx());
+        Company company = companyRepository.findByUserIdx(user.getIdx()).orElseThrow(() -> new InvalidCompanyException(COMPANY_REGIST_DETAIL_FAIL));
+        List<Product> productList = productRepository.findByCompanyIdx(company.getIdx());
         List<ProductMylistResponse> responseList = new ArrayList<>();
 
         for (int i = 0; i < productList.size(); i++) {
