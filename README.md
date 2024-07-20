@@ -22,7 +22,7 @@
 
 <br/><br/>
 ## 📌Sequence Diagram
-
+<a href="https://github.com/beyond-sw-camp/be06-2nd-4TREES-0909/wiki/%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5-%EC%8B%9C%ED%80%80%EC%8A%A4-%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8">시퀀스 다이어그램 위키</a>
 <br/><br/>
 ## 📌Entity Relationship Diagram (ERD)
 ![0909](https://github.com/user-attachments/assets/5c04ff50-2d2d-4af2-b946-d77cc9f6395a)
