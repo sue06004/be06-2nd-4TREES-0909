@@ -11,6 +11,7 @@ import org.example.fourtreesproject.coupon.model.Coupon;
 import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.user.model.entity.User;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
