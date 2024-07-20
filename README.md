@@ -38,8 +38,17 @@
 ### OS
 <img src="https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black"/> <img src="https://img.shields.io/badge/Vmware-607078?style=flat&logo=Vmware&logoColor=white"/>  <img src="https://img.shields.io/badge/CentOS-262577?style=flat&logo=CentOS&logoColor=white"/>
 
+### BACKEND
+<img src="https://img.shields.io/badge/SpringBoot-6DB33F?style=flat&logo=SpringBoot&logoColor=white"/>
+<img src="https://img.shields.io/badge/S3-569A31?style=flat&logo=amazons3&logoColor=white"/>
+<img src="https://img.shields.io/badge/EC2-FF9900?style=flat&logo=amazonec2&logoColor=white"/>
+<img src="https://img.shields.io/badge/Java-F344CB7?style=flat-plastic&logo=Java&logoColor=white"/></a>
+<img src="https://img.shields.io/badge/JPA-F37143?style=flat-plastic&logo=JPA&logoColor=white"/></a>
+<img src="https://img.shields.io/badge/GRADLE-02303A?style=flat-plastic&logo=gradle&logoColor=white"/></a>
+
 ### DB
 <img src="https://img.shields.io/badge/MariaDB-003545?style=flat&logo=MariaDB&logoColor=white"/>
+<img src="https://img.shields.io/badge/RDS-527FFF?style=flat&logo=RDS&logoColor=white"/>
 
 ### Load Balancer
 <img src="https://img.shields.io/badge/HAPROXY-blue?style=flat&logo=googlepubsub&logoColor=white"/>
