@@ -80,6 +80,7 @@ public class ProductService {
                     .build();
 
             ProductMylistResponse mylistResponse = ProductMylistResponse.builder()
+                    .productIdx(product.getIdx())
                     .productName(productList.get(i).getProductName())
                     .productContent(productList.get(i).getProductContent())
                     .category(productCategoryResponse)
