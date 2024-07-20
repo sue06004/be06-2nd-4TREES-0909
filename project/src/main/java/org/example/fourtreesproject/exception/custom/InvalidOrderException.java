@@ -1,13 +1,10 @@
 package org.example.fourtreesproject.exception.custom;
 
-import lombok.Getter;
 import org.example.fourtreesproject.common.BaseResponseStatus;
 
-@Getter
-public class InvalidOrderException extends RuntimeException {
-    private final BaseResponseStatus status;
+public class InvalidOrderException extends InvalidCustomException {
 
     public InvalidOrderException(BaseResponseStatus status) {
-        this.status = status;
+        super(status);
     }
 }

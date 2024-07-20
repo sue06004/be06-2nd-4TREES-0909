@@ -6,8 +6,11 @@ import org.example.fourtreesproject.company.model.request.CompanyModifyRequest;
 import org.example.fourtreesproject.company.model.request.CompanyRegisterRequest;
 import org.example.fourtreesproject.company.model.response.CompanyDetailResponse;
 import org.example.fourtreesproject.company.repository.CompanyRepository;
+import org.example.fourtreesproject.exception.custom.InvalidCompanyException;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.springframework.stereotype.Service;
+
+import static org.example.fourtreesproject.common.BaseResponseStatus.COMPANY_REGIST_FAIL;
 
 @Service
 @RequiredArgsConstructor
@@ -15,8 +18,10 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
 
     //업체 정보 등록
-    public void register(CompanyRegisterRequest request, User user) {
-
+    public void register(CompanyRegisterRequest request, User user) throws RuntimeException{
+        if (companyRepository.findByUserIdx(user.getIdx()).isPresent()){
+            throw new InvalidCompanyException(COMPANY_REGIST_FAIL);
+        }
         Company registCompany = Company.builder()
                 .user(user)
                 .companyName(request.getCompanyName())
