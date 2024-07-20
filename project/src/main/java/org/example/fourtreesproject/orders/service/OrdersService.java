@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.repository.BidRepository;
+import org.example.fourtreesproject.common.annotation.Timer;
 import org.example.fourtreesproject.coupon.model.Coupon;
 import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.coupon.repository.UserCouponRepository;
@@ -173,41 +174,11 @@ public class OrdersService {
         log.info("결제 취소");
     }
 
+    @Timer
     public List<OrdersListResponse> getOrderInfoList(Integer page, Integer size, Long userIdx) throws RuntimeException {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<Orders> ordersList = ordersRepository.findByUserIdxAndOrderStatusOrderByOrderStartedAtDesc(pageable, userIdx, "주문");
-        List<OrdersListResponse> ordersListResponseList = new ArrayList<>();
-        for (Orders orders : ordersList) {
-            GroupBuy groupBuy = orders.getGroupBuy();
-
-            String groupBuyStatus = groupBuy.getGpbuyStatus();
-            if (groupBuyStatus.equals("진행") && LocalDateTime.now().isAfter(groupBuy.getGpbuyFinEndedAt())) {
-                groupBuyStatus = "실패";
-            } else if (groupBuyStatus.equals("진행") && LocalDateTime.now().isAfter(groupBuy.getGpbuyEndedAt()) &&
-                    LocalDateTime.now().isBefore(groupBuy.getGpbuyFinEndedAt())) {
-                groupBuyStatus = "보류";
-            }
-
-            String deliveryNumber = orders.getDeliveryNumber();
-            if (deliveryNumber == null) {
-                deliveryNumber = "-";
-            }
-
-            Bid bid = bidRepository.findByGroupBuyIdxAndBidSelectIsTrue(groupBuy.getIdx()).orElse(null);
-            if (bid == null) {
-                throw new InvalidOrderException(BID_INFO_FAIL);
-            }
-            Product product = bid.getProduct();
-
-            OrdersListResponse ordersListResponse = OrdersListResponse.builder()
-                    .groupBuyIdx(groupBuy.getIdx())
-                    .groupBuyStatus(groupBuyStatus)
-                    .deliveryNumber(deliveryNumber)
-                    .productName(product.getProductName())
-                    .build();
-            ordersListResponseList.add(ordersListResponse);
-        }
-        return ordersListResponseList;
+        Slice<OrdersListResponse> ordersListResponseSlice = ordersRepository.findMyOrders(pageable, userIdx, "주문");
+        return ordersListResponseSlice.stream().toList();
     }
 
     public OrderPageResponse loadOrderPage(Long userIdx) throws RuntimeException {
