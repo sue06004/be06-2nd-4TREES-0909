@@ -33,7 +33,7 @@
 <a href="https://github.com/beyond-sw-camp/be06-2nd-4TREES-0909/wiki/%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5-%EC%8B%9C%EC%97%B0">기능 테스트 시연 위키</a>
 <br/><br/>
 ## 📌코드 컨벤션
-
+<a href="https://github.com/beyond-sw-camp/be06-2nd-4TREES-0909/wiki/%EC%BD%94%EB%93%9C-%EC%BB%A8%EB%B2%A4%EC%85%98">코드 컨벤션 위키</a>
 ## 📌기술스택
 ### OS
 <img src="https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black"/> <img src="https://img.shields.io/badge/Vmware-607078?style=flat&logo=Vmware&logoColor=white"/>  <img src="https://img.shields.io/badge/CentOS-262577?style=flat&logo=CentOS&logoColor=white"/>
