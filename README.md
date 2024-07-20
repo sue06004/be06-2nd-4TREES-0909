@@ -43,5 +43,6 @@
 <br/><br/>
 
 ## 📌소프트웨어 아키텍처
+![0909-소프트웨어 아키텍처](https://github.com/user-attachments/assets/a8ef2c4b-b8e3-4c82-98ba-85ff29bac552)
 
 <br/><br/>
