@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.USER_INFO_DETAIL_FAIL;
+import static org.example.fourtreesproject.common.BaseResponseStatus.USER_REGISTER_FAIL_EMAIL_DUPLICATION;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +45,7 @@ public class UserService {
 
     @Transactional
     public void signup(UserSignupRequest userSignupReq) throws RuntimeException {
+        checkDuplicateEmail(userSignupReq.getEmail());
         User user = User.builder()
                 .type("inapp")
                 .email(userSignupReq.getEmail())
@@ -60,8 +62,16 @@ public class UserService {
         userDetailRepository.save(userDetail);
     }
 
+    private void checkDuplicateEmail(String email) throws RuntimeException{
+        User existingUser = userRepository.findByEmail(email).orElse(null);
+        if (existingUser != null) {
+            throw new InvalidUserException(USER_REGISTER_FAIL_EMAIL_DUPLICATION);
+        }
+    }
+
     @Transactional
     public void sellerSignup(SellerSignupRequest sellerSignupRequest) throws RuntimeException {
+        checkDuplicateEmail(sellerSignupRequest.getEmail());
         User user = User.builder()
                 .type("inapp")
                 .role("ROLE_SELLER")
