@@ -54,7 +54,6 @@ public class GroupBuyController {
         return new BaseResponse<>(result);
     }
 
-    @Operation(summary = "공구 시작처리 api")
     @GetMapping("/start")
     public BaseResponse start(
             Long gpbuyIdx
