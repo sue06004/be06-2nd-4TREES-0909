@@ -98,7 +98,7 @@ public class BidController {
             )
     )
     @PostMapping("/modify")
-    public BaseResponse<String> modify(@AuthenticationPrincipalit  CustomUserDetails customUserDetails, @RequestBody BidModifyRequest bidModifyRequest) {
+    public BaseResponse<String> modify(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody BidModifyRequest bidModifyRequest) {
         if (customUserDetails == null) throw new InvalidBidException(USER_AUTHENTICATION_FAILED);
         Long userIdx = customUserDetails.getIdx();
         bidService.modify(userIdx, bidModifyRequest);
