@@ -1,6 +1,8 @@
 package org.example.fourtreesproject.bid.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.bid.model.request.BidCancelRequest;
 import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
@@ -21,7 +23,22 @@ import static org.example.fourtreesproject.common.BaseResponseStatus.USER_AUTHEN
 public class BidController {
     private final BidService bidService;
 
-    @Operation(summary = "입찰 등록 api")
+    @Operation(summary = "입찰 등록 api",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(name = "Valid example", value = """
+                                        {
+                                          "productIdx": 6,
+                                          "gpbuyIdx": 6,
+                                          "bidPrice": 30000
+                                        }
+                                    """)
+                            }
+                    )
+            )
+    )
     @PostMapping("/register")
     public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody BidRegisterRequest bidRegisterRequest) {
         if (customUserDetails == null) throw new InvalidBidException(USER_AUTHENTICATION_FAILED);

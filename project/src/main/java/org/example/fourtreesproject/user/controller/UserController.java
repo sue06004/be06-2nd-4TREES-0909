@@ -56,7 +56,6 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "이메일 인증 api")
     @GetMapping("/user/verify")
     public BaseResponse<String> verify(String email, String uuid) throws RuntimeException{
         Boolean verify = emailVerifyService.verifyEmail(EmailVerifyDto.builder()
