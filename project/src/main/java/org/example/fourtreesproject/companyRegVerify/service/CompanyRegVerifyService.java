@@ -10,6 +10,7 @@ import org.example.fourtreesproject.companyRegVerify.model.entity.CompanyRegVeri
 import org.example.fourtreesproject.companyRegVerify.model.request.CompanyRegVerifyRequest;
 import org.example.fourtreesproject.companyRegVerify.model.response.CompanyRegVerifyResponse;
 import org.example.fourtreesproject.companyRegVerify.repository.CompanyRegVerifyRepository;
+import org.example.fourtreesproject.exception.custom.InvalidUserException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,7 @@ public class CompanyRegVerifyService {
         return result.isPresent();
     }
 
-    // 사업자동륵번호 진위확인 API
+    // 국세청 사업자동륵번호 진위확인 API
     private ResponseEntity<String> sendValidateApi(CompanyRegVerifyRequest companyRegVerifyRequest) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("businesses", Collections.singletonList(
@@ -61,9 +62,7 @@ public class CompanyRegVerifyService {
         );
     }
 
-    // TODO : 예외처리
     public BaseResponse validate(CompanyRegVerifyRequest companyRegVerifyRequest) {
-
         ResponseEntity<String> response = sendValidateApi(companyRegVerifyRequest);
 
         // 응답이 200 ok
@@ -86,13 +85,8 @@ public class CompanyRegVerifyService {
                         )
                 );
             }
-            else {
-                // 일치하지 않을 경우, valid: 02
-                return new BaseResponse<>(USER_BUSINESS_NUMBER_AUTH_FAIL);
-            }
-        } else {
-            return new BaseResponse<>(USER_BUSINESS_NUMBER_AUTH_FAIL);
-        }
+            else throw new InvalidUserException(USER_BUSINESS_NUMBER_AUTH_FAIL);
+        } else throw new InvalidUserException(USER_BUSINESS_NUMBER_AUTH_FAIL);
     }
 
     public CompanyRegVerifyResponse save(CompanyRegVeriifyDto companyRegVeriifyDto) {

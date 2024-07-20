@@ -37,9 +37,9 @@ public class CompanyRegVerifyController {
                                }"""),
                                 @ExampleObject(name = "Default", value = """
                                {
-                                 "nickname": "string",
-                                 "email": "string",
-                                 "password": "string"
+                                 "b_no": "string",
+                                 "p_nm": "string",
+                                 "start_dt": "string"
                                }""")
                             }
                     )
