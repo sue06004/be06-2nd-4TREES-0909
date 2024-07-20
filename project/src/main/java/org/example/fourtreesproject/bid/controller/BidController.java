@@ -40,7 +40,9 @@ public class BidController {
 
     @Operation(summary = "입찰 대기 공구 조회 api")
     @GetMapping("/gpbuy/status-wait/list")
-    public BaseResponse<String> gpbuyWaitList(Integer page, Integer size, Long categoryIdx, String gpbuyTitle) {
+    public BaseResponse<String> gpbuyWaitList(Integer page, Integer size,
+                                              @RequestParam(required = false) Long categoryIdx,
+                                              @RequestParam(required = false) String gpbuyTitle) {
         return new BaseResponse(bidService.statusWaitList(page, size, categoryIdx, gpbuyTitle));
     }
 
