@@ -111,6 +111,6 @@ public class BidService {
                 bid.updataStatus("삭제");
                 bidRepository.save(bid);
             } else throw new InvalidBidException(BID_DELETE_FAIL);
-        }
+        } else throw new InvalidBidException(BID_DELETE_FAIL);
     }
 }
