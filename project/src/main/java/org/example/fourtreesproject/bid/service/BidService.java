@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,11 +52,14 @@ public class BidService {
 
     }
 
-    public List<BidMyListResponse> myList(Long userIdx, Boolean bidSelect) {
-        List<Bid> bidResults = bidRepository.findAllByUserIdxAndBidSelect(userIdx, bidSelect);
+    @Transactional(readOnly = true)
+    public List<BidMyListResponse> myList(Integer page, Integer size, Long userIdx, Boolean bidSelect) {
+        Pageable pageable = PageRequest.of(page, size);
+        Slice<Bid> result = bidRepository.findAllByUserIdAndBidSelect(pageable, userIdx, bidSelect);
+        List<Bid> bidList = result.getContent();
 
         List<BidMyListResponse> bidMyListResponses = new ArrayList<>();
-        for(Bid bid : bidResults) {
+        for(Bid bid : bidList) {
             BidMyListResponse bidMyListResponse = BidMyListResponse.builder()
                     .bidIdx(bid.getIdx())
                     .gpbuyIdx(bid.getGroupBuy().getIdx())

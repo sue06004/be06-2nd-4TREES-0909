@@ -59,10 +59,10 @@ public class BidController {
     @Operation(summary = "입찰 현황 조회 api", description = "업체회원이 자신이 등록한 (선정 되었거나 선정이 되지 않은)입찰 리스트 조회 <br><br>" +
             "※ 업체 회원 로그인이 필요한 기능입니다.")
     @GetMapping("/mylist")
-    public BaseResponse<String> myList(@AuthenticationPrincipal CustomUserDetails customUserDetails, Boolean bidSelect) {
+    public BaseResponse<String> myList(@AuthenticationPrincipal CustomUserDetails customUserDetails, Integer page, Integer size, Boolean bidSelect) {
         if (customUserDetails == null) throw new InvalidBidException(USER_AUTHENTICATION_FAILED);
         Long userIdx = customUserDetails.getIdx();
-        return new BaseResponse(bidService.myList(userIdx, bidSelect));
+        return new BaseResponse(bidService.myList(page, size, userIdx, bidSelect));
     }
 
     @Operation(summary = "입찰 대기 공구 조회 api",
