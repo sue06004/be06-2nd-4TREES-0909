@@ -34,8 +34,8 @@ public class GroupBuyController {
 
     @Operation(summary = "공구 등록api", description = "일반사용자가 마음에 드는 공구가 없을시 직접 공구를 등록<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "application/json", examples = {@ExampleObject(name = "Valid example", value = """
             {
-                "userIdx": 2,
-                "category": "Books",
+                "userIdx": 3,
+                "categoryIdx": 2,
                 "title": "sjb의 스프링 책 아무거나 대량으로 삽니다!",
                 "content": "원가보다는 싸게 등록해주세요! 50개 한번에 사는 공구입니다!",
                 "gpbuyQuantity": 50
