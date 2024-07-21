@@ -1,6 +1,8 @@
 package org.example.fourtreesproject.config;
 
 import lombok.RequiredArgsConstructor;
+import org.example.fourtreesproject.exception.CustomAccessDeniedHandler;
+import org.example.fourtreesproject.exception.CustomAuthenticationEntryPoint;
 import org.example.fourtreesproject.jwt.JwtUtil;
 import org.example.fourtreesproject.jwt.Repository.RefreshTokenRepository;
 import org.example.fourtreesproject.oauth.OAuth2AuthenticationSuccessHandler;
@@ -29,6 +31,8 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2Service oAuth2Service;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
     @Bean
     BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -67,8 +71,20 @@ public class SecurityConfig {
         http.formLogin((auth) -> auth.disable());
         http.authorizeHttpRequests((auth) ->
                 auth
-                        .anyRequest().permitAll()
+                        .requestMatchers(
+                                "/user/signup", "/user/login", "/user/verify",
+                                "/seller/signup", "/coupon/register", "company-reg/verify").permitAll() // 모든 사람 접속 가능
+                        .requestMatchers("/user/delivery/", "/user/info/detail").hasRole("USER")
+                        .requestMatchers("/seller/info/detail").hasRole("SELLER")
+                        .requestMatchers("/company/**").hasRole("SELLER")
+                        .requestMatchers("/product/**").hasRole("SELLER")
+                        .requestMatchers("/gpbuy/**").hasRole("USER")
+                        .requestMatchers("/bid/**").hasRole("SELLER")
+                        .requestMatchers("/orders/**").hasRole("USER")
+                        .anyRequest().authenticated()
         );
+        http.exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler));
+        http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint ));
 
         LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager(authenticationConfiguration));
         loginFilter.setFilterProcessesUrl("/user/login");
