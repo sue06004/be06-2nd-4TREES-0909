@@ -87,7 +87,7 @@ public class SecurityConfig {
         http.exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler));
         http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint ));
 
-        LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager(authenticationConfiguration));
+        LoginFilter loginFilter = new LoginFilter(jwtUtil, authenticationManager(authenticationConfiguration), refreshTokenRepository);
         loginFilter.setFilterProcessesUrl("/user/login");
 
         http.addFilterBefore(new JwtFilter(jwtUtil, refreshTokenRepository), LoginFilter.class);

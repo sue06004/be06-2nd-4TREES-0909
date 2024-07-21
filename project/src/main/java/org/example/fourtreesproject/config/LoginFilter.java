@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.jwt.JwtUtil;
+import org.example.fourtreesproject.jwt.Repository.RefreshTokenRepository;
+import org.example.fourtreesproject.jwt.model.entity.RefreshToken;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.request.UserLoginRequest;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +33,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -62,6 +65,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         String accessToken = jwtUtil.createAccessToken(idx,email, role);
         String refreshToken = jwtUtil.createRefreshToken(idx, email, role);
+        RefreshToken existingRefreshToken = refreshTokenRepository.findByEmail(email).orElse(null);
+        RefreshToken refreshTokenEntity;
+        if (existingRefreshToken != null) {
+            refreshTokenEntity = RefreshToken.builder().idx(existingRefreshToken.getIdx()).refreshToken(refreshToken).email(email).build();
+        } else{
+            refreshTokenEntity = RefreshToken.builder().email(email).refreshToken(refreshToken).build();
+        }
+        refreshTokenRepository.save(refreshTokenEntity);
 
         response.addHeader("Authorization", "Bearer " + accessToken);
 
