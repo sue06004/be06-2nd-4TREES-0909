@@ -43,11 +43,14 @@ public class BaseResponse<T> {
 
     @Override
     public String toString() {
-        return "{\n" +
+        String result = "{\n" +
                 "  \"isSuccess\": "+this.isSuccess + ",\n"+
                 "  \"code\": "+this.code +",\n"+
-                "  \"message\": \""+this.message+"\",\n" +
-                "  \"result\": \"\"" +
-                "\n}";
+                "  \"message\": \""+this.message+"\"";
+        if (this.result != null) {
+            result += ",\n" + "\"result\": \""+this.result.toString()+"\"";
+        }
+        result += "\n}";
+        return result;
     }
 }

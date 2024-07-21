@@ -89,6 +89,8 @@ public enum BaseResponseStatus {
     USER_LOGIN_FAIL_PASSWORD_EMPTY(false, 2506, "비밀번호를 입력해주세요."),
     // 미 로그인
     USER_NOT_LOGIN(false, 2507, "로그인 되어있지 않습니다."),
+    // 접근 권한 없음
+    USER_NOT_HAS_ROLE(false, 2507, "접근 권한이 없습니다."),
 
     // 회원 정보 2600
     // 회원 정보 조회 실패
