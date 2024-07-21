@@ -34,19 +34,21 @@ public class BidService {
     public void register(Long userIdx, BidRegisterRequest bidRegisterRequest) {
         GroupBuy groupBuy = groupBuyRepository.findById(bidRegisterRequest.getGpbuyIdx())
                 .orElseThrow(() -> new InvalidBidException((GROUPBUY_LIST_FAIL)));
-        Product product = productRepository.findById(bidRegisterRequest.getProductIdx())
-                .orElseThrow(() -> new InvalidBidException((PRODUCT_INFO_FAIL)));
+        // 공구 상태가 대기일 경우에만 가능
+        if(groupBuy.getGpbuyStatus().equals("대기")) {
+            Product product = productRepository.findById(bidRegisterRequest.getProductIdx())
+                    .orElseThrow(() -> new InvalidBidException((PRODUCT_INFO_FAIL)));
 
-        if(product.getCompany().getUser().getIdx().equals(userIdx)) {
-            Bid bid = Bid.builder()
-                    .bidPrice(bidRegisterRequest.getBidPrice())
-                    .product(product)
-                    .groupBuy(groupBuy)
-                    .build();
-            bidRepository.save(bid);
-        } else {
-            throw new InvalidBidException(PRODUCT_VERIFICATION_FAIL);
-        }
+            if(product.getCompany().getUser().getIdx().equals(userIdx)) {
+                Bid bid = Bid.builder()
+                        .bidPrice(bidRegisterRequest.getBidPrice())
+                        .product(product)
+                        .groupBuy(groupBuy)
+                        .build();
+                bidRepository.save(bid);
+            } else throw new InvalidBidException(PRODUCT_VERIFICATION_FAIL);
+        } else throw new InvalidBidException(BID_REGISTER_FAIL);
+
     }
 
     public List<BidMyListResponse> myList(Long userIdx, Boolean bidSelect) {
@@ -111,6 +113,6 @@ public class BidService {
                 bid.updataStatus("삭제");
                 bidRepository.save(bid);
             } else throw new InvalidBidException(BID_DELETE_FAIL);
-        }
+        } else throw new InvalidBidException(BID_DELETE_FAIL);
     }
 }
