@@ -210,6 +210,8 @@ public enum BaseResponseStatus {
 
     //공구 취소 4700
     GROUPBUY_CANCLE_FAIL(false, 4701, "공구 취소에 실패했습니다."),
+    GROUPBUY_CANCLE_FAIL_EMPTY_ORDER(false, 4702, "공구 취소에 실패했습니다. 없는 주문입니다."),
+
 
 
 //-------------------- 입찰기능

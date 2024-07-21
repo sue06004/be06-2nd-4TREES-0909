@@ -299,6 +299,9 @@ public class GroupBuyService {
 
     @Transactional
     public Boolean cancle(Long userIdx, Long ordersIdx) throws IamportResponseException, IOException {
+        User user = userRepository.findById(userIdx).orElseThrow(
+                () -> new InvalidGroupBuyException(BaseResponseStatus.USER_INFO_DETAIL_FAIL)
+        );
         Optional<Orders> optionalOrders = ordersRepository.findByIdxAndUserIdx(ordersIdx,userIdx);
         if (optionalOrders.isPresent()){
             //주문 테이블 상태수정, 취소시간 기록
@@ -335,8 +338,9 @@ public class GroupBuyService {
             ordersService.refund(orders.getImpUid(), amount);
 
             return true;
+        }else {
+            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_CANCLE_FAIL_EMPTY_ORDER);
         }
-        return false;
     }
 
 
