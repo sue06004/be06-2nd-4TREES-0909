@@ -53,7 +53,7 @@ public class GroupBuyRepositoryDslImpl implements GroupBuyRepositoryDsl {
                 .join(groupBuy.category,category)
                 .where(groupBuy.gpbuyStatus.eq("진행"),
                         minMaxBetween(request.getMinPrice(), request.getMaxPrice()),
-                        categoryNameEq(request.getCategory()))
+                        categoryIdxEq(request.getCategoryIdx()))
                 .offset(pageable.getOffset())
                 .orderBy(groupBuy.gpbuyRemainQuantity.asc())
                 .limit(pageable.getPageSize() + 1)

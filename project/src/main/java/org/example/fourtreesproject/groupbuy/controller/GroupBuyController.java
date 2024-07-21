@@ -2,6 +2,8 @@ package org.example.fourtreesproject.groupbuy.controller;
 
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.common.BaseResponseStatus;
@@ -28,7 +30,15 @@ public class GroupBuyController {
 
     private final GroupBuyService gpbuyService;
 
-    @Operation(summary = "공구 등록 api")
+    @Operation(summary = "공구 등록api", description = "일반사용자가 마음에 드는 공구가 없을시 직접 공구를 등록<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "application/json", examples = {@ExampleObject(name = "Valid example", value = """
+            {
+                "userIdx": 2,
+                "category": "Books",
+                "title": "sjb의 스프링 책 아무거나 대량으로 삽니다!",
+                "content": "원가보다는 싸게 등록해주세요! 50개 한번에 사는 공구입니다!",
+                "gpbuyQuantity": 50
+              }""")})))
+
     @PostMapping("/register")
     public BaseResponse register(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -44,7 +54,8 @@ public class GroupBuyController {
         return new BaseResponse();
     }
 
-    @Operation(summary = "공구에 입찰한 입찰정보 조회 api")
+    @Operation(summary = "공구에 입찰한 입찰정보 조회 api",
+    description = "일반사용자가 자신이 등록한 공구에 등록된 입찰 목록을 조회하는 기능입니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
     @GetMapping("/registered/bid/list")
     public BaseResponse<List<RegisteredBidListResponse>> registeredBidList(
             Long gpbuyIdx
@@ -53,18 +64,9 @@ public class GroupBuyController {
 
         return new BaseResponse<>(result);
     }
-    @Operation(summary = "공구 시작 api")
-    @GetMapping("/start")
-    public BaseResponse start(
-            Long gpbuyIdx
-    ){
-        if (!gpbuyService.start(gpbuyIdx)){
-            return new BaseResponse(BaseResponseStatus.GROUPBUY_START_FAIL);
-        }
-        return new BaseResponse();
-    }
 
-    @Operation(summary = "공구 전체 조회 api")
+    @Operation(summary = "공구 전체 조회 api",
+    description = "현재 진행중인 전체 공구 목록을 페이지 단위로 가져옵니다.<br><br>")
     @GetMapping("/list")
     public BaseResponse<List<GroupBuyListResponse>> list(
             Integer page, Integer size
@@ -74,7 +76,8 @@ public class GroupBuyController {
         return new BaseResponse<>(result);
     }
 
-    @Operation(summary = "공구 상세 조회 api")
+    @Operation(summary = "공구 상세 조회 api",
+    description = "현재 진행중인 특정 공구에 대한 상세정보를 조회합니다.")
     @GetMapping("/detail")
     public BaseResponse<GroupBuyDetailResponse> detail(
             Long gpbuyIdx
@@ -84,7 +87,8 @@ public class GroupBuyController {
         return new BaseResponse<>(result);
 
     }
-    @Operation(summary = "관심 공구 등록/취소 api")
+    @Operation(summary = "관심 공구 등록/취소 api",
+    description = "현재 진행중인 공구 중 하나를 로그인된 계정의 관심 공구 목록에 등록합니다. 다시 등록하면 취소됩니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
     @GetMapping("/likes/save")
     public BaseResponse likesSave(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -100,7 +104,8 @@ public class GroupBuyController {
     }
 
     //todo: list가 비어있으면 응답에서 result빼기
-    @Operation(summary = "관심 공구 목록 조회 api")
+    @Operation(summary = "관심 공구 목록 조회 api",
+    description = "현재 로그인된 계정에 등록된 관심 공구 목록을 조회합니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
     @GetMapping("/likes/list")
     public BaseResponse likesList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -112,7 +117,8 @@ public class GroupBuyController {
         return new BaseResponse(result);
     }
 
-    @Operation(summary = "공구 검색 api")
+    @Operation(summary = "공구 검색 api",
+    description = "현재 진행중인 공구 중, 입력한 조건에 맞는 공구를 검색합니다. 미 입력시 조건은 반영되지 않습니다.<br><br>")
     @GetMapping("/search")
     public BaseResponse search(
             GroupBuySearchRequest request
@@ -122,7 +128,8 @@ public class GroupBuyController {
         return new BaseResponse<>(result);
     }
 
-    @Operation(summary = "공구 취소 api")
+    @Operation(summary = "공구 취소 api",
+    description = "현재 참여중인 공구를 취소합니다. 쿠폰,포인트의 사용내역이 원상복구되며 결제취소가 발생합니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
     @GetMapping("/cancle")
     public BaseResponse cancle(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
