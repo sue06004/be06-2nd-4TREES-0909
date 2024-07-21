@@ -73,7 +73,7 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/user/signup", "/user/login", "/user/verify",
-                                "/seller/signup", "/coupon/register", "company-reg/verify").permitAll() // 모든 사람 접속 가능
+                                "/seller/signup", "/coupon/register", "/company-reg/verify").permitAll() // 모든 사람 접속 가능
                         .requestMatchers("/user/delivery/", "/user/info/detail").hasRole("USER")
                         .requestMatchers("/seller/info/detail").hasRole("SELLER")
                         .requestMatchers("/company/**").hasRole("SELLER")
@@ -81,7 +81,8 @@ public class SecurityConfig {
                         .requestMatchers("/gpbuy/**").hasRole("USER")
                         .requestMatchers("/bid/**").hasRole("SELLER")
                         .requestMatchers("/orders/**").hasRole("USER")
-                        .anyRequest().authenticated()
+                        .requestMatchers("/v2/api-dosc", "/swagger-resources/**", "/swagger-ui.html","/webjars/**","/swagger-ui/**" ).permitAll()
+                        .anyRequest().permitAll()
         );
         http.exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(customAccessDeniedHandler));
         http.exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(customAuthenticationEntryPoint ));
