@@ -15,5 +15,5 @@ public interface LikesRepository extends JpaRepository<Likes,Long> {
     Optional<Likes> findByGpbuyIdxAndUserIdx(Long gpbuyIdx, Long userIdx);
 
     @Query("SELECT l FROM Likes l JOIN FETCH l.groupBuy g JOIN FETCH l.user u WHERE l.user.idx = :userIdx")
-    List<Likes> findAllByIdx(Long userIdx);
+    Optional<List<Likes>> findAllByIdx(Long userIdx);
 }

@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.common.BaseResponseStatus;
+import org.example.fourtreesproject.exception.custom.InvalidGroupBuyException;
+import org.example.fourtreesproject.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuySearchRequest;
 import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-import static org.example.fourtreesproject.common.BaseResponseStatus.USER_NOT_LOGIN;
+import static org.example.fourtreesproject.common.BaseResponseStatus.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,11 +47,14 @@ public class GroupBuyController {
             @RequestBody GroupBuyCreateRequest request
             ){
         if (customUserDetails == null){
-            return new BaseResponse<>(USER_NOT_LOGIN);
+            throw new InvalidUserException(USER_NOT_LOGIN);
+        }
+        if (request == null){
+            throw new InvalidGroupBuyException(GROUPBUY_REGIST_FAIL);
         }
 
         if (!gpbuyService.save(customUserDetails.getUser().getIdx(),request)) {
-            return new BaseResponse();
+            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_REGIST_FAIL);
         }
         return new BaseResponse();
     }
@@ -61,6 +66,12 @@ public class GroupBuyController {
             Long gpbuyIdx
     ){
         List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
+        if (result.size() == 0){
+            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY);
+        }
+        if (gpbuyIdx == null){
+            throw new InvalidGroupBuyException(REQUEST_FAIL_INVALID);
+        }
 
         return new BaseResponse<>(result);
     }
@@ -71,7 +82,16 @@ public class GroupBuyController {
     public BaseResponse<List<GroupBuyListResponse>> list(
             Integer page, Integer size
     ){
+        if (page == null){
+            page = 0;
+        }
+        if (size == null || size == 0){
+            size = 10;
+        }
         List<GroupBuyListResponse> result = gpbuyService.list(page, size);
+        if(result.size() == 0){
+            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_EMPTY);
+        }
 
         return new BaseResponse<>(result);
     }
@@ -83,6 +103,9 @@ public class GroupBuyController {
             Long gpbuyIdx
     ){
         GroupBuyDetailResponse result = gpbuyService.findByGpbuyIdx(gpbuyIdx);
+        if (result == null){
+            throw new InvalidGroupBuyException(GROUPBUY_LIST_FAIL);
+        }
 
         return new BaseResponse<>(result);
 
@@ -95,7 +118,7 @@ public class GroupBuyController {
             Long gpbuyIdx
     ){
         if (customUserDetails == null){
-            return new BaseResponse<>(USER_NOT_LOGIN);
+            throw new InvalidUserException(USER_NOT_LOGIN);
         }
         if (!gpbuyService.likesSave(gpbuyIdx, customUserDetails.getIdx())){
             return new BaseResponse<>(BaseResponseStatus.GROUPBUY_LIKES_CREATE_FAIL);
@@ -111,9 +134,12 @@ public class GroupBuyController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ){
         if (customUserDetails == null){
-            return new BaseResponse<>(USER_NOT_LOGIN);
+            throw new InvalidUserException(USER_NOT_LOGIN);
         }
         List<GroupBuyLikesListResponse> result = gpbuyService.likesList(customUserDetails.getIdx());
+        if (result.size() == 0){
+            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_EMPTY);
+        }
         return new BaseResponse(result);
     }
 
@@ -123,7 +149,20 @@ public class GroupBuyController {
     public BaseResponse search(
             GroupBuySearchRequest request
     ){
+        if (request == null){
+            throw new InvalidGroupBuyException(REQUEST_FAIL_INVALID);
+        }
+        if (request.getPage() == null){
+            request.setPage(0);
+        }
+        if (request.getSize() == null || request.getSize() == 0){
+            request.setSize(10);
+        }
+
         List<GroupBuyListResponse> result = gpbuyService.search(request);
+        if (result.size() == 0){
+            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_SEARCH_EMPTY);
+        }
 
         return new BaseResponse<>(result);
     }
@@ -136,7 +175,7 @@ public class GroupBuyController {
             Long ordersIdx
     ) throws IamportResponseException, IOException {
         if (gpbuyService.cancle(customUserDetails.getIdx(), ordersIdx)){
-            return new BaseResponse();
+            throw new InvalidGroupBuyException(GROUPBUY_CANCLE_FAIL);
         };
 
         //Todo: 캔슬 리스폰스 작성

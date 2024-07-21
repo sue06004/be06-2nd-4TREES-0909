@@ -146,17 +146,17 @@ public enum BaseResponseStatus {
     // 공구 등록 4000
 
     // 공구 등록 실패
-    GROUPBUY_RREGIST_FAIL(false, 4001, "공구 등록에 실패하였습니다."),
+    GROUPBUY_REGIST_FAIL(false, 4001, "공구 등록에 실패하였습니다."),
     // 공구 카테고리,
-    GROUPBUY_RREGIST_FAIL_CATEGORY_EMPTY(false, 4002, "공구 카테고리를 선택하지 않았습니다."),
+    GROUPBUY_REGIST_FAIL_CATEGORY_EMPTY(false, 4002, "공구 카테고리를 선택하지 않았습니다."),
     // 공구 제목,
-    GROUPBUY_RREGIST_FAIL_TITLE_EMPTY(false, 4003, "공구 제목을 입력하지 않았습니다."),
+    GROUPBUY_REGIST_FAIL_TITLE_EMPTY(false, 4003, "공구 제목을 입력하지 않았습니다."),
     // 공구 수량,
-    GROUPBUY_RREGIST_FAIL_QUANTITY_EMPTY(false, 4004, "공구 수량을 입력하지 않았습니다."),
+    GROUPBUY_REGIST_FAIL_QUANTITY_EMPTY(false, 4004, "공구 수량을 입력하지 않았습니다."),
     // 공구 내용,
-    GROUPBUY_RREGIST_FAIL_CONTENT_EMPTY(false, 4005, "공구 내용을 입력하지 않았습니다."),
+    GROUPBUY_REGIST_FAIL_CONTENT_EMPTY(false, 4005, "공구 내용을 입력하지 않았습니다."),
     // 공구 기간,(기본
-    GROUPBUY_RREGIST_FAIL_PERIOD_EMPTY(false, 4006, "공구 기간을 입력하지 않았습니다."),
+    GROUPBUY_REGIST_FAIL_PERIOD_EMPTY(false, 4006, "공구 기간을 입력하지 않았습니다."),
 
     // 공구 시작 4100,
 
@@ -193,12 +193,23 @@ public enum BaseResponseStatus {
     // 공구 조회 4400
     // 공구 조회 실패
     GROUPBUY_LIST_FAIL(false, 4401, "공구 조회에 실패했습니다."),
+    GROUPBUY_LIST_EMPTY(true, 4402, "현재 진행중인 공구가 없습니다."),
+    GROUPBUY_LIST_REGISTERD_BID_EMPTY(true, 4403, "현재 등록된 입찰이 없습니다."),
+    GROUPBUY_EMPTY(false, 4404, "없는 공구입니다."),
 
     // 관심 공구 4500
     // 관심 공구 등록/취소 실패
     GROUPBUY_LIKES_CREATE_FAIL(false, 4501, "관심 공구 등록/취소에 실패했습니다."),
     // 관심 공구 조회 실패
     GROUPBUY_LIKES_LIST_FAIL(false, 4502, "관심 공구 조회에 실패했습니다."),
+    GROUPBUY_LIKES_LIST_EMPTY(true, 4503, "등록된 관심 공구가 없습니다."),
+
+    //공구 검색 4600
+    GROUPBUY_LIST_SEARCH_FAIL(false, 4601, "공구 검색에 실패했습니다."),
+    GROUPBUY_LIST_SEARCH_EMPTY(true, 4602, "검색 결과가 없습니다."),
+
+    //공구 취소 4700
+    GROUPBUY_CANCLE_FAIL(false, 4701, "공구 취소에 실패했습니다."),
 
 
 //-------------------- 입찰기능
@@ -232,7 +243,12 @@ public enum BaseResponseStatus {
     // 결제 관련 6000
     PAYMENT_FAIL(false, 6001, "결제에 실패하였습니다."),
     COUPON_NOT_FOUND(false, 7002, "쿠폰 조회에 실패하였습니다."),
-    USER_POINT_LACK(false, 7002, "포인트가 부족합니다.");
+    USER_POINT_LACK(false, 7002, "포인트가 부족합니다."),
+
+    // 공통
+    REQUEST_FAIL(false, 9000, "요청에 실패했습니다. 다시 시도해주세요 (지속적인 문제 발생시 문의 바랍니다.)"),
+    REQUEST_FAIL_INVALID(false, 9001, "잘못된 요청입니다."),
+    JWT_FAIL(false,9002, "JWT토큰에 문제가 발생했습니다.");
 
 
     // 쿠폰 관련 7000;

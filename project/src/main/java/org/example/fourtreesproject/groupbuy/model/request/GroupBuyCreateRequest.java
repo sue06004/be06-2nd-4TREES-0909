@@ -9,7 +9,7 @@ import lombok.*;
 public class GroupBuyCreateRequest {
 
     private Long userIdx;
-    private String category;
+    private Long categoryIdx;
     private String title;
     private String content;
     private Integer gpbuyQuantity;

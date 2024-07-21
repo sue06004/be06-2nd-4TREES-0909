@@ -2,9 +2,9 @@ package org.example.fourtreesproject.exception.custom;
 
 import org.example.fourtreesproject.common.BaseResponseStatus;
 
-public class InvalidUserException extends InvalidCustomException {
+public class InvalidGroupBuyException extends InvalidCustomException{
 
-    public InvalidUserException(BaseResponseStatus status) {
+    public InvalidGroupBuyException(BaseResponseStatus status) {
         super(status);
     }
 }
