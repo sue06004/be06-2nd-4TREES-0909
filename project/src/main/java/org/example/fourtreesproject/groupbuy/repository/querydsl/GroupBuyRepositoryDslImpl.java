@@ -66,8 +66,32 @@ public class GroupBuyRepositoryDslImpl implements GroupBuyRepositoryDsl {
         return new SliceImpl<>(result, pageable, hasNext);
     }
 
+    @Override
+    public Slice<GroupBuy> findSliceByGpbuyStatus(Pageable pageable, String gpbuyStatus) {
+        List<GroupBuy> result = queryFactory
+                .selectFrom(groupBuy)
+                .join(groupBuy.bidList,bid)
+                .join(groupBuy.category,category)
+                .where(groupBuy.gpbuyStatus.eq(gpbuyStatus))
+                .offset(pageable.getOffset())
+                .orderBy(groupBuy.gpbuyRemainQuantity.asc(),
+                        groupBuy.gpbuyEndedAt.desc())
+                .limit(pageable.getPageSize() + 1)
+                .fetch();
+
+        boolean hasNext = result.size() > pageable.getPageSize();
+        if (hasNext) {
+            result.remove(result.size() - 1);
+        }
+        return new SliceImpl<>(result, pageable, hasNext);
+    }
+
     private BooleanExpression categoryIdxEq(Long categoryIdx) {
         return categoryIdx != null ? groupBuy.category.idx.eq(categoryIdx) : null;
+    }
+
+    private BooleanExpression gpbuyStatusEq(String gpbuyStatus) {
+        return gpbuyStatus != null ? groupBuy.gpbuyStatus.eq(gpbuyStatus) : null;
     }
 
     private BooleanExpression minMaxBetween(Integer min, Integer max) {

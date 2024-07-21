@@ -5,8 +5,11 @@ import com.siot.IamportRestClient.exception.IamportResponseException;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.bid.model.entity.Bid;
 import org.example.fourtreesproject.bid.repository.BidRepository;
+import org.example.fourtreesproject.common.BaseResponseStatus;
 import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.coupon.repository.UserCouponRepository;
+import org.example.fourtreesproject.exception.custom.InvalidGroupBuyException;
+import org.example.fourtreesproject.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.groupbuy.model.entity.Category;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.entity.Likes;
@@ -58,8 +61,8 @@ public class GroupBuyService {
     private final UserDetailRepository userDetailRepository;
 
     public boolean save(Long user_idx, GroupBuyCreateRequest request) {
-        User user = userRepository.findById(user_idx).get();
-        Category category = categoryRepository.findByCategoryName(request.getCategory());
+        User user = userRepository.findById(user_idx).orElseThrow(() -> new InvalidUserException(BaseResponseStatus.USER_INFO_DETAIL_FAIL));
+        Category category = categoryRepository.findById(request.getCategoryIdx()).orElseThrow(() -> new InvalidGroupBuyException(BaseResponseStatus.REQUEST_FAIL));
         GroupBuy groupbuy = GroupBuy.builder()
                 .user(user)
                 .category(category)
@@ -80,21 +83,14 @@ public class GroupBuyService {
 
     }
     //공구 시작 기능
-    public boolean start(Long gpbuyIdx) {
-        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).get();
-        groupBuy.updateStatus("시작");
-        groupBuy.updateStartedAt(LocalDateTime.now());
-        GroupBuy updatedGroupBuy = groupBuy;
-        updatedGroupBuy = gpbuyRepository.save(updatedGroupBuy);
-        if (updatedGroupBuy == null){
-            return false;
-        }
-
-        return true;
-    }
 
     public List<RegisteredBidListResponse> findBidList(Long gpbuyIdx) {
-        List<Bid> bidList = bidRepository.findAllByGpbuyIdx(gpbuyIdx);
+        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).orElseThrow(
+                () -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_EMPTY)
+        );
+        List<Bid> bidList = bidRepository.findAllByGpbuyIdx(gpbuyIdx).orElseThrow(
+                () -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY)
+        );
         List<RegisteredBidListResponse> responseList = new ArrayList<>();
         for (Bid bid: bidList){
             String productThumbnailImg = "";
@@ -157,7 +153,7 @@ public class GroupBuyService {
 
     //공구 상세조회 기능
     public GroupBuyDetailResponse findByGpbuyIdx(Long gpbuyIdx) {
-        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).get();
+        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).orElseThrow(() -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_EMPTY));
         Bid bid = null;
         ProductImg thumbnailImg = null;
         List<String> productImgList = new ArrayList<>();
@@ -208,15 +204,19 @@ public class GroupBuyService {
                 likesRepository.deleteById(likes.get().getIdx());
             }
             return true;
-        } else {
-            return false;
+        } else if( groupBuy.isEmpty()) {
+            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_EMPTY);
+        }else {
+            throw  new InvalidGroupBuyException(BaseResponseStatus.USER_NOT_LOGIN);
         }
     }
 
 
     //관심 공구 목록 조회
     public List<GroupBuyLikesListResponse> likesList(Long userIdx) {
-        List<Likes> likesList = likesRepository.findAllByIdx(userIdx);
+        List<Likes> likesList = likesRepository.findAllByIdx(userIdx).orElseThrow(
+                () -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIKES_LIST_EMPTY)
+        );
         List<GroupBuyLikesListResponse> responseList = new ArrayList<>();
 
         for (Likes l : likesList){

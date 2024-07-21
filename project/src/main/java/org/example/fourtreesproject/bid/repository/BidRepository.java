@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface BidRepository extends JpaRepository<Bid, Long> {
 
     @Query("SELECT b FROM Bid b WHERE b.groupBuy.idx = :gpbuyIdx AND (b.bidStatus = '등록' OR b.bidStatus = '수정') ORDER BY b.bidPrice ASC")
-    List<Bid> findAllByGpbuyIdx(Long gpbuyIdx);
+    Optional<List<Bid>> findAllByGpbuyIdx(Long gpbuyIdx);
 
     @Query("SELECT b FROM Bid b " +
             "JOIN FETCH b.product p " +
