@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class GroupBuySearchRequest {
-    private String category;
+    private Long categoryIdx;
     private Integer minPrice;
     private Integer maxPrice;
     private Integer page;
