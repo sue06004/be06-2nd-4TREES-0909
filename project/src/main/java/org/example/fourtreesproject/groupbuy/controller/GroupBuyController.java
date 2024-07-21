@@ -158,6 +158,9 @@ public class GroupBuyController {
         if (request.getSize() == null || request.getSize() == 0){
             request.setSize(10);
         }
+        if (request.getCategoryIdx() == 0){
+            request.setCategoryIdx(null);
+        }
 
         List<GroupBuyListResponse> result = gpbuyService.search(request);
         if (result.size() == 0){

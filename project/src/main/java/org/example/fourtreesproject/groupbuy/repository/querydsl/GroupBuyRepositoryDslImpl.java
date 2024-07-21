@@ -8,6 +8,7 @@ import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.entity.QCategory;
 import org.example.fourtreesproject.groupbuy.model.entity.QGroupBuy;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuySearchRequest;
+import org.example.fourtreesproject.product.model.entity.QProduct;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
@@ -19,12 +20,14 @@ public class GroupBuyRepositoryDslImpl implements GroupBuyRepositoryDsl {
     private final QGroupBuy groupBuy;
     private final QBid bid;
     private final QCategory category;
+    private final QProduct product;
 
     public GroupBuyRepositoryDslImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
         this.groupBuy = QGroupBuy.groupBuy;
         this.bid = QBid.bid;
         this.category = QCategory.category;
+        this.product = QProduct.product;
     }
 
     @Override
@@ -52,10 +55,12 @@ public class GroupBuyRepositoryDslImpl implements GroupBuyRepositoryDsl {
                 .join(groupBuy.bidList,bid)
                 .join(groupBuy.category,category)
                 .where(groupBuy.gpbuyStatus.eq("진행"),
+                        bid.bidSelect.eq(true),
                         minMaxBetween(request.getMinPrice(), request.getMaxPrice()),
                         categoryIdxEq(request.getCategoryIdx()))
                 .offset(pageable.getOffset())
-                .orderBy(groupBuy.gpbuyRemainQuantity.asc())
+                .orderBy(groupBuy.gpbuyRemainQuantity.asc(),
+                        groupBuy.gpbuyEndedAt.asc())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
@@ -72,10 +77,11 @@ public class GroupBuyRepositoryDslImpl implements GroupBuyRepositoryDsl {
                 .selectFrom(groupBuy)
                 .join(groupBuy.bidList,bid)
                 .join(groupBuy.category,category)
-                .where(groupBuy.gpbuyStatus.eq(gpbuyStatus))
+                .where(gpbuyStatusEq(gpbuyStatus),
+                        bid.bidSelect.eq(true))
                 .offset(pageable.getOffset())
                 .orderBy(groupBuy.gpbuyRemainQuantity.asc(),
-                        groupBuy.gpbuyEndedAt.desc())
+                        groupBuy.gpbuyEndedAt.asc())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
