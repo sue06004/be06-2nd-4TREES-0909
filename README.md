@@ -19,7 +19,10 @@
 <br/><br/>
 
 ## 📌API 명세서
-
+<a href="http://43.202.232.230:8080/swagger-ui/index.html#/">김우혁 AWS 배포 Swagger</a> <br/>
+<a href="http://...../swagger-ui/index.html#/">도지민 AWS 배포 Swagger</a> <br/>
+<a href="http://...../swagger-ui/index.html#/">강태성 AWS 배포 Swagger</a> <br/>
+<a href="http://...../swagger-ui/index.html#/">서재은 AWS 배포 Swagger</a> <br/>
 <br/><br/>
 ## 📌Sequence Diagram
 <a href="https://github.com/beyond-sw-camp/be06-2nd-4TREES-0909/wiki/%ED%95%B5%EC%8B%AC-%EA%B8%B0%EB%8A%A5-%EC%8B%9C%ED%80%80%EC%8A%A4-%EB%8B%A4%EC%9D%B4%EC%96%B4%EA%B7%B8%EB%9E%A8">시퀀스 다이어그램 위키</a>
