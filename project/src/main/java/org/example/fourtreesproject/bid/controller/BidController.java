@@ -84,13 +84,13 @@ public class BidController {
                                 @ExampleObject(name = "Valid example", value = """
                                {
                                  "bidIdx": 22,
-                                 "gpbuyIdx": 7,
+                                 "productIdx": 14,
                                  "bidPrice": 20000
                                }"""),
                                 @ExampleObject(name = "Default", value = """
                                {
                                  "bidIdx": 0,
-                                 "gpbuyIdx": 0,
+                                 "productIdx": 0,
                                  "bidPrice": 0
                                }""")
                             }
