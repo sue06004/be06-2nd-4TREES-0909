@@ -20,6 +20,7 @@ import org.example.fourtreesproject.user.model.response.UserInfoResponse;
 import org.example.fourtreesproject.user.repository.SellerDetailRepository;
 import org.example.fourtreesproject.user.repository.UserDetailRepository;
 import org.example.fourtreesproject.user.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -42,6 +43,9 @@ public class UserService {
 
     private final JavaMailSender emailSender;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Value("${project.mail.url}")
+    private String mailUrl;
 
     @Transactional
     public void signup(UserSignupRequest userSignupReq) throws RuntimeException {
@@ -102,7 +106,7 @@ public class UserService {
         simpleMailMessage.setTo(email); // 받는 사람 메일
         simpleMailMessage.setSubject("[내 사이트] 가입 환영"); // 메일 제목
         String uuid = UUID.randomUUID().toString();
-        simpleMailMessage.setText("http://localhost:8080/user/verify?email=" + email + "&uuid=" + uuid); // 메일 내용
+        simpleMailMessage.setText(mailUrl+"/user/verify?email=" + email + "&uuid=" + uuid); // 메일 내용
 
         emailSender.send(simpleMailMessage); // 메일 보내기
         return uuid;
