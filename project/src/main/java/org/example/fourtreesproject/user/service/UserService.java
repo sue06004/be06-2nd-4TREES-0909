@@ -7,6 +7,7 @@ import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.coupon.model.response.CouponResponse;
 import org.example.fourtreesproject.delivery.model.DeliveryAddress;
 import org.example.fourtreesproject.delivery.model.request.DeliveryAddressRegisterRequest;
+import org.example.fourtreesproject.delivery.model.response.DeliveryAddressRegisterResponse;
 import org.example.fourtreesproject.delivery.model.response.DeliveryAddressResponse;
 import org.example.fourtreesproject.delivery.repository.DeliveryAddressRepository;
 import org.example.fourtreesproject.exception.custom.InvalidUserException;
@@ -120,7 +121,7 @@ public class UserService {
     }
 
     @Transactional
-    public void registerDelivery(User user, DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws RuntimeException {
+    public DeliveryAddressRegisterResponse registerDelivery(User user, DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws RuntimeException {
         DeliveryAddress defaultDelivery = deliveryAddressRepository.findByUserIdxAndAddressDefaultTrue(user.getIdx()).orElse(null);
         if (defaultDelivery != null && deliveryAddressRegisterRequest.getAddressDefault()) {
             defaultDelivery.updateDefault();
@@ -135,6 +136,7 @@ public class UserService {
                 .user(user)
                 .build();
         deliveryAddressRepository.save(deliveryAddress);
+        return DeliveryAddressRegisterResponse.builder().deliveryAddressIdx(deliveryAddress.getIdx()).build();
     }
 
     public UserInfoResponse getUserInfoDetail(Long userIdx) throws RuntimeException {
