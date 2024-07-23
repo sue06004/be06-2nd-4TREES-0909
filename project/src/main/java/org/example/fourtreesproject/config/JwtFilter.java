@@ -6,8 +6,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.fourtreesproject.jwt.JwtUtil;
-import org.example.fourtreesproject.jwt.RefreshToken;
+import org.example.fourtreesproject.jwt.model.entity.RefreshToken;
 import org.example.fourtreesproject.jwt.Repository.RefreshTokenRepository;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.entity.User;
@@ -19,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -27,13 +29,13 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            System.out.println("Bearer 토큰이 없음");
+            log.info("Bearer 토큰이 없음");
             filterChain.doFilter(request, response);
             return;
         }
         String accessToken = authorization.split(" ")[1];
-        if (!jwtUtil.isExpired(accessToken)) {
-            System.out.println("토큰 만료됨");
+        if (jwtUtil.isExpired(accessToken)) {
+            log.info("토큰 만료됨");
             Cookie[] cookieArray = request.getCookies();
             Cookie cookie = findRefreshTokenAtCookies(cookieArray);
             if (cookie == null) { // client가 refresh token을 안가지고 있을 때
@@ -46,8 +48,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 return;
             }
             accessToken = reissuedAccessToken;
+            response.addHeader("Authorization", "Bearer " + accessToken);
         }
-
         String email = jwtUtil.getEmail(accessToken);
         String role = jwtUtil.getRole(accessToken);
         Long idx = jwtUtil.getId(accessToken);
@@ -75,7 +77,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private String reissueToken(Cookie cookie) {
         String cookieRefreshToken = cookie.getValue();
         if (jwtUtil.isExpired(cookieRefreshToken)) {
-            System.out.println("refresh_token 만료됨");
+            log.info("refresh_token 만료됨");
             return null;
         }
 

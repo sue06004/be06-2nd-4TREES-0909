@@ -27,6 +27,12 @@ public class BaseResponse<T> {
         this.code = SUCCESS.getCode();
         this.result = result;
     }
+    // 요청에 성공한 경우
+    public BaseResponse() {
+        this.isSuccess = SUCCESS.isSuccess();
+        this.message = SUCCESS.getMessage();
+        this.code = SUCCESS.getCode();
+    }
 
     // 요청에 실패한 경우
     public BaseResponse(BaseResponseStatus status) {
@@ -37,11 +43,14 @@ public class BaseResponse<T> {
 
     @Override
     public String toString() {
-        return "{\n" +
+        String result = "{\n" +
                 "  \"isSuccess\": "+this.isSuccess + ",\n"+
                 "  \"code\": "+this.code +",\n"+
-                "  \"message\": \""+this.message+"\",\n" +
-                "  \"result\": \"\"" +
-                "\n}";
+                "  \"message\": \""+this.message+"\"";
+        if (this.result != null) {
+            result += ",\n" + "\"result\": \""+this.result.toString()+"\"";
+        }
+        result += "\n}";
+        return result;
     }
 }

@@ -5,12 +5,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.fourtreesproject.company.model.entity.Company;
+import org.example.fourtreesproject.coupon.model.UserCoupon;
+import org.example.fourtreesproject.delivery.model.DeliveryAddress;
+import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
+import org.example.fourtreesproject.groupbuy.model.entity.Likes;
+import org.example.fourtreesproject.orders.model.entity.Orders;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Builder
+@Table(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -44,11 +53,24 @@ public class User {
     @Builder.Default
     private boolean emailStatus = false;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<DeliveryAddress> deliveryAddress;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<GroupBuy> groupBuy;
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
+    private List<Orders> ordersList;
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "user")
+    private List<Likes> likesList;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private List<UserCoupon> userCouponList;
+
+
     public void updateEmailStatus() {
         this.emailStatus = true;
     }
 
-    public void updateStatus(String status){
+    public void updateStatus(String status) {
         this.status = status;
     }
+
 }

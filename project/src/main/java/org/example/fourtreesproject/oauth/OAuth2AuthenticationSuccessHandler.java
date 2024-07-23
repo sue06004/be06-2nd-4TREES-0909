@@ -6,8 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.http.HttpHeaders;
+import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.jwt.JwtUtil;
-import org.example.fourtreesproject.jwt.RefreshToken;
+import org.example.fourtreesproject.jwt.model.entity.RefreshToken;
 import org.example.fourtreesproject.jwt.Repository.RefreshTokenRepository;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
@@ -18,6 +19,9 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+
+import static org.example.fourtreesproject.common.BaseResponseStatus.USER_REGISTER_FAIL_EMAIL_DUPLICATION;
 
 @Component
 @RequiredArgsConstructor
@@ -36,23 +40,26 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String name = oAuth2User.getName();
         String email = oAuth2User.getEmail();
 
-        User user = userRepository.findByName(name).orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
         if (user==null) {
             user = User.builder()
-                    .type(oAuth2User.getRegistrationId()) // todo 직접 가져오도록 수정
+                    .type(oAuth2User.getRegistrationId())
                     .name(name)
                     .email(email)
                     .status("활동")
                     .emailStatus(true)
-                    .build(); // todo email도 추가
+                    .build();
             userRepository.save(user);
             UserDetail userDetail = UserDetail.builder().user(user).build();
             userDetailRepository.save(userDetail);
+        } else {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; charset=UTF-8");
+            PrintWriter out = response.getWriter();
+            BaseResponse<String> baseResponse = new BaseResponse<>(USER_REGISTER_FAIL_EMAIL_DUPLICATION);
+            out.print(baseResponse);
+            return;
         }
-        // todo refresh token, access token 발급
-        // todo access token은 Authorization 헤더로 전달
-        // todo refresh token은 Cookie에 저장
-        // todo refresh token 저장할 DB 만들기
 
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByEmail(email).orElse(null);
         String accessToken = jwtUtil.createAccessToken(user.getIdx(), email, user.getRole());
