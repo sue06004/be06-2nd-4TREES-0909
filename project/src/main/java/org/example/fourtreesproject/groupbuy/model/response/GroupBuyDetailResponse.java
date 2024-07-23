@@ -18,6 +18,8 @@ public class GroupBuyDetailResponse {
     private String productThumbnailImg;
     private List<String> productImgUrlList;
     private String productName;
+    private String productContent;
+    private Integer bidPrice;
     private String companyName;
     private Integer gpbuyRemainQuantity;
     private Integer gpbuyQuantity;
