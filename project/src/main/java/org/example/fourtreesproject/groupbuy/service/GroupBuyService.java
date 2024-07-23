@@ -174,6 +174,8 @@ public class GroupBuyService {
                 .productThumbnailImg(thumbnailImg.getProductImgUrl())
                 .productImgUrlList(productImgList)
                 .productName(bid.getProduct().getProductName())
+                .bidPrice(bid.getBidPrice())
+                .productContent(bid.getProduct().getProductContent())
                 .companyName(bid.getProduct().getCompany().getCompanyName())
                 .gpbuyRemainQuantity(groupBuy.getGpbuyRemainQuantity())
                 .gpbuyQuantity(groupBuy.getGpbuyQuantity())
