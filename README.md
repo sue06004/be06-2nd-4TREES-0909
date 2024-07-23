@@ -72,7 +72,7 @@
 <br/><br/>
 ## 📌시스템 아키텍처
 <div align="center">
-<img src="https://github.com/beyond-sw-camp/be06-1st-4TREES-0909/assets/82444759/5f2eb344-23ed-4348-987e-7037cacf735d"></img>
+<a href="https://github.com/beyond-sw-camp/be06-2nd-4TREES-0909/wiki/%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98">시스템 아키텍처 위키</a>
 </div>
 <br/><br/>
 
