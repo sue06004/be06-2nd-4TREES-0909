@@ -8,6 +8,7 @@ import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.file.FileUploadService;
 import org.example.fourtreesproject.product.model.request.ProductRegisterRequest;
 import org.example.fourtreesproject.product.model.response.ProductMylistResponse;
+import org.example.fourtreesproject.product.model.response.ProductRegisterResponse;
 import org.example.fourtreesproject.product.service.ProductService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.springframework.http.MediaType;
@@ -29,15 +30,15 @@ public class ProductController {
     @Operation(summary = "상품 등록 api", description = "업체 회원이 등록된 대기 중인 공구에 입찰을 등록 <br><br>" +
             "※ 업체 회원 로그인이 필요한 기능입니다.")
     @RequestMapping(method = RequestMethod.POST, value = "/register", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
-                                         @RequestPart ProductRegisterRequest productInfo,
-                                         @RequestPart MultipartFile[] images) {
+    public BaseResponse<ProductRegisterResponse> register(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+                                                          @RequestPart ProductRegisterRequest productInfo,
+                                                          @RequestPart MultipartFile[] images) {
         if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
         }
         List<String> ImgUrlList = fileUploadService.upload(images); //경로를 productImgList 반환하고
-        productService.register(customUserDetails.getUser(), productInfo, ImgUrlList);
-        return new BaseResponse<>();
+        ProductRegisterResponse productResponse=  productService.register(customUserDetails.getUser(), productInfo, ImgUrlList);
+        return new BaseResponse<>(productResponse);
     }
 
     @Operation(summary = "등록 상품 조회 api", description = "업체 회원 자신이 등록한 상품 조회 <br><br>" +
