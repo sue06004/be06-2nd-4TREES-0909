@@ -47,9 +47,9 @@
 
 ## 📌API 명세서
 <a href="http://43.202.232.230:8080/swagger-ui/index.html#/">김우혁 AWS 배포 Swagger</a> <br/>
-<a href="http://...../swagger-ui/index.html#/">도지민 AWS 배포 Swagger</a> <br/>
+<a href="http://3.34.25.245:8080/swagger-ui/index.html#/">도지민 AWS 배포 Swagger</a> <br/>
 <a href="http://...../swagger-ui/index.html#/">강태성 AWS 배포 Swagger</a> <br/>
-<a href="http://...../swagger-ui/index.html#/">서재은 AWS 배포 Swagger</a> <br/>
+<a href="http://52.78.79.165:8080/swagger-ui/index.html#/">서재은 AWS 배포 Swagger</a> <br/>
 <br/><br/>
 
 
@@ -72,7 +72,7 @@
 <br/><br/>
 ## 📌시스템 아키텍처
 <div align="center">
-<img src="https://github.com/beyond-sw-camp/be06-1st-4TREES-0909/assets/82444759/5f2eb344-23ed-4348-987e-7037cacf735d"></img>
+<a href="https://github.com/beyond-sw-camp/be06-2nd-4TREES-0909/wiki/%EC%8B%9C%EC%8A%A4%ED%85%9C-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98">시스템 아키텍처 위키</a>
 </div>
 <br/><br/>
 

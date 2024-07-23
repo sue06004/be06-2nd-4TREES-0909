@@ -5,6 +5,7 @@ import org.example.fourtreesproject.company.model.entity.Company;
 import org.example.fourtreesproject.company.model.request.CompanyModifyRequest;
 import org.example.fourtreesproject.company.model.request.CompanyRegisterRequest;
 import org.example.fourtreesproject.company.model.response.CompanyDetailResponse;
+import org.example.fourtreesproject.company.model.response.CompanyRegisterResponse;
 import org.example.fourtreesproject.company.repository.CompanyRepository;
 import org.example.fourtreesproject.exception.custom.InvalidCompanyException;
 import org.example.fourtreesproject.user.model.entity.User;
@@ -18,7 +19,7 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
 
     //업체 정보 등록
-    public void register(CompanyRegisterRequest request, User user) throws RuntimeException{
+    public CompanyRegisterResponse register(CompanyRegisterRequest request, User user) throws RuntimeException{
         if (companyRepository.findByUserIdx(user.getIdx()).isPresent()){
             throw new InvalidCompanyException(COMPANY_REGIST_FAIL);
         }
@@ -31,7 +32,11 @@ public class CompanyService {
                 .companyIntro(request.getCompanyIntro())
                 .build();
 
-        companyRepository.save(registCompany);
+       Company company = companyRepository.save(registCompany);
+
+        return CompanyRegisterResponse.builder()
+                .companyIdx(company.getIdx())
+                .build();
     }
 
     //업체 정보 수정

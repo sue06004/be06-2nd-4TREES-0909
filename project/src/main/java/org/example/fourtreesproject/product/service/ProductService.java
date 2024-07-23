@@ -12,10 +12,12 @@ import org.example.fourtreesproject.product.model.request.ProductRegisterRequest
 import org.example.fourtreesproject.product.model.response.ProductCategoryResponse;
 import org.example.fourtreesproject.product.model.response.ProductImgResponse;
 import org.example.fourtreesproject.product.model.response.ProductMylistResponse;
+import org.example.fourtreesproject.product.model.response.ProductRegisterResponse;
 import org.example.fourtreesproject.product.repository.ProductImgRepository;
 import org.example.fourtreesproject.product.repository.ProductRepository;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,8 @@ public class ProductService {
     private final CompanyRepository companyRepository;
 
     // 상품 등록
-    public void register(User user, ProductRegisterRequest request, List<String> imgUrlList) {
+    @Transactional
+    public ProductRegisterResponse register(User user, ProductRegisterRequest request, List<String> imgUrlList) {
 
         Product registerProduct = Product.builder()
                 .company(companyRepository.findByUserIdx(user.getIdx()).get())
@@ -40,7 +43,7 @@ public class ProductService {
                 .category(categoryRepository.findById(request.getCategoryIdx()).get())
                 .build();
 
-        productRepository.save(registerProduct);
+        Product product = productRepository.save(registerProduct);
         // 상품 이미지 등록
         for (int i = 0; i < imgUrlList.size(); i++) {
             ProductImg productImg = ProductImg.builder()
@@ -51,6 +54,10 @@ public class ProductService {
 
             productImgRepository.save(productImg);
         }
+
+        return ProductRegisterResponse.builder()
+                .productIdx(product.getIdx())
+                .build();
     }
 
     // 상품 전체 조회
