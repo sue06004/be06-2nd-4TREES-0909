@@ -11,10 +11,7 @@ import org.example.fourtreesproject.exception.custom.InvalidGroupBuyException;
 import org.example.fourtreesproject.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuySearchRequest;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyLikesListResponse;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
-import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
+import org.example.fourtreesproject.groupbuy.model.response.*;
 import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,7 +39,7 @@ public class GroupBuyController {
               }""")})))
 
     @PostMapping("/register")
-    public BaseResponse register(
+    public BaseResponse<GroupBuyRegisterResponse> register(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody GroupBuyCreateRequest request
             ){
@@ -52,11 +49,11 @@ public class GroupBuyController {
         if (request == null){
             throw new InvalidGroupBuyException(GROUPBUY_REGIST_FAIL);
         }
-
-        if (!gpbuyService.save(customUserDetails.getUser().getIdx(),request)) {
+        GroupBuyRegisterResponse groupBuyRegisterResponse = gpbuyService.save(customUserDetails.getUser().getIdx(), request);
+        if (groupBuyRegisterResponse==null) {
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_REGIST_FAIL);
         }
-        return new BaseResponse();
+        return new BaseResponse<>(groupBuyRegisterResponse);
     }
 
     @Operation(summary = "공구에 입찰한 입찰정보 조회 api",
