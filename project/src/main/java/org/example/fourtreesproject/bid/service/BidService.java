@@ -6,6 +6,7 @@ import org.example.fourtreesproject.bid.model.request.BidCancelRequest;
 import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
 import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
 import org.example.fourtreesproject.bid.model.response.BidMyListResponse;
+import org.example.fourtreesproject.bid.model.response.BidRegisterResponse;
 import org.example.fourtreesproject.bid.model.response.GpbuyWaitListResponse;
 import org.example.fourtreesproject.bid.repository.BidRepository;
 import org.example.fourtreesproject.exception.custom.InvalidBidException;
@@ -32,7 +33,7 @@ public class BidService {
     private final ProductRepository productRepository;
     private final GroupBuyRepository groupBuyRepository;
 
-    public void register(Long userIdx, BidRegisterRequest bidRegisterRequest) {
+    public BidRegisterResponse register(Long userIdx, BidRegisterRequest bidRegisterRequest) {
         GroupBuy groupBuy = groupBuyRepository.findById(bidRegisterRequest.getGpbuyIdx())
                 .orElseThrow(() -> new InvalidBidException((GROUPBUY_LIST_FAIL)));
         // 공구 상태가 대기일 경우에만 가능
@@ -47,6 +48,10 @@ public class BidService {
                         .groupBuy(groupBuy)
                         .build();
                 bidRepository.save(bid);
+
+                return BidRegisterResponse.builder()
+                        .bidIdx(bid.getIdx())
+                        .build();
             } else throw new InvalidBidException(PRODUCT_VERIFICATION_FAIL);
         } else throw new InvalidBidException(BID_REGISTER_FAIL);
 
