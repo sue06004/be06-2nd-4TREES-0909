@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.bid.model.request.BidCancelRequest;
 import org.example.fourtreesproject.bid.model.request.BidModifyRequest;
 import org.example.fourtreesproject.bid.model.request.BidRegisterRequest;
+import org.example.fourtreesproject.bid.model.response.BidRegisterResponse;
 import org.example.fourtreesproject.bid.service.BidService;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.exception.custom.InvalidBidException;
@@ -49,11 +50,10 @@ public class BidController {
             )
     )
     @PostMapping("/register")
-    public BaseResponse<String> register(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody BidRegisterRequest bidRegisterRequest) {
+    public BaseResponse<BidRegisterResponse> register(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody BidRegisterRequest bidRegisterRequest) {
         if (customUserDetails == null) throw new InvalidBidException(USER_AUTHENTICATION_FAILED);
         Long userIdx = customUserDetails.getIdx();
-        bidService.register(userIdx, bidRegisterRequest);
-        return new BaseResponse<>();
+        return new BaseResponse<>(bidService.register(userIdx, bidRegisterRequest));
     }
 
     @Operation(summary = "입찰 현황 조회 api", description = "업체회원이 자신이 등록한 (선정 되었거나 선정이 되지 않은)입찰 리스트 조회 <br><br>" +
