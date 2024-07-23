@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.common.BaseResponse;
 import org.example.fourtreesproject.companyRegVerify.service.CompanyRegVerifyService;
 import org.example.fourtreesproject.delivery.model.request.DeliveryAddressRegisterRequest;
+import org.example.fourtreesproject.delivery.model.response.DeliveryAddressRegisterResponse;
 import org.example.fourtreesproject.emailVerify.model.dto.EmailVerifyDto;
 import org.example.fourtreesproject.emailVerify.service.EmailVerifyService;
 import org.example.fourtreesproject.exception.custom.InvalidUserException;
@@ -71,13 +72,13 @@ public class UserController {
 
     @Operation(summary = "배송지 등록 api")
     @PostMapping("/user/delivery/register")
-    public BaseResponse<String> deliveryRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
+    public BaseResponse<DeliveryAddressRegisterResponse> deliveryRegister(@AuthenticationPrincipal CustomUserDetails customUserDetails,
                                                  @RequestBody DeliveryAddressRegisterRequest deliveryAddressRegisterRequest) throws RuntimeException{
         if (customUserDetails == null){
             return new BaseResponse<>(USER_NOT_LOGIN);
         }
-        userService.registerDelivery(customUserDetails.getUser(), deliveryAddressRegisterRequest);
-        return new BaseResponse<>();
+        DeliveryAddressRegisterResponse deliveryAddressRegisterResponse = userService.registerDelivery(customUserDetails.getUser(), deliveryAddressRegisterRequest);
+        return new BaseResponse<>(deliveryAddressRegisterResponse);
     }
 
     @Operation(summary = "일반 유저 상세 정보 조회 api")

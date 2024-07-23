@@ -11,10 +11,7 @@ import org.example.fourtreesproject.exception.custom.InvalidGroupBuyException;
 import org.example.fourtreesproject.exception.custom.InvalidUserException;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuySearchRequest;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyLikesListResponse;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
-import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
+import org.example.fourtreesproject.groupbuy.model.response.*;
 import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,7 +31,6 @@ public class GroupBuyController {
 
     @Operation(summary = "공구 등록api", description = "일반사용자가 마음에 드는 공구가 없을시 직접 공구를 등록<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "application/json", examples = {@ExampleObject(name = "Valid example", value = """
             {
-                "userIdx": 3,
                 "categoryIdx": 2,
                 "title": "sjb의 스프링 책 아무거나 대량으로 삽니다!",
                 "content": "원가보다는 싸게 등록해주세요! 50개 한번에 사는 공구입니다!",
@@ -42,7 +38,7 @@ public class GroupBuyController {
               }""")})))
 
     @PostMapping("/register")
-    public BaseResponse register(
+    public BaseResponse<GroupBuyRegisterResponse> register(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestBody GroupBuyCreateRequest request
             ){
@@ -52,11 +48,11 @@ public class GroupBuyController {
         if (request == null){
             throw new InvalidGroupBuyException(GROUPBUY_REGIST_FAIL);
         }
-
-        if (!gpbuyService.save(customUserDetails.getUser().getIdx(),request)) {
+        GroupBuyRegisterResponse groupBuyRegisterResponse = gpbuyService.save(customUserDetails.getUser().getIdx(), request);
+        if (groupBuyRegisterResponse==null) {
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_REGIST_FAIL);
         }
-        return new BaseResponse();
+        return new BaseResponse<>(groupBuyRegisterResponse);
     }
 
     @Operation(summary = "공구에 입찰한 입찰정보 조회 api",

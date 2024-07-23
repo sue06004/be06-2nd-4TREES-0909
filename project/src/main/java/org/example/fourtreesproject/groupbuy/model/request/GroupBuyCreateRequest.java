@@ -7,8 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GroupBuyCreateRequest {
-
-    private Long userIdx;
     private Long categoryIdx;
     private String title;
     private String content;

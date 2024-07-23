@@ -15,10 +15,7 @@ import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.model.entity.Likes;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuyCreateRequest;
 import org.example.fourtreesproject.groupbuy.model.request.GroupBuySearchRequest;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyDetailResponse;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyLikesListResponse;
-import org.example.fourtreesproject.groupbuy.model.response.GroupBuyListResponse;
-import org.example.fourtreesproject.groupbuy.model.response.RegisteredBidListResponse;
+import org.example.fourtreesproject.groupbuy.model.response.*;
 import org.example.fourtreesproject.groupbuy.repository.CategoryRepository;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
 import org.example.fourtreesproject.groupbuy.repository.LikesRepository;
@@ -60,7 +57,7 @@ public class GroupBuyService {
     private final OrdersService ordersService;
     private final UserDetailRepository userDetailRepository;
 
-    public boolean save(Long user_idx, GroupBuyCreateRequest request) {
+    public GroupBuyRegisterResponse save(Long user_idx, GroupBuyCreateRequest request) {
         User user = userRepository.findById(user_idx).orElseThrow(() -> new InvalidUserException(BaseResponseStatus.USER_INFO_DETAIL_FAIL));
         Category category = categoryRepository.findById(request.getCategoryIdx()).orElseThrow(() -> new InvalidGroupBuyException(BaseResponseStatus.REQUEST_FAIL));
         GroupBuy groupbuy = GroupBuy.builder()
@@ -76,11 +73,9 @@ public class GroupBuyService {
 
         GroupBuy res = gpbuyRepository.save(groupbuy);
         if (res == null){
-            return false;
+            return null;
         }
-
-        return true;
-
+        return GroupBuyRegisterResponse.builder().groupBuyIdx(res.getIdx()).build();
     }
     //공구 시작 기능
 
