@@ -47,7 +47,7 @@
 
 ## 📌API 명세서
 <a href="http://43.202.232.230:8080/swagger-ui/index.html#/">김우혁 AWS 배포 Swagger</a> <br/>
-<a href="http://15.165.17.119:8080/swagger-ui/index.html#/">도지민 AWS 배포 Swagger</a> <br/>
+<a href="http://3.34.25.245:8080/swagger-ui/index.html#/">도지민 AWS 배포 Swagger</a> <br/>
 <a href="http://...../swagger-ui/index.html#/">강태성 AWS 배포 Swagger</a> <br/>
 <a href="http://...../swagger-ui/index.html#/">서재은 AWS 배포 Swagger</a> <br/>
 <br/><br/>
