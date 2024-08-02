@@ -27,28 +27,44 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader("Authorization");
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            log.info("Bearer 토큰이 없음");
+//        String authorization = request.getHeader("Authorization");
+        Cookie authorization = null;
+        Cookie rTokenCookie = null;
+        Cookie[] cookieArray = request.getCookies();
+        if (cookieArray != null) {
+            for (Cookie cookie : cookieArray) {
+                if (cookie.getName().equals("AToken")) {
+                    authorization =  cookie;
+                } else if (cookie.getName().equals("RToken")){
+                    rTokenCookie = cookie;
+                }
+            }
+        }
+
+        if (authorization == null) {
+            log.info("AccessToken 없음");
             filterChain.doFilter(request, response);
             return;
         }
-        String accessToken = authorization.split(" ")[1];
+        String accessToken = authorization.getValue();
         if (jwtUtil.isExpired(accessToken)) {
-            log.info("토큰 만료됨");
-            Cookie[] cookieArray = request.getCookies();
-            Cookie cookie = findRefreshTokenAtCookies(cookieArray);
-            if (cookie == null) { // client가 refresh token을 안가지고 있을 때
+            log.info("AccessToken 만료됨");
+
+            if (rTokenCookie == null) { // client가 refresh token을 안가지고 있을 때
                 filterChain.doFilter(request, response);
                 return;
             }
-            String reissuedAccessToken = reissueToken(cookie);
+            String reissuedAccessToken = reissueToken(rTokenCookie);
             if (reissuedAccessToken == null) { // client의 refresh token이 변조되었거나, 만료되었거나, 서버가 가지고있는 refreshtoken과 다르거나
                 filterChain.doFilter(request, response);
                 return;
             }
             accessToken = reissuedAccessToken;
-            response.addHeader("Authorization", "Bearer " + accessToken);
+            Cookie aToken = new Cookie("AToken", accessToken);
+            aToken.setPath("/");
+            aToken.setHttpOnly(true);
+            aToken.setSecure(true);
+            response.addCookie(aToken);
         }
         String email = jwtUtil.getEmail(accessToken);
         String role = jwtUtil.getRole(accessToken);
@@ -65,19 +81,10 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private Cookie findRefreshTokenAtCookies(Cookie[] cookieArray) {
-        for (Cookie cookie : cookieArray) {
-            if (cookie.getName().equals("refresh_token")) {
-                return cookie;
-            }
-        }
-        return null;
-    }
-
     private String reissueToken(Cookie cookie) {
         String cookieRefreshToken = cookie.getValue();
         if (jwtUtil.isExpired(cookieRefreshToken)) {
-            log.info("refresh_token 만료됨");
+            log.info("RefreshToken 만료됨");
             return null;
         }
 
