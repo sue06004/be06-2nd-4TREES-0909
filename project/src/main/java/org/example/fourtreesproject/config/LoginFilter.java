@@ -74,16 +74,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         }
         refreshTokenRepository.save(refreshTokenEntity);
 
-        response.addHeader("Authorization", "Bearer " + accessToken);
-
-        Cookie aToken = new Cookie("refresh_token", refreshToken);
+        Cookie aToken = new Cookie("AToken", accessToken);
         aToken.setPath("/");
         aToken.setHttpOnly(true);
-        aToken.setMaxAge(COOKIE_MAX_AGE);
+        aToken.setSecure(true);
+
+        Cookie rToken = new Cookie("RToken", refreshToken);
+        rToken.setPath("/");
+        rToken.setHttpOnly(true);
+        rToken.setSecure(true);
+        rToken.setMaxAge(COOKIE_MAX_AGE);
+
         response.addCookie(aToken);
+        response.addCookie(rToken);
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=UTF-8");
+
         PrintWriter out = response.getWriter();
         BaseResponse<String> baseResponse = new BaseResponse<>();
         out.print(baseResponse);
