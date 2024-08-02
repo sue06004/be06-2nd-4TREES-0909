@@ -72,7 +72,7 @@ public class GroupBuyService {
                 .build();
 
         GroupBuy res = gpbuyRepository.save(groupbuy);
-        if (res == null){
+        if (res == null) {
             return null;
         }
         return GroupBuyRegisterResponse.builder().groupBuyIdx(res.getIdx()).build();
@@ -87,10 +87,10 @@ public class GroupBuyService {
                 () -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY)
         );
         List<RegisteredBidListResponse> responseList = new ArrayList<>();
-        for (Bid bid: bidList){
+        for (Bid bid : bidList) {
             String productThumbnailImg = "";
-            for (ProductImg img : bid.getProduct().getProductImgList()){
-                if (img.getProductImgSequence()==0){
+            for (ProductImg img : bid.getProduct().getProductImgList()) {
+                if (img.getProductImgSequence() == 0) {
                     productThumbnailImg = img.getProductImgUrl();
                 }
             }
@@ -109,7 +109,7 @@ public class GroupBuyService {
 
     public List<GroupBuyListResponse> list(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "idx"));
-        Slice<GroupBuy> result = gpbuyRepository.findSliceByGpbuyStatus(pageable,"진행");
+        Slice<GroupBuy> result = gpbuyRepository.findSliceByGpbuyStatus(pageable, "진행");
         List<GroupBuy> slicedResult = result.getContent();
         List<GroupBuyListResponse> responseList = new ArrayList<>();
         Product selectedProduct = null;
@@ -117,10 +117,10 @@ public class GroupBuyService {
         Bid selectedBid = null;
 
 
-        for (GroupBuy g : slicedResult){
+        for (GroupBuy g : slicedResult) {
             //선정된 상품 확인 (입찰 목록에서 선정 상태 확인)
-            for (Bid b: g.getBidList()){
-                if (isSelected(b)){
+            for (Bid b : g.getBidList()) {
+                if (isSelected(b)) {
                     selectedBid = b;
                     selectedProduct = selectedBid.getProduct();
                     selectedProductThumbnailImg = extractThumbnailImg(selectedProduct.getProductImgList());
@@ -154,16 +154,16 @@ public class GroupBuyService {
         List<String> productImgList = new ArrayList<>();
 
         //선정된 입찰 정보 가져오기
-        for (Bid b: groupBuy.getBidList()){
-            if (b.getBidSelect()){
+        for (Bid b : groupBuy.getBidList()) {
+            if (b.getBidSelect()) {
                 bid = b;
                 break;
             }
         }
         //썸네일과 본문 이미지 분리
-        for (ProductImg img : bid.getProduct().getProductImgList()){
+        for (ProductImg img : bid.getProduct().getProductImgList()) {
             thumbnailImg = extractThumbnailImg(bid.getProduct().getProductImgList());
-            if (img.getProductImgSequence() != 0){
+            if (img.getProductImgSequence() != 0) {
                 productImgList.add(img.getProductImgUrl());
             }
         }
@@ -189,22 +189,22 @@ public class GroupBuyService {
     public boolean likesSave(Long gpbuyIdx, Long userIdx) {
         Optional<GroupBuy> groupBuy = gpbuyRepository.findById(gpbuyIdx);
         Optional<User> user = userRepository.findById(userIdx);
-        if (groupBuy.isPresent() && user.isPresent()){
+        if (groupBuy.isPresent() && user.isPresent()) {
             Optional<Likes> likes = likesRepository.findByGpbuyIdxAndUserIdx(gpbuyIdx, userIdx);
-            if (likes.isEmpty()){
+            if (likes.isEmpty()) {
                 Likes newLikes = Likes.builder()
                         .groupBuy(groupBuy.get())
                         .user(user.get())
                         .build();
                 likesRepository.save(newLikes);
-            }else {
+            } else {
                 likesRepository.deleteById(likes.get().getIdx());
             }
             return true;
-        } else if( groupBuy.isEmpty()) {
+        } else if (groupBuy.isEmpty()) {
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_EMPTY);
-        }else {
-            throw  new InvalidGroupBuyException(BaseResponseStatus.USER_NOT_LOGIN);
+        } else {
+            throw new InvalidGroupBuyException(BaseResponseStatus.USER_NOT_LOGIN);
         }
     }
 
@@ -216,10 +216,10 @@ public class GroupBuyService {
         );
         List<GroupBuyLikesListResponse> responseList = new ArrayList<>();
 
-        for (Likes l : likesList){
+        for (Likes l : likesList) {
             Bid bid = null;
             for (Bid b : l.getGroupBuy().getBidList()) {
-                if (isSelected(b)){
+                if (isSelected(b)) {
                     bid = b;
                     break;
                 }
@@ -251,10 +251,10 @@ public class GroupBuyService {
         Bid selectedBid = null;
 
 
-        for (GroupBuy g : slicedResult){
+        for (GroupBuy g : slicedResult) {
             //선정된 상품 확인 (입찰 목록에서 선정 상태 확인)
-            for (Bid b: g.getBidList()){
-                if (isSelected(b)){
+            for (Bid b : g.getBidList()) {
+                if (isSelected(b)) {
                     selectedBid = b;
                     selectedProduct = selectedBid.getProduct();
                     selectedProductThumbnailImg = extractThumbnailImg(selectedProduct.getProductImgList());
@@ -281,13 +281,13 @@ public class GroupBuyService {
     }
 
     //-- 유틸, 추출 메소드 --
-    public Boolean isSelected(Bid b){
+    public Boolean isSelected(Bid b) {
         return b.getBidSelect();
     }
 
-    public ProductImg extractThumbnailImg(List<ProductImg> imgList){
-        for (ProductImg img: imgList){
-            if (img.getProductImgSequence() == 0){
+    public ProductImg extractThumbnailImg(List<ProductImg> imgList) {
+        for (ProductImg img : imgList) {
+            if (img.getProductImgSequence() == 0) {
                 return img;
             }
         }
@@ -299,8 +299,8 @@ public class GroupBuyService {
         User user = userRepository.findById(userIdx).orElseThrow(
                 () -> new InvalidGroupBuyException(BaseResponseStatus.USER_INFO_DETAIL_FAIL)
         );
-        Optional<Orders> optionalOrders = ordersRepository.findByIdxAndUserIdx(ordersIdx,userIdx);
-        if (optionalOrders.isPresent()){
+        Optional<Orders> optionalOrders = ordersRepository.findByIdxAndUserIdx(ordersIdx, userIdx);
+        if (optionalOrders.isPresent()) {
             //주문 테이블 상태수정, 취소시간 기록
             Orders orders = optionalOrders.get();
             orders.updateCancledAt(LocalDateTime.now());
@@ -318,30 +318,30 @@ public class GroupBuyService {
             userDetailRepository.save(userDetail);
 
             UserCoupon userCoupon = orders.getUserCoupon();
-            if (userCoupon != null){
+            if (userCoupon != null) {
                 userCoupon.cancleCoupon();
                 userCouponRepository.save(userCoupon);
             }
 
             //결제 취소 요청
             Bid bid = null;
-            for (Bid b: groupBuy.getBidList()){
-                if (isSelected(b)){
+            for (Bid b : groupBuy.getBidList()) {
+                if (isSelected(b)) {
                     bid = b;
                     break;
                 }
             }
-            BigDecimal amount = new BigDecimal(orders.getOrderQuantity()*bid.getBidPrice());
+            BigDecimal amount = new BigDecimal(orders.getOrderQuantity() * bid.getBidPrice());
             ordersService.refund(orders.getImpUid(), amount);
 
             return true;
-        }else {
+        } else {
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_CANCLE_FAIL_EMPTY_ORDER);
         }
     }
 
 
-    public String calcDuration(LocalDateTime gpbuyEndedAt){
+    public String calcDuration(LocalDateTime gpbuyEndedAt) {
         //현재 시간과 마감기한의 차이를 구함
         Duration duration = Duration.between(LocalDateTime.now(), gpbuyEndedAt);
         long days = duration.toDays();
@@ -352,6 +352,21 @@ public class GroupBuyService {
         //문자열 형태로 변환
         return String.format("%dT%02d:%02d:%02d",
                 days, hours, minutes, seconds);
+    }
+
+    public List<GroupBuyWaitListResponse> waitList(User user) {
+        List<GroupBuy> gpbuyList = gpbuyRepository.findByUserIdxAndGpbuyStatus(user.getIdx(), "대기");
+        List<GroupBuyWaitListResponse> responseList = new ArrayList<>();
+        for (GroupBuy groupBuy : gpbuyList) {
+            GroupBuyWaitListResponse response = GroupBuyWaitListResponse.builder()
+                    .gpbuyIdx(groupBuy.getIdx())
+                    .gpbuyTitle(groupBuy.getGpbuyTitle())
+                    .gpbuyRegedAt(groupBuy.getGpbuyRegedAt())
+                    .gpbuyBidEndedAt(groupBuy.getGpbuyBidEndedAt())
+                    .build();
+            responseList.add(response);
+        }
+        return responseList;
     }
 
 
