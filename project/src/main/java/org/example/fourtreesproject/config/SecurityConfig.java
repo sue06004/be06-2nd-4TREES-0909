@@ -73,14 +73,16 @@ public class SecurityConfig {
                 auth
                         .requestMatchers(
                                 "/user/signup", "/user/login", "/user/verify",
-                                "/seller/signup", "/coupon/register", "/company-reg/verify").permitAll() // 모든 사람 접속 가능
+                                "/seller/signup", "/coupon/register", "/company-reg/verify",
+                                "/gpbuy/search", "/gpbuy/list", "/gpbuy/detail").permitAll() // 모든 사람 접속 가능
                         .requestMatchers("/user/delivery/", "/user/info/detail").hasRole("USER")
                         .requestMatchers("/seller/info/detail").hasRole("SELLER")
                         .requestMatchers("/company/**").hasRole("SELLER")
                         .requestMatchers("/product/**").hasRole("SELLER")
-                        .requestMatchers("/gpbuy/**").hasRole("USER")
                         .requestMatchers("/bid/**").hasRole("SELLER")
                         .requestMatchers("/orders/**").hasRole("USER")
+                        .requestMatchers("/gpbuy/register", "/gpbuy/registered/bid/list"
+                        , "/gpbuy/likes/save", "/gpbuy/likes/list", "gpbuy/cancle").hasRole("USER")
                         .requestMatchers("/v2/api-dosc", "/swagger-resources/**", "/swagger-ui.html","/webjars/**","/swagger-ui/**" ).permitAll()
                         .anyRequest().permitAll()
         );
