@@ -163,7 +163,7 @@ public class GroupBuyService {
         Bid bid = null;
         ProductImg thumbnailImg = null;
         List<String> productImgList = new ArrayList<>();
-
+//
 //        Boolean isLiked = likesRepository.existsByGpbuyIdxAndUserIdx(gpbuyIdx)
 
         //선정된 입찰 정보 가져오기
