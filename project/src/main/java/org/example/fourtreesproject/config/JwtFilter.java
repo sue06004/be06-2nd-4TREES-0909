@@ -41,14 +41,14 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
 
-        if (authorization == null || !authorization.getValue().startsWith("Bearer ")) {
-            log.info("Bearer 토큰이 없음");
+        if (authorization == null) {
+            log.info("AccessToken 없음");
             filterChain.doFilter(request, response);
             return;
         }
         String accessToken = authorization.getValue();
         if (jwtUtil.isExpired(accessToken)) {
-            log.info("토큰 만료됨");
+            log.info("AccessToken 만료됨");
 
             if (rTokenCookie == null) { // client가 refresh token을 안가지고 있을 때
                 filterChain.doFilter(request, response);
@@ -84,7 +84,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private String reissueToken(Cookie cookie) {
         String cookieRefreshToken = cookie.getValue();
         if (jwtUtil.isExpired(cookieRefreshToken)) {
-            log.info("refresh_token 만료됨");
+            log.info("RefreshToken 만료됨");
             return null;
         }
 
