@@ -79,13 +79,14 @@ public class GroupBuyService {
     }
     //공구 시작 기능
 
-    public List<RegisteredBidListResponse> findBidList(Long gpbuyIdx) {
+    public RegisteredGroupBuyResponse findBidList(Long gpbuyIdx) {
         GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).orElseThrow(
                 () -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_EMPTY)
         );
         List<Bid> bidList = bidRepository.findAllByGpbuyIdx(gpbuyIdx).orElseThrow(
                 () -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY)
         );
+
         List<RegisteredBidListResponse> responseList = new ArrayList<>();
         for (Bid bid : bidList) {
             String productThumbnailImg = "";
@@ -104,7 +105,17 @@ public class GroupBuyService {
                     .build();
             responseList.add(response);
         }
-        return responseList;
+
+        RegisteredGroupBuyResponse registeredGroupBuyResponse = RegisteredGroupBuyResponse.builder()
+                .gpbuyIdx(groupBuy.getIdx())
+                .gpbuyTitle(groupBuy.getGpbuyTitle())
+                .gpbuyContent(groupBuy.getGpbuyContent())
+                .categoryIdx(groupBuy.getCategory().getIdx())
+                .gpbuyQuantity(groupBuy.getGpbuyQuantity())
+                .gpbuyBidEndedAt(groupBuy.getGpbuyBidEndedAt())
+                .bidList(responseList)
+                .build();
+        return registeredGroupBuyResponse;
     }
 
     public List<GroupBuyListResponse> list(Integer page, Integer size) {
