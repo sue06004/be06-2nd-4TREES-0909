@@ -55,14 +55,14 @@ public class GroupBuyController {
         return new BaseResponse<>(groupBuyRegisterResponse);
     }
 
-    @Operation(summary = "공구에 입찰한 입찰정보 조회 api",
-    description = "일반사용자가 자신이 등록한 공구에 등록된 입찰 목록을 조회하는 기능입니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
+    @Operation(summary = "공구와 공구에 입찰한 입찰정보 조회 api",
+    description = "일반사용자가 자신이 등록한 공구와 공구에 등록된 입찰 목록을 조회하는 기능입니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
     @GetMapping("/registered/bid/list")
-    public BaseResponse<List<RegisteredBidListResponse>> registeredBidList(
+    public BaseResponse<RegisteredGroupBuyResponse> registeredBidList(
             Long gpbuyIdx
     ){
-        List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
-        if (result.size() == 0){
+        RegisteredGroupBuyResponse result = gpbuyService.findBidList(gpbuyIdx);
+        if (result.getBidList().size() == 0){
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY);
         }
         if (gpbuyIdx == null){
