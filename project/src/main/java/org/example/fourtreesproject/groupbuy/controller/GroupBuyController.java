@@ -15,6 +15,8 @@ import org.example.fourtreesproject.groupbuy.model.response.*;
 import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -100,6 +102,10 @@ public class GroupBuyController {
     public BaseResponse<GroupBuyDetailResponse> detail(
             Long gpbuyIdx
     ) {
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() == null){
+            System.out.println("들어오긴함");
+        }
+
         GroupBuyDetailResponse result = gpbuyService.findByGpbuyIdx(gpbuyIdx);
         if (result == null) {
             throw new InvalidGroupBuyException(GROUPBUY_LIST_FAIL);
