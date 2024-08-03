@@ -100,13 +100,12 @@ public class GroupBuyController {
             description = "현재 진행중인 특정 공구에 대한 상세정보를 조회합니다.")
     @GetMapping("/detail")
     public BaseResponse<GroupBuyDetailResponse> detail(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             Long gpbuyIdx
     ) {
-        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() == null){
-            System.out.println("들어오긴함");
-        }
 
-        GroupBuyDetailResponse result = gpbuyService.findByGpbuyIdx(gpbuyIdx);
+
+        GroupBuyDetailResponse result = gpbuyService.findByGpbuyIdx(gpbuyIdx, customUserDetails);
         if (result == null) {
             throw new InvalidGroupBuyException(GROUPBUY_LIST_FAIL);
         }
