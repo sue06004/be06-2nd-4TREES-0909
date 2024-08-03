@@ -60,14 +60,6 @@ public class OrdersService {
 
     @Transactional
     public void registerOrder(Long userIdx, String impUid) throws IamportResponseException, IOException, RuntimeException {
-        // 1. 공구 상태 확인(대기 or 진행)
-        //- 대기이면 bid 선정 - 완
-        //- 진행으로 바꾸고 - 완
-        //- 시작시간 기록 - 완
-        //- 마감 시간, 보류 마감 시간 기록 - 완
-
-        //2. 공구 remain quantity 확인 - 완
-
         User user = userRepository.findById(userIdx).orElse(null);
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(impUid);
         Payment payment = iamportResponse.getResponse();
@@ -177,7 +169,7 @@ public class OrdersService {
     @Timer
     public List<OrdersListResponse> getOrderInfoList(Integer page, Integer size, Long userIdx) throws RuntimeException {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<OrdersListResponse> ordersListResponseSlice = ordersRepository.findMyOrders(pageable, userIdx, "주문");
+        Slice<OrdersListResponse> ordersListResponseSlice = ordersRepository.findMyOrders(pageable, userIdx);
         return ordersListResponseSlice.stream().toList();
     }
 
