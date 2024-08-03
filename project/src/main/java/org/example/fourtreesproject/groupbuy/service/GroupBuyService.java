@@ -24,6 +24,7 @@ import org.example.fourtreesproject.orders.repository.OrdersRepository;
 import org.example.fourtreesproject.orders.service.OrdersService;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.product.model.entity.ProductImg;
+import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
 import org.example.fourtreesproject.user.repository.UserDetailRepository;
@@ -158,44 +159,52 @@ public class GroupBuyService {
     }
 
     //공구 상세조회 기능
-    public GroupBuyDetailResponse findByGpbuyIdx(Long gpbuyIdx) {
-        GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).orElseThrow(() -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_EMPTY));
-        Bid bid = null;
-        ProductImg thumbnailImg = null;
-        List<String> productImgList = new ArrayList<>();
-//
-//        Boolean isLiked = likesRepository.existsByGpbuyIdxAndUserIdx(gpbuyIdx)
+    public GroupBuyDetailResponse findByGpbuyIdx(Long gpbuyIdx, CustomUserDetails customUserDetails) {
+        Boolean isLiked = false;
+        if (customUserDetails != null){
+            Optional<Likes> optionalLikes = likesRepository.findByGpbuyIdxAndUserIdx(gpbuyIdx, customUserDetails.getUser().getIdx());
+            if (optionalLikes.isPresent()){
+                isLiked = true;
+            }
+        }
+            GroupBuy groupBuy = gpbuyRepository.findById(gpbuyIdx).orElseThrow(() -> new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_EMPTY));
+            Bid bid = null;
+            ProductImg thumbnailImg = null;
+            List<String> productImgList = new ArrayList<>();
 
-        //선정된 입찰 정보 가져오기
-        for (Bid b : groupBuy.getBidList()) {
-            if (b.getBidSelect()) {
-                bid = b;
-                break;
+
+            //선정된 입찰 정보 가져오기
+            for (Bid b : groupBuy.getBidList()) {
+                if (b.getBidSelect()) {
+                    bid = b;
+                    break;
+                }
             }
-        }
-        //썸네일과 본문 이미지 분리
-        for (ProductImg img : bid.getProduct().getProductImgList()) {
-            thumbnailImg = extractThumbnailImg(bid.getProduct().getProductImgList());
-            if (img.getProductImgSequence() != 0) {
-                productImgList.add(img.getProductImgUrl());
+            //썸네일과 본문 이미지 분리
+            for (ProductImg img : bid.getProduct().getProductImgList()) {
+                thumbnailImg = extractThumbnailImg(bid.getProduct().getProductImgList());
+                if (img.getProductImgSequence() != 0) {
+                    productImgList.add(img.getProductImgUrl());
+                }
             }
-        }
-        //응답 DTO 빌딩
-        GroupBuyDetailResponse response = GroupBuyDetailResponse.builder()
-                .gpbuyIdx(groupBuy.getIdx())
-                .userIdx(groupBuy.getUser().getIdx())
-                .productThumbnailImg(thumbnailImg.getProductImgUrl())
-                .productImgUrlList(productImgList)
-                .productName(bid.getProduct().getProductName())
-                .bidPrice(bid.getBidPrice())
-                .productContent(bid.getProduct().getProductContent())
-                .companyName(bid.getProduct().getCompany().getCompanyName())
-                .gpbuyRemainQuantity(groupBuy.getGpbuyRemainQuantity())
-                .gpbuyQuantity(groupBuy.getGpbuyQuantity())
-                .gpbuyStartedAt(groupBuy.getGpbuyStartedAt())
-                .gpbuyEndedAt(groupBuy.getGpbuyEndedAt())
-                .duration(calcDuration(groupBuy.getGpbuyEndedAt()))
-                .build();
+            //응답 DTO 빌딩
+            GroupBuyDetailResponse response = GroupBuyDetailResponse.builder()
+                    .gpbuyIdx(groupBuy.getIdx())
+                    .userIdx(groupBuy.getUser().getIdx())
+                    .productThumbnailImg(thumbnailImg.getProductImgUrl())
+                    .productImgUrlList(productImgList)
+                    .productName(bid.getProduct().getProductName())
+                    .bidPrice(bid.getBidPrice())
+                    .productContent(bid.getProduct().getProductContent())
+                    .companyName(bid.getProduct().getCompany().getCompanyName())
+                    .gpbuyRemainQuantity(groupBuy.getGpbuyRemainQuantity())
+                    .gpbuyQuantity(groupBuy.getGpbuyQuantity())
+                    .gpbuyStartedAt(groupBuy.getGpbuyStartedAt())
+                    .gpbuyEndedAt(groupBuy.getGpbuyEndedAt())
+                    .duration(calcDuration(groupBuy.getGpbuyEndedAt()))
+                    .isLiked(isLiked)
+                    .build();
+
         return response;
     }
 
