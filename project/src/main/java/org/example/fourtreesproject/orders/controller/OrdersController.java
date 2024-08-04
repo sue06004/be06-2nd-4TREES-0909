@@ -45,8 +45,8 @@ public class OrdersController {
     @Operation(summary = "주문 페이지 정보 조회 api",
             description = "회원이 주문 페이지에서 사용할 배송지 정보, 쿠폰 정보, 포인트를 반환")
     @GetMapping("/page")
-    public BaseResponse<OrderPageResponse> getOrderPageInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) throws RuntimeException {
-        OrderPageResponse orderPageResponse = ordersService.loadOrderPage(customUserDetails.getIdx());
+    public BaseResponse<OrderPageResponse> getOrderPageInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails, Long gpbuyIdx, Integer quantity) throws RuntimeException {
+        OrderPageResponse orderPageResponse = ordersService.loadOrderPage(customUserDetails.getIdx(), gpbuyIdx, quantity);
         return new BaseResponse<>(orderPageResponse);
     }
 }

@@ -16,4 +16,8 @@ public class OrderPageResponse {
     private Integer point;
     private List<UserCouponResponse> userCouponResponseList;
     private List<DeliveryAddressResponse> deliveryAddressResponseList;
+    private Integer bidPrice;
+    private String productName;
+    private Integer quantity;
+    private String productThumbnailUrl;
 }

@@ -17,6 +17,7 @@ import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.coupon.repository.UserCouponRepository;
 import org.example.fourtreesproject.delivery.model.DeliveryAddress;
 import org.example.fourtreesproject.delivery.model.response.DeliveryAddressResponse;
+import org.example.fourtreesproject.exception.custom.InvalidBidException;
 import org.example.fourtreesproject.exception.custom.InvalidOrderException;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
@@ -26,6 +27,8 @@ import org.example.fourtreesproject.orders.model.response.OrdersListResponse;
 import org.example.fourtreesproject.orders.repository.OrdersRepository;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.exception.custom.InvalidUserException;
+import org.example.fourtreesproject.product.model.entity.ProductImg;
+import org.example.fourtreesproject.product.repository.ProductImgRepository;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
 import org.example.fourtreesproject.user.model.response.UserCouponResponse;
@@ -57,6 +60,7 @@ public class OrdersService {
     private final GroupBuyRepository groupBuyRepository;
     private final UserRepository userRepository;
     private final UserDetailRepository userDetailRepository;
+    private final ProductImgRepository productImgRepository;
 
     @Transactional
     public void registerOrder(Long userIdx, String impUid) throws IamportResponseException, IOException, RuntimeException {
@@ -173,7 +177,7 @@ public class OrdersService {
         return ordersListResponseSlice.stream().toList();
     }
 
-    public OrderPageResponse loadOrderPage(Long userIdx) throws RuntimeException {
+    public OrderPageResponse loadOrderPage(Long userIdx, Long gpbuyIdx, Integer quantity) throws RuntimeException {
         User user = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
         UserDetail userDetail = userDetailRepository.findByUserIdx(user.getIdx()).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
         List<UserCoupon> userCouponList = user.getUserCouponList();
@@ -204,6 +208,9 @@ public class OrdersService {
             deliveryAddressResponseList.add(deliveryAddressResponse);
         }
 
+        Bid bid = bidRepository.findByGroupBuyIdxAndBidSelectIsTrue(gpbuyIdx).orElseThrow(() -> new InvalidBidException(BID_INFO_FAIL));
+        Product product = bid.getProduct();
+        ProductImg productThumbnailImg = productImgRepository.findByProductIdxAndProductImgSequence(product.getIdx(), 0).orElse(null);
         return OrderPageResponse.builder()
                 .email(user.getEmail())
                 .name(user.getName())
@@ -211,6 +218,10 @@ public class OrdersService {
                 .point(userDetail.getPoint())
                 .deliveryAddressResponseList(deliveryAddressResponseList)
                 .userCouponResponseList(userCouponResponseList)
+                .bidPrice(bid.getBidPrice())
+                .productName(product.getProductName())
+                .productThumbnailUrl(productThumbnailImg.getProductImgUrl())
+                .quantity(quantity)
                 .build();
     }
 
