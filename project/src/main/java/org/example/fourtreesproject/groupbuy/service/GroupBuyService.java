@@ -203,6 +203,7 @@ public class GroupBuyService {
                     .gpbuyEndedAt(groupBuy.getGpbuyEndedAt())
                     .duration(calcDuration(groupBuy.getGpbuyEndedAt()))
                     .isLiked(isLiked)
+                    .categoryIdx(groupBuy.getCategory().getIdx())
                     .build();
 
         return response;
