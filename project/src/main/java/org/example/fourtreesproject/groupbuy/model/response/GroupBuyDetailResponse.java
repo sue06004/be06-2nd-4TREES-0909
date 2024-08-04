@@ -27,4 +27,5 @@ public class GroupBuyDetailResponse {
     private LocalDateTime gpbuyEndedAt;
     private String duration;
     private Boolean isLiked;
+    private Long categoryIdx;
 }
