@@ -20,4 +20,5 @@ public class OrderPageResponse {
     private String productName;
     private Integer quantity;
     private String productThumbnailUrl;
+    private Long bidIdx;
 }

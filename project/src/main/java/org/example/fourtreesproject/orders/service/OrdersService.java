@@ -177,7 +177,7 @@ public class OrdersService {
         return ordersListResponseSlice.stream().toList();
     }
 
-    public OrderPageResponse loadOrderPage(Long userIdx, Long gpbuyIdx, Integer quantity) throws RuntimeException {
+    public OrderPageResponse loadOrderPage(Long userIdx, Long gpbuyIdx, Integer quantity, Long bidIdx) throws RuntimeException {
         User user = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
         UserDetail userDetail = userDetailRepository.findByUserIdx(user.getIdx()).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
         List<UserCoupon> userCouponList = user.getUserCouponList();
@@ -208,7 +208,12 @@ public class OrdersService {
             deliveryAddressResponseList.add(deliveryAddressResponse);
         }
 
-        Bid bid = bidRepository.findByGroupBuyIdxAndBidSelectIsTrue(gpbuyIdx).orElseThrow(() -> new InvalidBidException(BID_INFO_FAIL));
+        Bid bid;
+        if(bidIdx==null){ // 공구가 이미 진행중인 상태
+            bid = bidRepository.findByGroupBuyIdxAndBidSelectIsTrue(gpbuyIdx).orElseThrow(() -> new InvalidBidException(BID_INFO_FAIL));
+        } else { // 입찰 선정할 때
+            bid = bidRepository.findById(bidIdx).orElseThrow(() -> new InvalidBidException(BID_INFO_FAIL));
+        }
         Product product = bid.getProduct();
         ProductImg productThumbnailImg = productImgRepository.findByProductIdxAndProductImgSequence(product.getIdx(), 0).orElse(null);
         return OrderPageResponse.builder()
@@ -219,6 +224,7 @@ public class OrdersService {
                 .deliveryAddressResponseList(deliveryAddressResponseList)
                 .userCouponResponseList(userCouponResponseList)
                 .bidPrice(bid.getBidPrice())
+                .bidIdx(bid.getIdx())
                 .productName(product.getProductName())
                 .productThumbnailUrl(productThumbnailImg.getProductImgUrl())
                 .quantity(quantity)
