@@ -218,7 +218,6 @@ public class OrdersService {
                 .point(userDetail.getPoint())
                 .deliveryAddressResponseList(deliveryAddressResponseList)
                 .userCouponResponseList(userCouponResponseList)
-                .bidIdx(bid.getIdx())
                 .bidPrice(bid.getBidPrice())
                 .productName(product.getProductName())
                 .productThumbnailUrl(productThumbnailImg.getProductImgUrl())
