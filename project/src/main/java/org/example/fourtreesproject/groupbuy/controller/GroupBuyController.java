@@ -15,15 +15,12 @@ import org.example.fourtreesproject.groupbuy.model.response.*;
 import org.example.fourtreesproject.groupbuy.service.GroupBuyService;
 import org.example.fourtreesproject.user.model.dto.CustomUserDetails;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.*;
-import static org.example.fourtreesproject.common.BaseResponseStatus.GROUPBUY_LIST_WAIT_EMPTY;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,14 +56,14 @@ public class GroupBuyController {
     }
 
     @Operation(summary = "공구와 공구에 입찰한 입찰정보 조회 api",
-    description = "일반사용자가 자신이 등록한 공구와 공구에 등록된 입찰 목록을 조회하는 기능입니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
+            description = "일반사용자가 자신이 등록한 공구와 공구에 등록된 입찰 목록을 조회하는 기능입니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
 
     @GetMapping("/registered/bid/list")
     public BaseResponse<RegisteredGroupBuyResponse> registeredBidList(
             Long gpbuyIdx
-    ){
+    ) {
         RegisteredGroupBuyResponse result = gpbuyService.findBidList(gpbuyIdx);
-        if (result.getBidList().size() == 0){
+        if (result.getBidList().size() == 0) {
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY);
         }
         if (gpbuyIdx == null) {
@@ -151,21 +148,13 @@ public class GroupBuyController {
             description = "현재 진행중인 공구 중, 입력한 조건에 맞는 공구를 검색합니다. 미 입력시 조건은 반영되지 않습니다.<br><br>")
     @GetMapping("/search")
     public BaseResponse search(
-            GroupBuySearchRequest request
-    ) {
-        if (request == null) {
-            throw new InvalidGroupBuyException(REQUEST_FAIL_INVALID);
-        }
-        if (request.getPage() == null) {
-            request.setPage(0);
-        }
-        if (request.getSize() == null || request.getSize() == 0) {
-            request.setSize(10);
-        }
-        if (request.getCategoryIdx() == 0) {
-            request.setCategoryIdx(null);
-        }
+            @RequestParam(required = false) Long categoryIdx,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice    ) {
 
+        GroupBuySearchRequest request = GroupBuySearchRequest.builder().page(page).size(size).categoryIdx(categoryIdx).minPrice(minPrice).maxPrice(maxPrice).build();
         List<GroupBuyListResponse> result = gpbuyService.search(request);
         if (result.size() == 0) {
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_SEARCH_EMPTY);
