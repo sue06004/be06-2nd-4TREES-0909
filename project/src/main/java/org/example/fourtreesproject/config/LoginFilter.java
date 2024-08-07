@@ -92,7 +92,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setContentType("application/json; charset=UTF-8");
 
         PrintWriter out = response.getWriter();
-        BaseResponse<String> baseResponse = new BaseResponse<>();
+        BaseResponse<String> baseResponse = new BaseResponse<>(userDetails.getUser().getRole());
         out.print(baseResponse);
     }
 
