@@ -12,6 +12,7 @@ import org.example.fourtreesproject.user.model.entity.User;
 import org.springframework.stereotype.Service;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.COMPANY_REGIST_FAIL;
+import static org.example.fourtreesproject.common.BaseResponseStatus.COMPANY_REGIST_FAIL_EXCEED;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class CompanyService {
     //업체 정보 등록
     public CompanyRegisterResponse register(CompanyRegisterRequest request, User user) throws RuntimeException{
         if (companyRepository.findByUserIdx(user.getIdx()).isPresent()){
-            throw new InvalidCompanyException(COMPANY_REGIST_FAIL);
+            throw new InvalidCompanyException(COMPANY_REGIST_FAIL_EXCEED);
         }
         Company registCompany = Company.builder()
                 .user(user)
