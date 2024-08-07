@@ -63,9 +63,9 @@ public class GroupBuyController {
             Long gpbuyIdx
     ) {
         RegisteredGroupBuyResponse result = gpbuyService.findBidList(gpbuyIdx);
-        if (result.getBidList().size() == 0) {
-            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY);
-        }
+//        if (result.getBidList().size() == 0) {
+//            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY);
+//        }
         if (gpbuyIdx == null) {
             throw new InvalidGroupBuyException(REQUEST_FAIL_INVALID);
         }
