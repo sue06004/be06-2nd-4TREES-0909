@@ -85,6 +85,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         response.addCookie(aToken);
         response.addCookie(rToken);
 
-        getRedirectStrategy().sendRedirect(request, response, "redirect url");
+        getRedirectStrategy().sendRedirect(request, response, "http://localhost:8081/login/redirect");
     }
 }
