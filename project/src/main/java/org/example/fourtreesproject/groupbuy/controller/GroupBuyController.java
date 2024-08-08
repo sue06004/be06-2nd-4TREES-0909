@@ -114,17 +114,14 @@ public class GroupBuyController {
     @Operation(summary = "관심 공구 등록/취소 api",
             description = "현재 진행중인 공구 중 하나를 로그인된 계정의 관심 공구 목록에 등록합니다. 다시 등록하면 취소됩니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
     @GetMapping("/likes/save")
-    public BaseResponse likesSave(
+    public BaseResponse<GroupBuyLikesResponse> likesSave(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             Long gpbuyIdx
     ) {
         if (customUserDetails == null) {
             throw new InvalidUserException(USER_NOT_LOGIN);
         }
-        if (!gpbuyService.likesSave(gpbuyIdx, customUserDetails.getIdx())) {
-            return new BaseResponse<>(BaseResponseStatus.GROUPBUY_LIKES_CREATE_FAIL);
-        }
-        return new BaseResponse();
+        return new BaseResponse<>(gpbuyService.likesSave(gpbuyIdx, customUserDetails.getIdx()));
     }
 
     //todo: list가 비어있으면 응답에서 result빼기

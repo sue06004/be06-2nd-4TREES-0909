@@ -209,7 +209,7 @@ public class GroupBuyService {
         return response;
     }
 
-    public boolean likesSave(Long gpbuyIdx, Long userIdx) {
+    public GroupBuyLikesResponse likesSave(Long gpbuyIdx, Long userIdx) {
         Optional<GroupBuy> groupBuy = gpbuyRepository.findById(gpbuyIdx);
         Optional<User> user = userRepository.findById(userIdx);
         if (groupBuy.isPresent() && user.isPresent()) {
@@ -220,10 +220,15 @@ public class GroupBuyService {
                         .user(user.get())
                         .build();
                 likesRepository.save(newLikes);
+                return GroupBuyLikesResponse.builder()
+                        .isLiked(true)
+                        .build();
             } else {
                 likesRepository.deleteById(likes.get().getIdx());
+                return GroupBuyLikesResponse.builder()
+                        .isLiked(false)
+                        .build();
             }
-            return true;
         } else if (groupBuy.isEmpty()) {
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_EMPTY);
         } else {
