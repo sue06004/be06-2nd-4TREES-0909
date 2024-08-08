@@ -52,7 +52,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             userRepository.save(user);
             UserDetail userDetail = UserDetail.builder().user(user).build();
             userDetailRepository.save(userDetail);
-        } else {
+        } else if (user.getType().equals("inapp")) {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; charset=UTF-8");
             PrintWriter out = response.getWriter();
@@ -71,13 +71,20 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         }
         refreshTokenRepository.save(refreshTokenEntity);
 
-        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
-        Cookie aToken = new Cookie("refresh_token", refreshToken);
+        Cookie aToken = new Cookie("AToken", accessToken);
         aToken.setPath("/");
         aToken.setHttpOnly(true);
-        aToken.setMaxAge(COOKIE_MAX_AGE);
-        response.addCookie(aToken);
+        aToken.setSecure(true);
 
-        getRedirectStrategy().sendRedirect(request, response, "redirect url");
+        Cookie rToken = new Cookie("RToken", refreshToken);
+        rToken.setPath("/");
+        rToken.setHttpOnly(true);
+        rToken.setSecure(true);
+        rToken.setMaxAge(COOKIE_MAX_AGE);
+
+        response.addCookie(aToken);
+        response.addCookie(rToken);
+
+        getRedirectStrategy().sendRedirect(request, response, "http://localhost:8081/login/redirect");
     }
 }

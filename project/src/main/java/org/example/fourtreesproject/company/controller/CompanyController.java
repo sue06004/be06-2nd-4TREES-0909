@@ -32,7 +32,7 @@ public class CompanyController {
             }""")})))
     @RequestMapping(method = RequestMethod.POST, value = "/register")
     public BaseResponse<CompanyRegisterResponse> register(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CompanyRegisterRequest request) throws RuntimeException {
-
+        System.out.println(request.getCompanyName());
         if (customUserDetails.getUser().getRole().equals("ROLE_USER")) {
             return new BaseResponse<>(COMPANY_REGIST_FAIL); //업체회원이 아니면 예외처리
         }
