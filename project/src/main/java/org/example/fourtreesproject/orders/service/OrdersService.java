@@ -17,6 +17,7 @@ import org.example.fourtreesproject.coupon.model.UserCoupon;
 import org.example.fourtreesproject.coupon.repository.UserCouponRepository;
 import org.example.fourtreesproject.delivery.model.DeliveryAddress;
 import org.example.fourtreesproject.delivery.model.response.DeliveryAddressResponse;
+import org.example.fourtreesproject.exception.custom.InvalidBidException;
 import org.example.fourtreesproject.exception.custom.InvalidOrderException;
 import org.example.fourtreesproject.groupbuy.model.entity.GroupBuy;
 import org.example.fourtreesproject.groupbuy.repository.GroupBuyRepository;
@@ -26,6 +27,8 @@ import org.example.fourtreesproject.orders.model.response.OrdersListResponse;
 import org.example.fourtreesproject.orders.repository.OrdersRepository;
 import org.example.fourtreesproject.product.model.entity.Product;
 import org.example.fourtreesproject.exception.custom.InvalidUserException;
+import org.example.fourtreesproject.product.model.entity.ProductImg;
+import org.example.fourtreesproject.product.repository.ProductImgRepository;
 import org.example.fourtreesproject.user.model.entity.User;
 import org.example.fourtreesproject.user.model.entity.UserDetail;
 import org.example.fourtreesproject.user.model.response.UserCouponResponse;
@@ -57,17 +60,10 @@ public class OrdersService {
     private final GroupBuyRepository groupBuyRepository;
     private final UserRepository userRepository;
     private final UserDetailRepository userDetailRepository;
+    private final ProductImgRepository productImgRepository;
 
     @Transactional
     public void registerOrder(Long userIdx, String impUid) throws IamportResponseException, IOException, RuntimeException {
-        // 1. 공구 상태 확인(대기 or 진행)
-        //- 대기이면 bid 선정 - 완
-        //- 진행으로 바꾸고 - 완
-        //- 시작시간 기록 - 완
-        //- 마감 시간, 보류 마감 시간 기록 - 완
-
-        //2. 공구 remain quantity 확인 - 완
-
         User user = userRepository.findById(userIdx).orElse(null);
         IamportResponse<Payment> iamportResponse = iamportClient.paymentByImpUid(impUid);
         Payment payment = iamportResponse.getResponse();
@@ -177,11 +173,11 @@ public class OrdersService {
     @Timer
     public List<OrdersListResponse> getOrderInfoList(Integer page, Integer size, Long userIdx) throws RuntimeException {
         Pageable pageable = PageRequest.of(page, size);
-        Slice<OrdersListResponse> ordersListResponseSlice = ordersRepository.findMyOrders(pageable, userIdx, "주문");
+        Slice<OrdersListResponse> ordersListResponseSlice = ordersRepository.findMyOrders(pageable, userIdx);
         return ordersListResponseSlice.stream().toList();
     }
 
-    public OrderPageResponse loadOrderPage(Long userIdx) throws RuntimeException {
+    public OrderPageResponse loadOrderPage(Long userIdx, Long gpbuyIdx, Integer quantity, Long bidIdx) throws RuntimeException {
         User user = userRepository.findById(userIdx).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
         UserDetail userDetail = userDetailRepository.findByUserIdx(user.getIdx()).orElseThrow(() -> new InvalidUserException(USER_NOT_BASIC));
         List<UserCoupon> userCouponList = user.getUserCouponList();
@@ -212,6 +208,14 @@ public class OrdersService {
             deliveryAddressResponseList.add(deliveryAddressResponse);
         }
 
+        Bid bid;
+        if(bidIdx==null){ // 공구가 이미 진행중인 상태
+            bid = bidRepository.findByGroupBuyIdxAndBidSelectIsTrue(gpbuyIdx).orElseThrow(() -> new InvalidBidException(BID_INFO_FAIL));
+        } else { // 입찰 선정할 때
+            bid = bidRepository.findById(bidIdx).orElseThrow(() -> new InvalidBidException(BID_INFO_FAIL));
+        }
+        Product product = bid.getProduct();
+        ProductImg productThumbnailImg = productImgRepository.findByProductIdxAndProductImgSequence(product.getIdx(), 0).orElse(null);
         return OrderPageResponse.builder()
                 .email(user.getEmail())
                 .name(user.getName())
@@ -219,6 +223,11 @@ public class OrdersService {
                 .point(userDetail.getPoint())
                 .deliveryAddressResponseList(deliveryAddressResponseList)
                 .userCouponResponseList(userCouponResponseList)
+                .bidPrice(bid.getBidPrice())
+                .bidIdx(bid.getIdx())
+                .productName(product.getProductName())
+                .productThumbnailUrl(productThumbnailImg.getProductImgUrl())
+                .quantity(quantity)
                 .build();
     }
 

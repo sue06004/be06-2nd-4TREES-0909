@@ -55,17 +55,19 @@ public class GroupBuyController {
         return new BaseResponse<>(groupBuyRegisterResponse);
     }
 
-    @Operation(summary = "공구에 입찰한 입찰정보 조회 api",
-    description = "일반사용자가 자신이 등록한 공구에 등록된 입찰 목록을 조회하는 기능입니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
+    @Operation(summary = "공구와 공구에 입찰한 입찰정보 조회 api",
+            description = "일반사용자가 자신이 등록한 공구와 공구에 등록된 입찰 목록을 조회하는 기능입니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
+
     @GetMapping("/registered/bid/list")
     public BaseResponse<List<RegisteredBidListResponse>> registeredBidList(
             Long gpbuyIdx
-    ){
-        List<RegisteredBidListResponse> result = gpbuyService.findBidList(gpbuyIdx);
-        if (result.size() == 0){
-            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY);
-        }
-        if (gpbuyIdx == null){
+
+    ) {
+        RegisteredGroupBuyResponse result = gpbuyService.findBidList(gpbuyIdx);
+//        if (result.getBidList().size() == 0) {
+//            throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_REGISTERD_BID_EMPTY);
+//        }
+        if (gpbuyIdx == null) {
             throw new InvalidGroupBuyException(REQUEST_FAIL_INVALID);
         }
 
@@ -96,10 +98,13 @@ public class GroupBuyController {
     description = "현재 진행중인 특정 공구에 대한 상세정보를 조회합니다.")
     @GetMapping("/detail")
     public BaseResponse<GroupBuyDetailResponse> detail(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
             Long gpbuyIdx
-    ){
-        GroupBuyDetailResponse result = gpbuyService.findByGpbuyIdx(gpbuyIdx);
-        if (result == null){
+    ) {
+
+
+        GroupBuyDetailResponse result = gpbuyService.findByGpbuyIdx(gpbuyIdx, customUserDetails);
+        if (result == null) {
             throw new InvalidGroupBuyException(GROUPBUY_LIST_FAIL);
         }
 
@@ -109,17 +114,14 @@ public class GroupBuyController {
     @Operation(summary = "관심 공구 등록/취소 api",
     description = "현재 진행중인 공구 중 하나를 로그인된 계정의 관심 공구 목록에 등록합니다. 다시 등록하면 취소됩니다.<br><br>" + "※ 일반 회원 로그인이 필요한 기능입니다.")
     @GetMapping("/likes/save")
-    public BaseResponse likesSave(
+    public BaseResponse<GroupBuyLikesResponse> likesSave(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             Long gpbuyIdx
     ){
         if (customUserDetails == null){
             throw new InvalidUserException(USER_NOT_LOGIN);
         }
-        if (!gpbuyService.likesSave(gpbuyIdx, customUserDetails.getIdx())){
-            return new BaseResponse<>(BaseResponseStatus.GROUPBUY_LIKES_CREATE_FAIL);
-        }
-        return new BaseResponse();
+        return new BaseResponse<>(gpbuyService.likesSave(gpbuyIdx, customUserDetails.getIdx()));
     }
 
     //todo: list가 비어있으면 응답에서 result빼기
@@ -143,21 +145,13 @@ public class GroupBuyController {
     description = "현재 진행중인 공구 중, 입력한 조건에 맞는 공구를 검색합니다. 미 입력시 조건은 반영되지 않습니다.<br><br>")
     @GetMapping("/search")
     public BaseResponse search(
-            GroupBuySearchRequest request
-    ){
-        if (request == null){
-            throw new InvalidGroupBuyException(REQUEST_FAIL_INVALID);
-        }
-        if (request.getPage() == null){
-            request.setPage(0);
-        }
-        if (request.getSize() == null || request.getSize() == 0){
-            request.setSize(10);
-        }
-        if (request.getCategoryIdx() == 0){
-            request.setCategoryIdx(null);
-        }
+            @RequestParam(required = false) Long categoryIdx,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice    ) {
 
+        GroupBuySearchRequest request = GroupBuySearchRequest.builder().page(page).size(size).categoryIdx(categoryIdx).minPrice(minPrice).maxPrice(maxPrice).build();
         List<GroupBuyListResponse> result = gpbuyService.search(request);
         if (result.size() == 0){
             throw new InvalidGroupBuyException(BaseResponseStatus.GROUPBUY_LIST_SEARCH_EMPTY);

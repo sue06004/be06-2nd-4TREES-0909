@@ -124,6 +124,8 @@ public enum BaseResponseStatus {
     COMPANY_REGIST_FAIL_INTRO_EMPTY(false, 3005,"소개글을 입력해주세요."),
     // 업체 정보 조회 실패
     COMPANY_REGIST_DETAIL_FAIL(false, 3006,"업체 정보 조회에 실패했습니다."),
+    // 업체 등록 초과
+    COMPANY_REGIST_FAIL_EXCEED(false, 3007,"업체 등록 초과. 등록 실패했습니다."),
 
     // 상품정보 (회사인덱스, 상품명, 상품설명, 상품가격) 3100
 

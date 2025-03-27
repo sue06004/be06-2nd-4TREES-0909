@@ -1,5 +1,7 @@
 package org.example.fourtreesproject.config;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.fourtreesproject.exception.CustomAccessDeniedHandler;
 import org.example.fourtreesproject.exception.CustomAuthenticationEntryPoint;
@@ -96,6 +98,30 @@ public class SecurityConfig {
         http.oauth2Login((config) -> {
             config.successHandler(oAuth2AuthenticationSuccessHandler);
             config.userInfoEndpoint((endPoint) -> endPoint.userService(oAuth2Service));
+        });
+
+        // 로그아웃 처리 추가
+        http.logout(logout -> {
+            logout.logoutUrl("/logout");
+            logout.logoutSuccessHandler((request, response, authentication) -> {
+                // 쿠키 삭제
+                Cookie aToken = new Cookie("AToken", null);
+                aToken.setPath("/");
+                aToken.setHttpOnly(true);
+                aToken.setMaxAge(0); // 쿠키 만료
+                aToken.setSecure(true);
+                response.addCookie(aToken);
+
+                Cookie rToken = new Cookie("RToken", null);
+                rToken.setPath("/");
+                rToken.setHttpOnly(true);
+                rToken.setMaxAge(0); // 쿠키 만료
+                rToken.setSecure(true);
+                response.addCookie(rToken);
+
+
+                response.setStatus(HttpServletResponse.SC_OK);
+            });
         });
 
         return http.build();

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.example.fourtreesproject.common.BaseResponseStatus.COMPANY_REGIST_DETAIL_FAIL;
@@ -69,7 +70,7 @@ public class ProductService {
         for (int i = 0; i < productList.size(); i++) {
             Product product = productList.get(i);
             List<ProductImg> productImgList = product.getProductImgList();
-            System.out.println(productImgList.get(0).getProductImgUrl());
+            productImgList.sort(Comparator.comparingInt(ProductImg::getProductImgSequence));
             List<ProductImgResponse> productImgResponseList = new ArrayList<>(); //한 상품의 이미지들 넣음
             for (ProductImg productImg : productImgList) {
                 ProductImgResponse productImgResponse = ProductImgResponse.builder()
