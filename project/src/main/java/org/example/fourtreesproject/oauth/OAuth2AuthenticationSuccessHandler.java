@@ -28,7 +28,7 @@ import static org.example.fourtreesproject.common.BaseResponseStatus.USER_REGIST
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final int COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
-
+    private final static String FRONT_URL = "https://fourtrees.kro.kr";
     private final UserRepository userRepository;
     private final UserDetailRepository userDetailRepository;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -85,6 +85,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         response.addCookie(aToken);
         response.addCookie(rToken);
 
-        getRedirectStrategy().sendRedirect(request, response, "http://localhost:8081/login/redirect");
+        getRedirectStrategy().sendRedirect(request, response, FRONT_URL + "/login/redirect");
     }
 }
