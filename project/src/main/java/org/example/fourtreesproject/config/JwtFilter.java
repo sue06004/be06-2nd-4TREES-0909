@@ -27,6 +27,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
         Cookie authorization = null;
         Cookie rTokenCookie = null;
         Cookie[] cookieArray = request.getCookies();
@@ -45,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String accessToken = authorization.getValue();
+        String accessToken = authorization.split(" ")[1];
         if (jwtUtil.isExpired(accessToken)) {
             log.info("AccessToken 만료");
 
@@ -54,18 +55,14 @@ public class JwtFilter extends OncePerRequestFilter {
                 log.info("RefreshToken 없음");
                 return;
             }
-            String reissuedAccessToken = reissueToken(rTokenCookie);
+            String reissuedAccessToken = reissueToken(cookie);
             if (reissuedAccessToken == null) { // client의 refresh token이 변조되었거나, 만료되었거나, 서버가 가지고있는 refreshtoken과 다르거나
                 filterChain.doFilter(request, response);
                 log.info("RefreshToken 이상");
                 return;
             }
             accessToken = reissuedAccessToken;
-            Cookie aToken = new Cookie("AToken", accessToken);
-            aToken.setPath("/");
-            aToken.setHttpOnly(true);
-            aToken.setSecure(true);
-            response.addCookie(aToken);
+            response.addHeader("Authorization", "Bearer " + accessToken);
         }
         String email = jwtUtil.getEmail(accessToken);
         String role = jwtUtil.getRole(accessToken);
@@ -82,9 +79,19 @@ public class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    private Cookie findRefreshTokenAtCookies(Cookie[] cookieArray) {
+        for (Cookie cookie : cookieArray) {
+            if (cookie.getName().equals("refresh_token")) {
+                return cookie;
+            }
+        }
+        return null;
+    }
+
     private String reissueToken(Cookie cookie) {
         String cookieRefreshToken = cookie.getValue();
         if (jwtUtil.isExpired(cookieRefreshToken)) {
+
             log.info("RefreshToken 만료");
             return null;
         }

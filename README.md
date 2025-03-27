@@ -18,7 +18,12 @@
 <b>'직접 모집, 업체간 경쟁 입찰'이라는 방식으로 구매자가 주도하는 능동적인 형태의 공동구매 서비스</b>
 <br/><br/>
 
+## 📌프론트 프로젝트
+<a href="https://github.com/sue06004/be06-3rd-4TREES-0909">프론트 프로젝트 링크</a>
+<br/><br/>
+
 ## 📌기술스택
+
 ### OS
 <img src="https://img.shields.io/badge/Linux-FCC624?style=flat&logo=linux&logoColor=black"/> <img src="https://img.shields.io/badge/Vmware-607078?style=flat&logo=Vmware&logoColor=white"/>  <img src="https://img.shields.io/badge/CentOS-262577?style=flat&logo=CentOS&logoColor=white"/>
 ### BACKEND
@@ -48,7 +53,7 @@
 ## 📌API 명세서
 <a href="http://43.202.232.230:8080/swagger-ui/index.html#/">김우혁 AWS 배포 Swagger</a> <br/>
 <a href="http://3.34.25.245:8080/swagger-ui/index.html#/">도지민 AWS 배포 Swagger</a> <br/>
-<a href="http://...../swagger-ui/index.html#/">강태성 AWS 배포 Swagger</a> <br/>
+<a href="http://15.164.3.92:8080/swagger-ui/index.html#/">강태성 AWS 배포 Swagger</a> <br/>
 <a href="http://52.78.79.165:8080/swagger-ui/index.html#/">서재은 AWS 배포 Swagger</a> <br/>
 <br/><br/>
 
